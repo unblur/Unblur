@@ -24,4 +24,5 @@ CSE416 Group Project
 ## How To Run Server
 
 1. Be in the Unblur repo
-2. Start server with: `npm run server`
+2. Add `.env` file
+3. Start server with: `npm run server`
