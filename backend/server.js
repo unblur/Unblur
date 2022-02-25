@@ -12,6 +12,9 @@ app.get('/', (req, res) => {
   res.send('unblur')
 })
 
+// Routes
+app.use('/api/users', require('./routes/userRoutes'))
+
 app.use(errorHandler)
 
 app.listen(port, () => {
