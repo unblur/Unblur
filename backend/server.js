@@ -14,6 +14,7 @@ app.get('/', (req, res) => {
 
 // Routes
 app.use('/api/users', require('./routes/userRoutes'))
+app.use('/api/artworks', require('./routes/artworkRoutes'))
 
 app.use(errorHandler)
 
