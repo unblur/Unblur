@@ -16,6 +16,7 @@ CSE416 Group Project
 
 ```json
     "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2,
     "prettier.singleQuote": true,
     "prettier.jsxSingleQuote": true,
     "prettier.semi": false,
