@@ -12,15 +12,7 @@ CSE416 Group Project
 
 1. Install Prettier extention: `esbenp.prettier-vscode`
 2. [How To Format Code with Prettier in Visual Studio Code](https://www.digitalocean.com/community/tutorials/code-formatting-with-prettier-in-visual-studio-code)
-3. Update `settings.json` with:
-
-```json
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.tabSize": 2,
-    "prettier.singleQuote": true,
-    "prettier.jsxSingleQuote": true,
-    "prettier.semi": false,
-```
+3. You just need to enable format on save using Prettier as the formatter. The formatting configurations for this repo have already been created in [`.prettierrc.json`](.prettierrc.json). No need to change anything.
 
 ## How To Run Server
 
