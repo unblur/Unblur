@@ -6,7 +6,7 @@ const User = require('../models/userModel')
 // @access  Public
 const getUsers = asyncHandler(async (req, res) => {
   // TODO (zhen): Change access to private.
-  // Only logged in users can see other users.
+  // Only expose specific fields to public.
 
   const users = await User.find()
   if (!users) {
