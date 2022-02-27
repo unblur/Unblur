@@ -17,6 +17,8 @@ const artworkSchema = mongoose.Schema(
     dateUnblurred: {
       type: Date,
     },
+    // TODO: decide whether or not to introduce a new model for comments
+    // TODO: use Date.now as the default date
     comments: {
       type: [
         {

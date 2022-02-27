@@ -5,7 +5,7 @@ const User = require('../models/userModel')
 // @route   GET /api/users
 // @access  Public
 const getUsers = asyncHandler(async (req, res) => {
-  // TODO (zhen): Change access to private.
+  // TODO: (zhen) Change access to private.
   // Only expose specific fields to public.
 
   const users = await User.find()
