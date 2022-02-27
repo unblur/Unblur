@@ -12,6 +12,10 @@ app.get('/', (req, res) => {
   res.send('unblur')
 })
 
+// Body parser
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
+
 // Routes
 app.use('/api/users', require('./routes/userRoutes'))
 app.use('/api/artworks', require('./routes/artworkRoutes'))
