@@ -42,6 +42,34 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 })
 
+// @desc    Login user
+// @route   POST /api/users/login
+// @access  Public
+const loginUser = asyncHandler(async (req, res) => {
+  const { email, password } = req.body
+
+  // Check if user exists
+  const user = await User.findOne({ email })
+  if (!user) {
+    res.status(400)
+    throw new Error('Invalid credentials')
+  }
+
+  // Check password matches
+  const match = await bcrypt.compare(password, user.password)
+  if (!match) {
+    res.status(400)
+    throw new Error('Invalid credentials')
+  }
+
+  // Successful login
+  res.json({
+    _id: user.id,
+    email: user.email,
+    token: generateToken(user._id),
+  })
+})
+
 // @desc    Get all users
 // @route   GET /api/users
 // @access  Public
@@ -67,5 +95,6 @@ const generateToken = (id) => {
 
 module.exports = {
   registerUser,
+  loginUser,
   getUsers,
 }
