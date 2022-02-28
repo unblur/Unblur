@@ -79,8 +79,8 @@ const getUsers = asyncHandler(async (req, res) => {
 
   const users = await User.find()
   if (!users) {
-    res.status(500)
-    throw new Error('Server error')
+    res.status(400)
+    throw new Error('Error')
   }
 
   res.json(users)
