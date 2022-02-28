@@ -83,7 +83,7 @@ const getUsers = asyncHandler(async (req, res) => {
     throw new Error('Server error')
   }
 
-  res.status(200).json(users)
+  res.json(users)
 })
 
 // Generate JWT
