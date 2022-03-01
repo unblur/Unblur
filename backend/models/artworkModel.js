@@ -18,9 +18,7 @@ const artworkSchema = mongoose.Schema(
       type: Date,
     },
     commentIDs: [mongoose.Schema.Types.ObjectId],
-    transactionIDs: {
-      type: [mongoose.Schema.Types.ObjectId],
-    },
+    transactionIDs: [mongoose.Schema.Types.ObjectId],
   },
   {
     timestamps: true,
