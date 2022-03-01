@@ -70,6 +70,24 @@ const loginUser = asyncHandler(async (req, res) => {
   })
 })
 
+// @desc    Get user data
+// @route   GET /api/users/self
+// @access  Private
+const getSelf = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user.id)
+
+  res.json({
+    id: user.id,
+    email: user.email,
+    wallet: user.wallet,
+    artworkIDs: user.artworkIDs,
+    transactionIDs: user.transactionIDs,
+    profilePicture: user.profilePicture,
+    profileName: user.profileName,
+    profileDescription: user.profileDescription,
+  })
+})
+
 // @desc    Get all users
 // @route   GET /api/users
 // @access  Public
@@ -96,5 +114,6 @@ const generateToken = (id) => {
 module.exports = {
   registerUser,
   loginUser,
+  getSelf,
   getUsers,
 }
