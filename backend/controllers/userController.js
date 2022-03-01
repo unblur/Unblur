@@ -77,7 +77,7 @@ const getSelf = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user.id)
 
   res.json({
-    id: user.id,
+    _id: user.id,
     email: user.email,
     wallet: user.wallet,
     artworkIDs: user.artworkIDs,
@@ -92,13 +92,10 @@ const getSelf = asyncHandler(async (req, res) => {
 // @route   GET /api/users
 // @access  Public
 const getUsers = asyncHandler(async (req, res) => {
-  // TODO: (zhen) Change access to private.
-  // Only expose specific fields to public.
-
-  const users = await User.find()
+  const users = await User.find().select('-password -createdAt -updatedAt -__v')
   if (!users) {
-    res.status(400)
-    throw new Error('Error')
+    res.status(500)
+    throw new Error('Server error')
   }
 
   res.json(users)
