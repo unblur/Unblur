@@ -11,24 +11,12 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    wallet: {
-      type: String,
-    },
-    artworkIDs: {
-      type: [mongoose.Schema.Types.ObjectId],
-    },
-    transactionIDs: {
-      type: [mongoose.Schema.Types.ObjectId],
-    },
-    profilePicture: {
-      type: String,
-    },
-    profileName: {
-      type: String,
-    },
-    profileDescription: {
-      type: String,
-    },
+    wallet: String,
+    artworkIDs: [mongoose.Schema.Types.ObjectId],
+    transactionIDs: [mongoose.Schema.Types.ObjectId],
+    profilePicture: String,
+    profileName: String,
+    profileDescription: String,
   },
   {
     timestamps: true,
