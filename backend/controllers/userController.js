@@ -2,6 +2,8 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const asyncHandler = require('express-async-handler')
 const User = require('../models/userModel')
+const PasswordRestToken = require('../models/passwordRestTokenModel')
+const clientURL = process.env.CLIENT_URL
 
 // @desc    Register user
 // @route   POST /api/users/register
@@ -106,6 +108,49 @@ const getUsers = asyncHandler(async (req, res) => {
   }
 
   res.json(users)
+})
+
+// @desc    Rest user's password
+// @route   POST /api/users/passwordresetrequest
+// @access  Public
+const resetPasswordRequest = asyncHandler(async (req, res) => {
+  const { email, password } = req.body
+  const user = await User.findOne({ email })
+
+  // Check if user doesn't exists
+  if (!user) {
+    res.status(400)
+    throw new Error("User doesn't exists")
+  }
+
+  // Check if a password reset token already exists
+  const pswdRestToken = await PasswordRestToken.findById(user._id)
+
+  if (pswdRestToken) {
+    await pswdRestToken.deleteOne()
+  }
+
+  // Make new password rest token
+  let resetToken = crypto.randomBytes(32).toString('hex')
+  const hash = await bcrypt.hash(resetToken, Number(bcryptSalt))
+
+  // Store password reset token
+  await new PasswordRestToken({
+    userId: user._id,
+    token: hash,
+    createdAt: Date.now(),
+  }).save()
+
+  const link = `${clientURL}/passwordReset?token=${resetToken}&id=${user._id}`
+
+  sendEmail(
+    user.email,
+    'Password Rest Request',
+    { link: link },
+    './template/requestResetPassword.handlebars'
+  )
+
+  res.json(link)
 })
 
 // Generate JWT
