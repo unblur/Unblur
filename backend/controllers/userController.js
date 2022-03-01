@@ -70,6 +70,13 @@ const loginUser = asyncHandler(async (req, res) => {
   })
 })
 
+// @desc    Update user data
+// @route   POST /api/users/update
+// @access  Private
+const updateSelf = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user.id)
+})
+
 // @desc    Get user data
 // @route   GET /api/users/self
 // @access  Private
@@ -111,6 +118,7 @@ const generateToken = (id) => {
 module.exports = {
   registerUser,
   loginUser,
+  updateSelf,
   getSelf,
   getUsers,
 }
