@@ -27,19 +27,11 @@ const sendEmail = async (email, subject, payload, template) => {
     }
 
     // Send email
-    transporter.sendMail(options(), (error, info) => {
-      if (error) {
-        console.log(error)
-        return error
-      } else {
-        return res.status(200).json({
-          success: true,
-        })
-      }
-    })
+    let info = await transporter.sendMail(options())
+
+    return {}
   } catch (error) {
-    console.log(error)
-    return error
+    return { error }
   }
 }
 
