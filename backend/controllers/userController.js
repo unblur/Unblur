@@ -26,7 +26,8 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   // Hash password
-  const hashedPassword = await bcrypt.hash(password, bcryptSalt)
+  const salt = await bcrypt.genSalt(bcryptSalt)
+  const hashedPassword = await bcrypt.hash(password, salt)
 
   // Create user
   const user = await User.create({
@@ -126,15 +127,16 @@ const resetPasswordRequest = asyncHandler(async (req, res) => {
   }
 
   // Check if a password reset token already exists
-  const pswdResetToken = await PasswordResetToken.findOne(user._id)
+  const passwordResetToken = await PasswordResetToken.findOne(user._id)
 
-  if (pswdResetToken) {
-    await pswdResetToken.deleteOne(pswdResetToken._id)
+  if (passwordResetToken) {
+    await passwordResetToken.deleteOne(passwordResetToken._id)
   }
 
   // Make new password reset token
   const resetToken = crypto.randomBytes(32).toString('hex')
-  const hash = await bcrypt.hash(resetToken, Number(bcryptSalt))
+  const salt = await bcrypt.genSalt(bcryptSalt)
+  const hash = await bcrypt.hash(resetToken, Number(salt))
 
   // Store password reset token
   await PasswordResetToken.create({
@@ -182,7 +184,8 @@ const resetPassword = asyncHandler(async (req, res) => {
   }
 
   // Everything was a success, hash the new password
-  const hash = await bcrypt.hash(password, Number(bcryptSalt))
+  const salt = await bcrypt.genSalt(bcryptSalt)
+  const hash = await bcrypt.hash(password, Number(salt))
 
   // Update the user's password
   await User.updateOne(
