@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 const resetTokenSchema = mongoose.Schema({
-  userId: {
+  userID: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
@@ -12,8 +12,8 @@ const resetTokenSchema = mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
-    expires: 3600, // this is the expire time in seconds
+    expires: 3600, // 1 hour
   },
 })
 
-module.exports = mongoose.model('RestPasswordToken', resetTokenSchema)
+module.exports = mongoose.model('ResetPasswordToken', resetTokenSchema)

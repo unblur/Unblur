@@ -27,7 +27,7 @@ const sendEmail = async (email, subject, payload, template) => {
     }
 
     // Send email
-    let info = await transporter.sendMail(options())
+    await transporter.sendMail(options())
 
     return {}
   } catch (error) {

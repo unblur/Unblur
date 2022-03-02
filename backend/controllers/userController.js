@@ -2,10 +2,11 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const asyncHandler = require('express-async-handler')
 const User = require('../models/userModel')
-const PasswordRestToken = require('../models/passwordRestTokenModel')
+const PasswordResetToken = require('../models/passwordResetTokenModel')
 const crypto = require('crypto')
 const sendEmail = require('../utils/email/sendEmail')
 const clientURL = process.env.CLIENT_URL
+const bcryptSalt = process.env.BCRYPT_SALT
 
 // @desc    Register user
 // @route   POST /api/users/register
@@ -25,8 +26,7 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   // Hash password
-  const salt = await bcrypt.genSalt(10)
-  const hashedPassword = await bcrypt.hash(password, salt)
+  const hashedPassword = await bcrypt.hash(password, bcryptSalt)
 
   // Create user
   const user = await User.create({
@@ -112,7 +112,7 @@ const getUsers = asyncHandler(async (req, res) => {
   res.json(users)
 })
 
-// @desc    Create a rest user password request
+// @desc    Create a password reset request
 // @route   POST /api/users/passwordresetrequest
 // @access  Public
 const resetPasswordRequest = asyncHandler(async (req, res) => {
@@ -126,30 +126,29 @@ const resetPasswordRequest = asyncHandler(async (req, res) => {
   }
 
   // Check if a password reset token already exists
-  const pswdRestToken = await PasswordRestToken.findOne(user._id)
+  const pswdResetToken = await PasswordResetToken.findOne(user._id)
 
-  if (pswdRestToken) {
-    await pswdRestToken.deleteOne(pswdRestToken._id)
+  if (pswdResetToken) {
+    await pswdResetToken.deleteOne(pswdResetToken._id)
   }
 
-  // Make new password rest token
-  const salt = await bcrypt.genSalt(10)
-  let resetToken = crypto.randomBytes(32).toString('hex')
-  const hash = await bcrypt.hash(resetToken, Number(salt))
+  // Make new password reset token
+  const resetToken = crypto.randomBytes(32).toString('hex')
+  const hash = await bcrypt.hash(resetToken, Number(bcryptSalt))
 
   // Store password reset token
-  await new PasswordRestToken({
-    userId: user._id,
+  await PasswordResetToken.create({
+    userID: user._id,
     token: hash,
     createdAt: Date.now(),
-  }).save()
+  })
 
   const link = `${clientURL}/passwordreset?token=${resetToken}&id=${user._id}`
 
   const sendStatus = await sendEmail(
     user.email,
-    'Password Rest Request',
-    { link: link },
+    'Password Reset Request',
+    { link },
     './templates/requestResetPassword.handlebars'
   )
 
@@ -158,51 +157,50 @@ const resetPasswordRequest = asyncHandler(async (req, res) => {
     throw new Error('Server error.')
   }
 
-  res.json({ msg: 'Successfully sent email.' })
+  res.json({ message: 'Successfully sent email.' })
 })
 
-// @desc    Rest user's password
+// @desc    Reset user's password
 // @route   POST /api/users/passwordreset
 // @access  Public
-const restPassword = asyncHandler(async (req, res) => {
-  const { token, userId, password } = req.body
-  let restPasswordToken = await PasswordRestToken.findOne({ userId })
+const resetPassword = asyncHandler(async (req, res) => {
+  const { token, userID, password } = req.body
+  const resetPasswordToken = await PasswordResetToken.findOne({ userID })
 
-  // Check if a rest password token has been created (there's been a password rest request)
-  if (!restPasswordToken) {
+  // Check if a reset password token has been created (there's been a password reset request)
+  if (!resetPasswordToken) {
     res.status(400)
     throw new Error('No password reset requested')
   }
 
-  const isValid = await bcrypt.compare(token, restPasswordToken.token)
+  const isValid = await bcrypt.compare(token, resetPasswordToken.token)
 
-  // Check if the rest password token being sent to us is the same we have in file for the specific user
+  // Check if the reset password token being sent to us is the same we have in file for the specific user
   if (!isValid) {
     res.status(400)
-    throw new Error('Invalid or expired rest password token')
+    throw new Error('Invalid or expired reset password token')
   }
 
   // Everything was a success, hash the new password
-  const salt = await bcrypt.genSalt(10)
-  const hash = await bcrypt.hash(password, Number(salt))
+  const hash = await bcrypt.hash(password, Number(bcryptSalt))
 
   // Update the user's password
   await User.updateOne(
-    { _id: userId },
+    { _id: userID },
     { $set: { password: hash } },
     { new: true }
   )
 
-  const user = await User.findById(userId)
+  const user = await User.findById(userID)
   sendEmail(
     user.email,
-    'Password Reset Successfully',
+    'Successfully Reset Password',
     {},
     './templates/resetPassword.handlebars'
   )
-  await restPasswordToken.deleteOne()
+  await resetPasswordToken.deleteOne()
 
-  res.json({ msg: 'Succesfully reset password.' })
+  res.json({ message: 'Succesfully reset password.' })
 })
 
 // Generate JWT
@@ -219,5 +217,5 @@ module.exports = {
   getSelf,
   getUsers,
   resetPasswordRequest,
-  restPassword,
+  resetPassword,
 }
