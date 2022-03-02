@@ -8,7 +8,6 @@ const sendEmail = async (email, subject, payload, template) => {
     // create reusable transporter object using the default SMTP transport
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
-      port: 465,
       auth: {
         user: process.env.EMAIL_USERNAME,
         pass: process.env.EMAIL_PASSWORD,
@@ -21,6 +20,7 @@ const sendEmail = async (email, subject, payload, template) => {
       return {
         from: process.env.FROM_EMAIL,
         to: email,
+        replyTo: process.env.FROM_EMAIL,
         subject: subject,
         html: compiledTemplate(payload),
       }
@@ -29,6 +29,7 @@ const sendEmail = async (email, subject, payload, template) => {
     // Send email
     transporter.sendMail(options(), (error, info) => {
       if (error) {
+        console.log(error)
         return error
       } else {
         return res.status(200).json({
@@ -37,6 +38,7 @@ const sendEmail = async (email, subject, payload, template) => {
       }
     })
   } catch (error) {
+    console.log(error)
     return error
   }
 }
