@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs')
 const asyncHandler = require('express-async-handler')
 const User = require('../models/userModel')
 const PasswordResetToken = require('../models/passwordResetTokenModel')
+const VerifyEmailToken = require('../models/verifyEmailTokenModel')
 const crypto = require('crypto')
 const sendEmail = require('../utils/email/sendEmail')
 const clientURL = process.env.CLIENT_URL
@@ -33,10 +34,37 @@ const registerUser = asyncHandler(async (req, res) => {
   const user = await User.create({
     email,
     password: hashedPassword,
+    verified: false,
   })
   if (!user) {
     res.status(400)
     throw new Error('Invalid user data')
+  }
+
+  // Create email verification token
+  const verificationToken = crypto.randomBytes(32).toString('hex')
+  const salt = await bcrypt.genSalt(bcryptSalt)
+  const hashedToken = await bcrypt.hash(verificationToken, Number(salt))
+
+  // Store verification token
+  await VerifyEmailToken.create({
+    userID: user._id,
+    token: hashedToken,
+    createdAt: Date.now(),
+  })
+
+  const link = `${clientURL}/verifyemail?token=${verificationToken}&id=${user._id}`
+
+  const sendStatus = await sendEmail(
+    user.email,
+    'Verify Email Address',
+    { link },
+    './templates/requestVerifyEmail.handlebars'
+  )
+
+  if (sendStatus.error) {
+    res.status(500)
+    throw new Error('Server error.')
   }
 
   // Successful registration
@@ -44,6 +72,7 @@ const registerUser = asyncHandler(async (req, res) => {
     _id: user.id,
     email: user.email,
     token: generateToken(user._id),
+    message: 'Successfully sent email.',
   })
 })
 
@@ -60,6 +89,12 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new Error('Invalid credentials')
   }
 
+  // Check if user is verified
+  if (!user.verified) {
+    res.status(400)
+    throw new Error('User not verified')
+  }
+
   // Check password matches
   const match = await bcrypt.compare(password, user.password)
   if (!match) {
@@ -73,6 +108,121 @@ const loginUser = asyncHandler(async (req, res) => {
     email: user.email,
     token: generateToken(user._id),
   })
+})
+
+// @desc    Verify user email
+// @route   POST /api/users/verifyemail
+// @access  Public
+const verifyEmail = asyncHandler(async (req, res) => {
+  const { token, userID } = req.body
+  const verifyEmailToken = await VerifyEmailToken.findOne({ userID })
+
+  // Check if a verify email token has been created (there's been a verify email request)
+  if (!verifyEmailToken) {
+    res.status(400)
+    throw new Error('No email verification requested')
+  }
+
+  const user = await User.findOne({ userID })
+
+  // Check if user exisits
+  if (!user) {
+    res.status(400)
+    throw new Error('User not found')
+  }
+
+  // Check if user is already verified
+  if (user.verified) {
+    return res
+      .status(200)
+      .json({ message: 'User has been already verified. Please login.' })
+  }
+
+  const isValid = await bcrypt.compare(token, verifyEmailToken.token)
+
+  // Check if the verify email token being sent to us is the same we have in file for the specific user
+  if (!isValid) {
+    res.status(400)
+    throw new Error('Invalid or expired verify email token')
+  }
+
+  // Update the user's verification status
+  await User.updateOne(
+    { _id: userID },
+    { $set: { verified: true } },
+    { new: true }
+  )
+
+  const user = await User.findById(userID)
+
+  if (!user.verified) {
+    return res.status(500).json({ message: 'Error with email verification' })
+  }
+  sendEmail(
+    user.email,
+    'Successfully Verified Email',
+    {},
+    './templates/verifyEmail.handlebars'
+  )
+  await verifyEmailToken.deleteOne()
+
+  res.json({ message: 'Succesfully verified email.' })
+})
+
+// @desc    Resend verify user email
+// @route   POST /api/users/resendverifyemail
+// @access  Public
+const resendVerifyEmail = asyncHandler(async (req, res) => {
+  const { email } = req.body
+
+  const user = await User.findOne({ email })
+
+  // Check if user exisits
+  if (!user) {
+    res.status(400)
+    throw new Error('User not found')
+  }
+
+  // Check if user is already verified
+  if (user.verified) {
+    return res
+      .status(200)
+      .json({ message: 'User has been already verified. Please login.' })
+  }
+
+  const verifyEmailToken = await VerifyEmailToken.findOne(user._id)
+
+  if (verifyEmailToken) {
+    await verifyEmailToken.deleteOne(verifyEmailToken._id)
+  }
+
+  // Make new verification token
+  const verifyToken = crypto.randomBytes(32).toString('hex')
+  const salt = await bcrypt.genSalt(bcryptSalt)
+  const hashedToken = await bcrypt.hash(verifyToken, Number(salt))
+
+  // Store password verification token
+  await VerifyEmailToken.create({
+    userID: user._id,
+    token: hashedToken,
+    createdAt: Date.now(),
+  })
+
+  const link = `${clientURL}/verifyemail?token=${verifyToken}&id=${user._id}`
+
+  const sendStatus = await sendEmail(
+    user.email,
+    'Verify Email Address',
+    { link },
+    './templates/requestVerifyEmail.handlebars'
+  )
+
+  if (sendStatus.error) {
+    res.status(500)
+    throw new Error('Server error.')
+  }
+
+  res.json({ message: 'Successfully sent email.' })
 })
 
 // @desc    Update user data
@@ -221,4 +371,6 @@ module.exports = {
   getUsers,
   resetPasswordRequest,
   resetPassword,
+  verifyEmail,
+  resendVerifyEmail,
 }
