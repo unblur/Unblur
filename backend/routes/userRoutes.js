@@ -7,14 +7,14 @@ const {
   getSelf,
   getUsers,
   resetPasswordRequest,
-  restPassword,
+  resetPassword,
 } = require('../controllers/userController')
 const { protect } = require('../middleware/authMiddleware')
 
 router.post('/register', registerUser)
 router.post('/login', loginUser)
 router.post('/passwordresetrequest', resetPasswordRequest)
-router.post('/passwordreset', restPassword)
+router.post('/passwordreset', resetPassword)
 router.get('/update', protect, updateSelf)
 router.get('/self', protect, getSelf)
 router.get('/', getUsers)
