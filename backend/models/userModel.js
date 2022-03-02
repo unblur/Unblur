@@ -11,6 +11,11 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    verified: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
     wallet: String,
     artworkIDs: [mongoose.Schema.Types.ObjectId],
     transactionIDs: [mongoose.Schema.Types.ObjectId],
