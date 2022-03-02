@@ -7,7 +7,7 @@ const VerifyEmailToken = require('../models/verifyEmailTokenModel')
 const crypto = require('crypto')
 const sendEmail = require('../utils/email/sendEmail')
 const clientURL = process.env.CLIENT_URL
-const bcryptSalt = process.env.BCRYPT_SALT
+const bcryptSalt = parseInt(process.env.BCRYPT_SALT)
 
 // @desc    Register user
 // @route   POST /api/users/register
@@ -43,8 +43,8 @@ const registerUser = asyncHandler(async (req, res) => {
 
   // Create email verification token
   const verificationToken = crypto.randomBytes(32).toString('hex')
-  const salt = await bcrypt.genSalt(bcryptSalt)
-  const hashedToken = await bcrypt.hash(verificationToken, Number(salt))
+  const saltForEmail = await bcrypt.genSalt(bcryptSalt)
+  const hashedToken = await bcrypt.hash(verificationToken, Number(saltForEmail))
 
   // Store verification token
   await VerifyEmailToken.create({
@@ -153,13 +153,13 @@ const verifyEmail = asyncHandler(async (req, res) => {
     { new: true }
   )
 
-  const user = await User.findById(userID)
+  const userCheck = await User.findById(userID)
 
-  if (!user.verified) {
+  if (!userCheck.verified) {
     return res.status(500).json({ message: 'Error with email verification' })
   }
   sendEmail(
-    user.email,
+    userCheck.email,
     'Successfully Verified Email',
     {},
     './templates/verifyEmail.handlebars'
