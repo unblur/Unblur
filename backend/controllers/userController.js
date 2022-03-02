@@ -146,14 +146,19 @@ const resetPasswordRequest = asyncHandler(async (req, res) => {
 
   const link = `${clientURL}/passwordreset?token=${resetToken}&id=${user._id}`
 
-  sendEmail(
+  const sendStatus = await sendEmail(
     user.email,
     'Password Rest Request',
     { link: link },
     './templates/requestResetPassword.handlebars'
   )
 
-  res.json(link)
+  if (sendStatus.error) {
+    res.status(500)
+    throw new Error('Server error.')
+  }
+
+  res.json({ msg: 'Successfully sent email.' })
 })
 
 // @desc    Rest user's password
@@ -197,7 +202,7 @@ const restPassword = asyncHandler(async (req, res) => {
   )
   await restPasswordToken.deleteOne()
 
-  res.json('Password Reset Successfully')
+  res.json({ msg: 'Succesfully reset password.' })
 })
 
 // Generate JWT
