@@ -7,7 +7,7 @@ const VerifyEmailToken = require('../models/verifyEmailTokenModel')
 const crypto = require('crypto')
 const sendEmail = require('../utils/email/sendEmail')
 const clientURL = process.env.CLIENT_URL
-const bcryptSalt = parseInt(process.env.BCRYPT_SALT)
+const bcryptSalt = parseInt(process.env.SALT_ROUNDS)
 
 // @desc    Register user
 // @route   POST /api/users/register
@@ -34,7 +34,6 @@ const registerUser = asyncHandler(async (req, res) => {
   const user = await User.create({
     email,
     password: hashedPassword,
-    verified: false,
   })
   if (!user) {
     res.status(400)
@@ -50,18 +49,16 @@ const registerUser = asyncHandler(async (req, res) => {
   await VerifyEmailToken.create({
     userID: user._id,
     token: hashedToken,
-    createdAt: Date.now(),
   })
 
-  const link = `${clientURL}/verifyemail?token=${verificationToken}&id=${user._id}`
-
+  // Creating a link that will be sent to user's email. User will click the link activating a GET request. Need to create display page.
+  const link = `${clientURL}/api/users/verifyemail?token=${verificationToken}&id=${user._id}`
   const sendStatus = await sendEmail(
     user.email,
     'Verify Email Address',
     { link },
     './templates/requestVerifyEmail.handlebars'
   )
-
   if (sendStatus.error) {
     res.status(500)
     throw new Error('Server error.')
@@ -71,8 +68,7 @@ const registerUser = asyncHandler(async (req, res) => {
   res.status(201).json({
     _id: user.id,
     email: user.email,
-    token: generateToken(user._id),
-    message: 'Successfully sent email.',
+    message: 'Successfully registered. Please verify your email to log in.',
   })
 })
 
@@ -111,11 +107,11 @@ const loginUser = asyncHandler(async (req, res) => {
 })
 
 // @desc    Verify user email
-// @route   POST /api/users/verifyemail
+// @route   GET /api/users/verifyemail
 // @access  Public
 const verifyEmail = asyncHandler(async (req, res) => {
-  const { token, userID } = req.body
-  const verifyEmailToken = await VerifyEmailToken.findOne({ userID })
+  const { token, id } = req.query
+  const verifyEmailToken = await VerifyEmailToken.findOne({ userID: id })
 
   // Check if a verify email token has been created (there's been a verify email request)
   if (!verifyEmailToken) {
@@ -123,21 +119,20 @@ const verifyEmail = asyncHandler(async (req, res) => {
     throw new Error('No email verification requested')
   }
 
-  const user = await User.findOne({ userID })
-
   // Check if user exisits
+  const user = await User.findOne({ _id: id })
   if (!user) {
     res.status(400)
     throw new Error('User not found')
   }
 
-  // Check if user is already verified
+  // Check if user is already verified if not then compare the token coming in with the request to the one we have stored for the particular user
   if (user.verified) {
-    return res
-      .status(200)
-      .json({ message: 'User has been already verified. Please login.' })
+    res.json({
+      message: 'User has been already verified. Please login.',
+    })
+    return
   }
-
   const isValid = await bcrypt.compare(token, verifyEmailToken.token)
 
   // Check if the verify email token being sent to us is the same we have in file for the specific user
@@ -147,37 +142,36 @@ const verifyEmail = asyncHandler(async (req, res) => {
   }
 
   // Update the user's verification status
-  await User.updateOne(
-    { _id: userID },
-    { $set: { verified: true } },
-    { new: true }
-  )
+  user.verified = true
+  await user.save()
 
-  const userCheck = await User.findById(userID)
+  const updatedUser = await User.findById(id)
 
-  if (!userCheck.verified) {
-    return res.status(500).json({ message: 'Error with email verification' })
+  if (!updatedUser.verified) {
+    res.status(500)
+    throw new Error('Error verifying email')
   }
+
   sendEmail(
-    userCheck.email,
+    updatedUser.email,
     'Successfully Verified Email',
     {},
     './templates/verifyEmail.handlebars'
   )
-  await verifyEmailToken.deleteOne()
+  await VerifyEmailToken.deleteOne({ _id: verifyEmailToken._id })
 
+  // Display a succesfully verified email page instead of sending this json back
   res.json({ message: 'Succesfully verified email.' })
 })
 
-// @desc    Resend verify user email
-// @route   POST /api/users/resendverifyemail
+// @desc    Create a verify email request
+// @route   POST /api/users/verifyemailrequest
 // @access  Public
-const resendVerifyEmail = asyncHandler(async (req, res) => {
+const verifyEmailRequest = asyncHandler(async (req, res) => {
   const { email } = req.body
 
-  const user = await User.findOne({ email })
-
   // Check if user exisits
+  const user = await User.findOne({ email })
   if (!user) {
     res.status(400)
     throw new Error('User not found')
@@ -185,15 +179,14 @@ const resendVerifyEmail = asyncHandler(async (req, res) => {
 
   // Check if user is already verified
   if (user.verified) {
-    return res
-      .status(200)
-      .json({ message: 'User has been already verified. Please login.' })
+    res.json({ message: 'User has been already verified. Please login.' })
+    return
   }
 
-  const verifyEmailToken = await VerifyEmailToken.findOne(user._id)
+  const verifyEmailToken = await VerifyEmailToken.findOne({ userID: user._id })
 
   if (verifyEmailToken) {
-    await verifyEmailToken.deleteOne(verifyEmailToken._id)
+    await VerifyEmailToken.deleteOne({ _id: verifyEmailToken._id })
   }
 
   // Make new verification token
@@ -205,18 +198,16 @@ const resendVerifyEmail = asyncHandler(async (req, res) => {
   await VerifyEmailToken.create({
     userID: user._id,
     token: hashedToken,
-    createdAt: Date.now(),
   })
 
-  const link = `${clientURL}/verifyemail?token=${verifyToken}&id=${user._id}`
-
+  // Creating a link that will be sent to user's email. User will click the link activating a GET request. Need to create display page.
+  const link = `${clientURL}/api/users/verifyemail?token=${verifyToken}&id=${user._id}`
   const sendStatus = await sendEmail(
     user.email,
     'Verify Email Address',
     { link },
     './templates/requestVerifyEmail.handlebars'
   )
-
   if (sendStatus.error) {
     res.status(500)
     throw new Error('Server error.')
@@ -277,7 +268,9 @@ const resetPasswordRequest = asyncHandler(async (req, res) => {
   }
 
   // Check if a password reset token already exists
-  const passwordResetToken = await PasswordResetToken.findOne(user._id)
+  const passwordResetToken = await PasswordResetToken.findOne({
+    userID: user._id,
+  })
 
   if (passwordResetToken) {
     await passwordResetToken.deleteOne(passwordResetToken._id)
@@ -292,10 +285,10 @@ const resetPasswordRequest = asyncHandler(async (req, res) => {
   await PasswordResetToken.create({
     userID: user._id,
     token: hash,
-    createdAt: Date.now(),
   })
 
-  const link = `${clientURL}/passwordreset?token=${resetToken}&id=${user._id}`
+  // Creating a link that will be sent to user's email. User will click the link activating a GET request to a webpage with a password input text box. The link below will then be sent along with password request body to hit the /api/users/passwordreset endpoint updating the user's password.
+  const link = `${clientURL}/api/users/passwordreset?token=${resetToken}&id=${user._id}`
 
   const sendStatus = await sendEmail(
     user.email,
@@ -316,8 +309,9 @@ const resetPasswordRequest = asyncHandler(async (req, res) => {
 // @route   POST /api/users/passwordreset
 // @access  Public
 const resetPassword = asyncHandler(async (req, res) => {
-  const { token, userID, password } = req.body
-  const resetPasswordToken = await PasswordResetToken.findOne({ userID })
+  const { token, id } = req.query
+  const { password } = req.body
+  const resetPasswordToken = await PasswordResetToken.findOne({ userID: id })
 
   // Check if a reset password token has been created (there's been a password reset request)
   if (!resetPasswordToken) {
@@ -338,13 +332,10 @@ const resetPassword = asyncHandler(async (req, res) => {
   const hash = await bcrypt.hash(password, Number(salt))
 
   // Update the user's password
-  await User.updateOne(
-    { _id: userID },
-    { $set: { password: hash } },
-    { new: true }
-  )
+  const user = await User.findOne({ _id: id })
+  user.password = hash
+  await user.save()
 
-  const user = await User.findById(userID)
   sendEmail(
     user.email,
     'Successfully Reset Password',
@@ -372,5 +363,5 @@ module.exports = {
   resetPasswordRequest,
   resetPassword,
   verifyEmail,
-  resendVerifyEmail,
+  verifyEmailRequest,
 }
