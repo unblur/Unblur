@@ -11,7 +11,12 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    wallet: String,
+    wallets: [
+      {
+        walletID: String,
+        walletName: String,
+      },
+    ],
     artworkIDs: [mongoose.Schema.Types.ObjectId],
     transactionIDs: [mongoose.Schema.Types.ObjectId],
     profilePicture: String,
