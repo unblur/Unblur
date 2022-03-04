@@ -220,14 +220,14 @@ const verifyEmailRequest = asyncHandler(async (req, res) => {
 // @route   POST /api/users/update
 // @access  Private
 const updateSelf = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user.id)
+  const user = req.user
 })
 
 // @desc    Get user data
 // @route   GET /api/users/self
 // @access  Private
 const getSelf = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user.id)
+  const user = req.user
 
   res.json({
     _id: user.id,
