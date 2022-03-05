@@ -2,11 +2,12 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const asyncHandler = require('express-async-handler')
 const User = require('../models/userModel')
-const PasswordResetToken = require('../models/passwordResetTokenModel')
+const ResetPasswordToken = require('../models/resetPasswordTokenModel')
+const VerifyEmailToken = require('../models/verifyEmailTokenModel')
 const crypto = require('crypto')
 const sendEmail = require('../utils/email/sendEmail')
 const clientURL = process.env.CLIENT_URL
-const bcryptSalt = process.env.BCRYPT_SALT
+const saltRounds = parseInt(process.env.SALT_ROUNDS)
 
 // @desc    Register user
 // @route   POST /api/users/register
@@ -26,7 +27,7 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   // Hash password
-  const salt = await bcrypt.genSalt(bcryptSalt)
+  const salt = await bcrypt.genSalt(saltRounds)
   const hashedPassword = await bcrypt.hash(password, salt)
 
   // Create user
@@ -39,11 +40,35 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error('Invalid user data')
   }
 
+  // Create email verification token
+  const verificationToken = crypto.randomBytes(32).toString('hex')
+  const saltForEmail = await bcrypt.genSalt(saltRounds)
+  const hashedToken = await bcrypt.hash(verificationToken, Number(saltForEmail))
+
+  // Store verification token
+  await VerifyEmailToken.create({
+    userID: user._id,
+    token: hashedToken,
+  })
+
+  // Create an email verification link
+  const link = `${clientURL}/api/users/verifyemail?token=${verificationToken}&id=${user._id}`
+  const sendStatus = await sendEmail(
+    user.email,
+    'Verify Email Address',
+    { link },
+    './templates/requestVerifyEmail.handlebars'
+  )
+  if (sendStatus.error) {
+    res.status(500)
+    throw new Error('Server error.')
+  }
+
   // Successful registration
   res.status(201).json({
     _id: user.id,
     email: user.email,
-    token: generateToken(user._id),
+    message: 'Successfully registered. Please verify your email to log in.',
   })
 })
 
@@ -60,6 +85,12 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new Error('Invalid credentials')
   }
 
+  // Check if user is verified
+  if (!user.verified) {
+    res.status(400)
+    throw new Error('User not verified')
+  }
+
   // Check password matches
   const match = await bcrypt.compare(password, user.password)
   if (!match) {
@@ -73,6 +104,115 @@ const loginUser = asyncHandler(async (req, res) => {
     email: user.email,
     token: generateToken(user._id),
   })
+})
+
+// @desc    Verify user email
+// @route   GET /api/users/verifyemail
+// @access  Public
+const verifyEmail = asyncHandler(async (req, res) => {
+  const { token, id } = req.query
+  const verifyEmailToken = await VerifyEmailToken.findOne({ userID: id })
+
+  // Check if a verify email token has been created (there's been a verify email request)
+  if (!verifyEmailToken) {
+    res.status(400)
+    throw new Error('No email verification requested')
+  }
+
+  // Check if user exisits
+  const user = await User.findById(id)
+  if (!user) {
+    res.status(400)
+    throw new Error('User not found')
+  }
+
+  // Check if user is already verified if not then compare the token coming in with the request to the one we have stored for the particular user
+  if (user.verified) {
+    res.json({
+      message: 'User has been already verified. Please login.',
+    })
+    return
+  }
+
+  // Check if the verify email token being sent to us is the same we have in file for the specific user
+  const isValid = await bcrypt.compare(token, verifyEmailToken.token)
+  if (!isValid) {
+    res.status(400)
+    throw new Error('Invalid or expired verify email token')
+  }
+
+  // Update the user's verification status
+  user.verified = true
+  await user.save()
+
+  const updatedUser = await User.findById(id)
+
+  if (!updatedUser.verified) {
+    res.status(500)
+    throw new Error('Error verifying email')
+  }
+
+  sendEmail(
+    updatedUser.email,
+    'Successfully Verified Email',
+    {},
+    './templates/verifyEmail.handlebars'
+  )
+  await VerifyEmailToken.deleteOne({ _id: verifyEmailToken._id })
+
+  res.json({ message: 'Succesfully verified email.' })
+})
+
+// @desc    Create a verify email request
+// @route   POST /api/users/verifyemailrequest
+// @access  Public
+const verifyEmailRequest = asyncHandler(async (req, res) => {
+  const { email } = req.body
+
+  // Check if user exisits
+  const user = await User.findOne({ email })
+  if (!user) {
+    res.status(400)
+    throw new Error('User not found')
+  }
+
+  // User has already been veriified
+  if (user.verified) {
+    res.json({ message: 'User has been already verified. Please login.' })
+    return
+  }
+
+  const verifyEmailToken = await VerifyEmailToken.findOne({ userID: user._id })
+
+  if (verifyEmailToken) {
+    await VerifyEmailToken.deleteOne({ _id: verifyEmailToken._id })
+  }
+
+  // Make new verification token
+  const verificationToken = crypto.randomBytes(32).toString('hex')
+  const salt = await bcrypt.genSalt(saltRounds)
+  const hashedToken = await bcrypt.hash(verificationToken, Number(salt))
+
+  // Store password verification token
+  await VerifyEmailToken.create({
+    userID: user._id,
+    token: hashedToken,
+  })
+
+  // Create an email verification link
+  const link = `${clientURL}/api/users/verifyemail?token=${verificationToken}&id=${user._id}`
+  const sendStatus = await sendEmail(
+    user.email,
+    'Verify Email Address',
+    { link },
+    './templates/requestVerifyEmail.handlebars'
+  )
+  if (sendStatus.error) {
+    res.status(500)
+    throw new Error('Server error.')
+  }
+
+  res.json({ message: 'Successfully sent email.' })
 })
 
 // @desc    Update user data
@@ -114,7 +254,7 @@ const getUsers = asyncHandler(async (req, res) => {
 })
 
 // @desc    Create a password reset request
-// @route   POST /api/users/passwordresetrequest
+// @route   POST /api/users/resetpasswordrequest
 // @access  Public
 const resetPasswordRequest = asyncHandler(async (req, res) => {
   const { email } = req.body
@@ -127,25 +267,27 @@ const resetPasswordRequest = asyncHandler(async (req, res) => {
   }
 
   // Check if a password reset token already exists
-  const passwordResetToken = await PasswordResetToken.findOne(user._id)
+  const resetPasswordToken = await ResetPasswordToken.findOne({
+    userID: user._id,
+  })
 
-  if (passwordResetToken) {
-    await passwordResetToken.deleteOne(passwordResetToken._id)
+  if (resetPasswordToken) {
+    await ResetPasswordToken.deleteOne({ _id: resetPasswordToken._id })
   }
 
   // Make new password reset token
   const resetToken = crypto.randomBytes(32).toString('hex')
-  const salt = await bcrypt.genSalt(bcryptSalt)
+  const salt = await bcrypt.genSalt(saltRounds)
   const hash = await bcrypt.hash(resetToken, Number(salt))
 
   // Store password reset token
-  await PasswordResetToken.create({
+  await ResetPasswordToken.create({
     userID: user._id,
     token: hash,
-    createdAt: Date.now(),
   })
 
-  const link = `${clientURL}/passwordreset?token=${resetToken}&id=${user._id}`
+  // Creating a reset password link
+  const link = `${clientURL}/api/users/resetpassword?token=${resetToken}&id=${user._id}`
 
   const sendStatus = await sendEmail(
     user.email,
@@ -163,11 +305,12 @@ const resetPasswordRequest = asyncHandler(async (req, res) => {
 })
 
 // @desc    Reset user's password
-// @route   POST /api/users/passwordreset
+// @route   POST /api/users/resetpassword
 // @access  Public
 const resetPassword = asyncHandler(async (req, res) => {
-  const { token, userID, password } = req.body
-  const resetPasswordToken = await PasswordResetToken.findOne({ userID })
+  const { token, id } = req.query
+  const { password } = req.body
+  const resetPasswordToken = await ResetPasswordToken.findOne({ userID: id })
 
   // Check if a reset password token has been created (there's been a password reset request)
   if (!resetPasswordToken) {
@@ -184,24 +327,21 @@ const resetPassword = asyncHandler(async (req, res) => {
   }
 
   // Everything was a success, hash the new password
-  const salt = await bcrypt.genSalt(bcryptSalt)
+  const salt = await bcrypt.genSalt(saltRounds)
   const hash = await bcrypt.hash(password, Number(salt))
 
   // Update the user's password
-  await User.updateOne(
-    { _id: userID },
-    { $set: { password: hash } },
-    { new: true }
-  )
+  const user = await User.findById(id)
+  user.password = hash
+  await user.save()
 
-  const user = await User.findById(userID)
   sendEmail(
     user.email,
     'Successfully Reset Password',
     {},
     './templates/resetPassword.handlebars'
   )
-  await resetPasswordToken.deleteOne()
+  await ResetPasswordToken.deleteOne({ _id: resetPasswordToken._id })
 
   res.json({ message: 'Succesfully reset password.' })
 })
@@ -221,4 +361,6 @@ module.exports = {
   getUsers,
   resetPasswordRequest,
   resetPassword,
+  verifyEmail,
+  verifyEmailRequest,
 }
