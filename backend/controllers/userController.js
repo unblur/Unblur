@@ -2,12 +2,12 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const asyncHandler = require('express-async-handler')
 const User = require('../models/userModel')
-const PasswordResetToken = require('../models/passwordResetTokenModel')
+const ResetPasswordToken = require('../models/resetPasswordTokenModel')
 const VerifyEmailToken = require('../models/verifyEmailTokenModel')
 const crypto = require('crypto')
 const sendEmail = require('../utils/email/sendEmail')
 const clientURL = process.env.CLIENT_URL
-const bcryptSalt = parseInt(process.env.SALT_ROUNDS)
+const saltRounds = parseInt(process.env.SALT_ROUNDS)
 
 // @desc    Register user
 // @route   POST /api/users/register
@@ -27,7 +27,7 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   // Hash password
-  const salt = await bcrypt.genSalt(bcryptSalt)
+  const salt = await bcrypt.genSalt(saltRounds)
   const hashedPassword = await bcrypt.hash(password, salt)
 
   // Create user
@@ -42,7 +42,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   // Create email verification token
   const verificationToken = crypto.randomBytes(32).toString('hex')
-  const saltForEmail = await bcrypt.genSalt(bcryptSalt)
+  const saltForEmail = await bcrypt.genSalt(saltRounds)
   const hashedToken = await bcrypt.hash(verificationToken, Number(saltForEmail))
 
   // Store verification token
@@ -51,7 +51,7 @@ const registerUser = asyncHandler(async (req, res) => {
     token: hashedToken,
   })
 
-  // Creating a link that will be sent to user's email. User will click the link activating a GET request. Need to create display page.
+  // Create an email verification link
   const link = `${clientURL}/api/users/verifyemail?token=${verificationToken}&id=${user._id}`
   const sendStatus = await sendEmail(
     user.email,
@@ -120,7 +120,7 @@ const verifyEmail = asyncHandler(async (req, res) => {
   }
 
   // Check if user exisits
-  const user = await User.findOne({ _id: id })
+  const user = await User.findById(id)
   if (!user) {
     res.status(400)
     throw new Error('User not found')
@@ -133,9 +133,9 @@ const verifyEmail = asyncHandler(async (req, res) => {
     })
     return
   }
-  const isValid = await bcrypt.compare(token, verifyEmailToken.token)
 
   // Check if the verify email token being sent to us is the same we have in file for the specific user
+  const isValid = await bcrypt.compare(token, verifyEmailToken.token)
   if (!isValid) {
     res.status(400)
     throw new Error('Invalid or expired verify email token')
@@ -160,7 +160,6 @@ const verifyEmail = asyncHandler(async (req, res) => {
   )
   await VerifyEmailToken.deleteOne({ _id: verifyEmailToken._id })
 
-  // Display a succesfully verified email page instead of sending this json back
   res.json({ message: 'Succesfully verified email.' })
 })
 
@@ -177,7 +176,7 @@ const verifyEmailRequest = asyncHandler(async (req, res) => {
     throw new Error('User not found')
   }
 
-  // Check if user is already verified
+  // User has already been veriified
   if (user.verified) {
     res.json({ message: 'User has been already verified. Please login.' })
     return
@@ -190,9 +189,9 @@ const verifyEmailRequest = asyncHandler(async (req, res) => {
   }
 
   // Make new verification token
-  const verifyToken = crypto.randomBytes(32).toString('hex')
-  const salt = await bcrypt.genSalt(bcryptSalt)
-  const hashedToken = await bcrypt.hash(verifyToken, Number(salt))
+  const verificationToken = crypto.randomBytes(32).toString('hex')
+  const salt = await bcrypt.genSalt(saltRounds)
+  const hashedToken = await bcrypt.hash(verificationToken, Number(salt))
 
   // Store password verification token
   await VerifyEmailToken.create({
@@ -200,8 +199,8 @@ const verifyEmailRequest = asyncHandler(async (req, res) => {
     token: hashedToken,
   })
 
-  // Creating a link that will be sent to user's email. User will click the link activating a GET request. Need to create display page.
-  const link = `${clientURL}/api/users/verifyemail?token=${verifyToken}&id=${user._id}`
+  // Create an email verification link
+  const link = `${clientURL}/api/users/verifyemail?token=${verificationToken}&id=${user._id}`
   const sendStatus = await sendEmail(
     user.email,
     'Verify Email Address',
@@ -255,7 +254,7 @@ const getUsers = asyncHandler(async (req, res) => {
 })
 
 // @desc    Create a password reset request
-// @route   POST /api/users/passwordresetrequest
+// @route   POST /api/users/resetpasswordrequest
 // @access  Public
 const resetPasswordRequest = asyncHandler(async (req, res) => {
   const { email } = req.body
@@ -268,27 +267,27 @@ const resetPasswordRequest = asyncHandler(async (req, res) => {
   }
 
   // Check if a password reset token already exists
-  const passwordResetToken = await PasswordResetToken.findOne({
+  const resetPasswordToken = await ResetPasswordToken.findOne({
     userID: user._id,
   })
 
-  if (passwordResetToken) {
-    await passwordResetToken.deleteOne(passwordResetToken._id)
+  if (resetPasswordToken) {
+    await ResetPasswordToken.deleteOne({ _id: resetPasswordToken._id })
   }
 
   // Make new password reset token
   const resetToken = crypto.randomBytes(32).toString('hex')
-  const salt = await bcrypt.genSalt(bcryptSalt)
+  const salt = await bcrypt.genSalt(saltRounds)
   const hash = await bcrypt.hash(resetToken, Number(salt))
 
   // Store password reset token
-  await PasswordResetToken.create({
+  await ResetPasswordToken.create({
     userID: user._id,
     token: hash,
   })
 
-  // Creating a link that will be sent to user's email. User will click the link activating a GET request to a webpage with a password input text box. The link below will then be sent along with password request body to hit the /api/users/passwordreset endpoint updating the user's password.
-  const link = `${clientURL}/api/users/passwordreset?token=${resetToken}&id=${user._id}`
+  // Creating a reset password link
+  const link = `${clientURL}/api/users/resetpassword?token=${resetToken}&id=${user._id}`
 
   const sendStatus = await sendEmail(
     user.email,
@@ -306,12 +305,12 @@ const resetPasswordRequest = asyncHandler(async (req, res) => {
 })
 
 // @desc    Reset user's password
-// @route   POST /api/users/passwordreset
+// @route   POST /api/users/resetpassword
 // @access  Public
 const resetPassword = asyncHandler(async (req, res) => {
   const { token, id } = req.query
   const { password } = req.body
-  const resetPasswordToken = await PasswordResetToken.findOne({ userID: id })
+  const resetPasswordToken = await ResetPasswordToken.findOne({ userID: id })
 
   // Check if a reset password token has been created (there's been a password reset request)
   if (!resetPasswordToken) {
@@ -328,11 +327,11 @@ const resetPassword = asyncHandler(async (req, res) => {
   }
 
   // Everything was a success, hash the new password
-  const salt = await bcrypt.genSalt(bcryptSalt)
+  const salt = await bcrypt.genSalt(saltRounds)
   const hash = await bcrypt.hash(password, Number(salt))
 
   // Update the user's password
-  const user = await User.findOne({ _id: id })
+  const user = await User.findById(id)
   user.password = hash
   await user.save()
 
@@ -342,7 +341,7 @@ const resetPassword = asyncHandler(async (req, res) => {
     {},
     './templates/resetPassword.handlebars'
   )
-  await resetPasswordToken.deleteOne()
+  await ResetPasswordToken.deleteOne({ _id: resetPasswordToken._id })
 
   res.json({ message: 'Succesfully reset password.' })
 })
