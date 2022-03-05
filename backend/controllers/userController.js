@@ -36,7 +36,11 @@ const registerUser = asyncHandler(async (req, res) => {
     password: hashedPassword,
   })
   if (!user) {
+<<<<<<< HEAD
     res.status(402)
+=======
+    res.status(403)
+>>>>>>> 15e0f436c37e5f23c94990b65f9cc0284684e3ae
     throw new Error('Invalid user data')
   }
 
