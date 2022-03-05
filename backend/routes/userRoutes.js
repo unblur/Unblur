@@ -10,14 +10,13 @@ const {
   resetPassword,
   verifyEmail,
   verifyEmailRequest,
-  getVerifyEmail,
 } = require('../controllers/userController')
 const { protect } = require('../middleware/authMiddleware')
 
 router.post('/register', registerUser)
 router.post('/login', loginUser)
-router.post('/passwordresetrequest', resetPasswordRequest)
-router.post('/passwordreset', resetPassword)
+router.post('/resetpasswordrequest', resetPasswordRequest)
+router.post('/resetpassword', resetPassword)
 router.post('/verifyemailrequest', verifyEmailRequest)
 router.get('/verifyemail', verifyEmail)
 router.get('/update', protect, updateSelf)
