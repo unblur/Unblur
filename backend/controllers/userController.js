@@ -22,7 +22,7 @@ const registerUser = asyncHandler(async (req, res) => {
   // Check if user exists
   const userExists = await User.findOne({ email })
   if (userExists) {
-    res.status(400)
+    res.status(401)
     throw new Error('User already exists')
   }
 
@@ -36,7 +36,7 @@ const registerUser = asyncHandler(async (req, res) => {
     password: hashedPassword,
   })
   if (!user) {
-    res.status(400)
+    res.status(402)
     throw new Error('Invalid user data')
   }
 
@@ -87,14 +87,14 @@ const loginUser = asyncHandler(async (req, res) => {
 
   // Check if user is verified
   if (!user.verified) {
-    res.status(400)
+    res.status(401)
     throw new Error('User not verified')
   }
 
   // Check password matches
   const match = await bcrypt.compare(password, user.password)
   if (!match) {
-    res.status(400)
+    res.status(402)
     throw new Error('Invalid credentials')
   }
 
@@ -122,7 +122,7 @@ const verifyEmail = asyncHandler(async (req, res) => {
   // Check if user exisits
   const user = await User.findById(id)
   if (!user) {
-    res.status(400)
+    res.status(401)
     throw new Error('User not found')
   }
 
@@ -137,7 +137,7 @@ const verifyEmail = asyncHandler(async (req, res) => {
   // Check if the verify email token being sent to us is the same we have in file for the specific user
   const isValid = await bcrypt.compare(token, verifyEmailToken.token)
   if (!isValid) {
-    res.status(400)
+    res.status(402)
     throw new Error('Invalid or expired verify email token')
   }
 
@@ -322,7 +322,7 @@ const resetPassword = asyncHandler(async (req, res) => {
 
   // Check if the reset password token being sent to us is the same we have in file for the specific user
   if (!isValid) {
-    res.status(400)
+    res.status(401)
     throw new Error('Invalid or expired reset password token')
   }
 
