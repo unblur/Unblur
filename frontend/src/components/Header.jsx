@@ -1,14 +1,13 @@
 import { Link } from 'react-router-dom'
 import { FaCircle } from 'react-icons/fa'
-import { useSelector } from "react-redux"
-import { useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import authActions from '../state/actions/authActions'
 
 const Header = () => {
-  const { user } = useSelector(state => state.auth)
-  const dispatch = useDispatch();
-  const { signOut } = bindActionCreators(authActions, dispatch);
+  const { user } = useSelector((state) => state.auth)
+  const dispatch = useDispatch()
+  const { signOut } = bindActionCreators(authActions, dispatch)
 
   return (
     <header className='header'>
@@ -23,24 +22,24 @@ const Header = () => {
             browse
           </Link>
         </li>
-        {user &&
+        {user && (
           <li>
             <Link to='/profile' className='btn'>
               profile
-          </Link>
+            </Link>
           </li>
-        }
+        )}
         <li>
-          {user &&
+          {user && (
             <button className='btn' onClick={() => signOut()}>
               sign out
             </button>
-          }
-          {!user &&
+          )}
+          {!user && (
             <Link to='/signin' className='btn'>
               sign in
             </Link>
-          }
+          )}
         </li>
       </ul>
     </header>

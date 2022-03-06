@@ -51,8 +51,10 @@ const registerUser = asyncHandler(async (req, res) => {
     token: hashedToken,
   })
   // Create an email verification link
-  if (process.env.NODE_ENV == "development") {
-    console.log(`http://localhost:3000/verifyemail?token=${verificationToken}&id=${user._id}`)
+  if (process.env.NODE_ENV == 'development') {
+    console.log(
+      `http://localhost:3000/verifyemail?token=${verificationToken}&id=${user._id}`
+    )
   } else {
     const link = `http://localhost:3000/verifyemail?token=${verificationToken}&id=${user._id}`
     const sendStatus = await sendEmail(
