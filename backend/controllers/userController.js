@@ -50,18 +50,21 @@ const registerUser = asyncHandler(async (req, res) => {
     userID: user._id,
     token: hashedToken,
   })
-
   // Create an email verification link
-  const link = `${clientURL}/api/users/verifyemail?token=${verificationToken}&id=${user._id}`
-  const sendStatus = await sendEmail(
-    user.email,
-    'Verify Email Address',
-    { link },
-    './templates/requestVerifyEmail.handlebars'
-  )
-  if (sendStatus.error) {
-    res.status(500)
-    throw new Error('Server error.')
+  if (process.env.NODE_ENV == "development") {
+    console.log(`http://localhost:3000/verifyemail?token=${verificationToken}&id=${user._id}`)
+  } else {
+    const link = `http://localhost:3000/verifyemail?token=${verificationToken}&id=${user._id}`
+    const sendStatus = await sendEmail(
+      user.email,
+      'Verify Email Address',
+      { link },
+      './templates/requestVerifyEmail.handlebars'
+    )
+    if (sendStatus.error) {
+      res.status(500)
+      throw new Error('Server error.')
+    }
   }
 
   // Successful registration
