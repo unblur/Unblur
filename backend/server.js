@@ -1,5 +1,6 @@
 const express = require('express')
 const dotenv = require('dotenv').config()
+const cors = require('cors')
 const connectDB = require('./config/db')
 const { errorHandler } = require('./middleware/errorMiddleware')
 const port = process.env.PORT || 8000
@@ -11,6 +12,9 @@ const app = express()
 app.get('/', (req, res) => {
   res.send('unblur')
 })
+
+// CORS
+app.use(cors())
 
 // Body parser
 app.use(express.json())
