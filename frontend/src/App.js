@@ -1,5 +1,10 @@
 import { useEffect } from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import authActions from './state/actions/authActions'
@@ -11,14 +16,14 @@ import SignUpPage from './pages/SignUp'
 import VerifyEmail from './pages/VerifyEmail'
 
 function App() {
-  const { user } = useSelector(state => state.auth)
-  const dispatch = useDispatch();
-  const { signInWithJWT } = bindActionCreators(authActions, dispatch);
+  const { user } = useSelector((state) => state.auth)
+  const dispatch = useDispatch()
+  const { signInWithJWT } = bindActionCreators(authActions, dispatch)
 
   useEffect(() => {
-    const token = localStorage.getItem('jwtToken');
+    const token = localStorage.getItem('jwtToken')
     if (token) {
-      signInWithJWT(token);
+      signInWithJWT(token)
     }
   }, [signInWithJWT])
 
@@ -28,20 +33,20 @@ function App() {
         <div className='container'>
           <Header />
           <Routes>
-            {!user &&
+            {!user && (
               <>
                 <Route path='/signin' element={<SignIn />} />
                 <Route path='/signup' element={<SignUpPage />} />
                 <Route path='/verifyemail' element={<VerifyEmail />} />
               </>
-            }
-            {user &&
+            )}
+            {user && (
               <>
                 <Route path='/profile' element={<Profile />} />
               </>
-            }
+            )}
             <Route path='/browse' element={<Browse />} />
-            <Route path='*' element={<Navigate to="/browse" />} />
+            <Route path='*' element={<Navigate to='/browse' />} />
           </Routes>
         </div>
       </Router>
