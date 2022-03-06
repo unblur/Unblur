@@ -168,7 +168,7 @@
         }
       }
     },
-    "/users/verifyEmail": {
+    "/Users/verifyEmail": {
       "get": {
         "tags": ["Users"],
         "summary": "Gets a user's verification status",
@@ -302,7 +302,7 @@
         }
       }
     },
-    "/users": {
+    "/Users": {
       "get": {
         "tags": ["Users"],
         "summary": "Gets all users",
@@ -325,7 +325,7 @@
         }
       }
     },
-    "/users/self": {
+    "/Users/self": {
       "get": {
         "tags": ["Users"],
         "summary": "Get user data",
@@ -377,7 +377,7 @@
         }
       }
     },
-    "/users/resetPasswordRequest": {
+    "/Users/resetPasswordRequest": {
       "post": {
         "tags": ["Users"],
         "summary": "Create a password reset request",
@@ -412,7 +412,7 @@
         }
       }
     },
-    "/users/resetPassword": {
+    "/Users/resetPassword": {
       "post": {
         "tags": ["Users"],
         "summary": "Create a password reset request",
