@@ -36,11 +36,7 @@ const registerUser = asyncHandler(async (req, res) => {
     password: hashedPassword,
   })
   if (!user) {
-<<<<<<< HEAD
     res.status(402)
-=======
-    res.status(403)
->>>>>>> 15e0f436c37e5f23c94990b65f9cc0284684e3ae
     throw new Error('Invalid user data')
   }
 
@@ -86,7 +82,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email })
   if (!user) {
     res.status(400)
-    throw new Error('Invalid credentials')
+    throw new Error('User does not exist')
   }
 
   // Check if user is verified
@@ -132,7 +128,7 @@ const verifyEmail = asyncHandler(async (req, res) => {
 
   // Check if user is already verified if not then compare the token coming in with the request to the one we have stored for the particular user
   if (user.verified) {
-    res.json({
+    res.status(201).json({
       message: 'User has been already verified. Please login.',
     })
     return
@@ -181,7 +177,7 @@ const verifyEmailRequest = asyncHandler(async (req, res) => {
   }
 
   // User has already been veriified
-  if (user.verified) {
+  if (user.status(201).verified) {
     res.json({ message: 'User has been already verified. Please login.' })
     return
   }
