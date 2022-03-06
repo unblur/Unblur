@@ -1,0 +1,486 @@
+{
+  "openapi" : "3.0.0",
+  "servers" : [ {
+    "description" : "Development Server",
+    "url" : "http://localhost:8000/api"
+  } ],
+  "info" : {
+    "description" : "This is a simple API",
+    "version" : "1.0.0",
+    "title" : "Unblur API",
+    "contact" : {
+      "email" : "xavier.velez@stonybrook.edu"
+    },
+    "license" : {
+      "name" : "Apache 2.0",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "tags" : [ {
+    "name" : "Users",
+    "description" : "User related calls"
+  } ],
+  "paths" : {
+    "/Users/register" : {
+      "post" : {
+        "tags" : [ "Users" ],
+        "summary" : "Register new user",
+        "operationId" : "registerUser",
+        "description" : "Register new user if user does not already exist",
+        "responses" : {
+          "201" : {
+            "description" : "Returned on successful registration of Users",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "_id" : {
+                        "type" : "string",
+                        "example" : "12345abcdef"
+                      },
+                      "email" : {
+                        "type" : "string",
+                        "example" : "anyperson@anysite.com"
+                      },
+                      "message" : {
+                        "type" : "string",
+                        "example" : "Successfully registered. Please verify your email to log in."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Please enter all fields"
+          },
+          "401" : {
+            "description" : "User already exists"
+          },
+          "402" : {
+            "description" : "Invalid user data"
+          },
+          "500" : {
+            "description" : "Server error"
+          }
+        },
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "object",
+                  "required" : [ "email", "password" ],
+                  "properties" : {
+                    "email" : {
+                      "type" : "string",
+                      "example" : "anyperson@anysite.com"
+                    },
+                    "password" : {
+                      "type" : "string",
+                      "example" : "password123"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "description" : "New user to register"
+        }
+      }
+    },
+    "/Users/login" : {
+      "post" : {
+        "tags" : [ "Users" ],
+        "summary" : "Login user",
+        "operationId" : "loginUser",
+        "description" : "Login user after authenticating user information",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "object",
+                  "required" : [ "email", "password" ],
+                  "properties" : {
+                    "email" : {
+                      "type" : "string",
+                      "example" : "anyperson@anysite.com"
+                    },
+                    "password" : {
+                      "type" : "string",
+                      "example" : "password123"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "description" : "User to attempt to login"
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Returned on successful login of User",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "_id" : {
+                        "type" : "string",
+                        "example" : "12345abcdef"
+                      },
+                      "email" : {
+                        "type" : "string",
+                        "example" : "anyperson@anysite.com"
+                      },
+                      "token" : {
+                        "type" : "string",
+                        "example" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "User does not exist"
+          },
+          "401" : {
+            "description" : "User not verified"
+          },
+          "402" : {
+            "description" : "Invalid credentials"
+          }
+        }
+      }
+    },
+    "/users/verifyEmail" : {
+      "get" : {
+        "tags" : [ "Users" ],
+        "summary" : "Gets a user's verification status",
+        "description" : "Checks for a User's existance and then checks their verification status",
+        "operationId" : "verifyEmail",
+        "responses" : {
+          "200" : {
+            "description" : "Returned on successful verification of User",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "message" : {
+                        "type" : "string",
+                        "example" : "Succesfully verified email."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "201" : {
+            "description" : "Returned if User has previously been verified",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "message" : {
+                        "type" : "string",
+                        "example" : "User has been already verified. Please login."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "No email verification requested"
+          },
+          "401" : {
+            "description" : "User not found"
+          },
+          "402" : {
+            "description" : "Invalid or expired verify email token"
+          },
+          "500" : {
+            "description" : "Error verifying email"
+          }
+        }
+      }
+    },
+    "/Users/verifyEmailRequest" : {
+      "post" : {
+        "tags" : [ "Users" ],
+        "summary" : "Request email verification",
+        "operationId" : "verifyEmailRequest",
+        "description" : "Create a verify email request to make sure that the user has entered a valid email",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "object",
+                  "required" : [ "email" ],
+                  "properties" : {
+                    "email" : {
+                      "type" : "string",
+                      "example" : "anyperson@anysite.com"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "description" : "User email to send verification request to"
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Returned when an email is successfully sent",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "message" : {
+                        "type" : "string",
+                        "example" : "Successfully sent email."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "201" : {
+            "description" : "Returned if User has previously been verified",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "message" : {
+                        "type" : "string",
+                        "example" : "User has been already verified. Please login."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "User not found"
+          },
+          "500" : {
+            "description" : "Server error."
+          }
+        }
+      }
+    },
+    "/users" : {
+      "get" : {
+        "tags" : [ "Users" ],
+        "summary" : "Gets all users",
+        "description" : "Gets all current existing users",
+        "operationId" : "getUsers",
+        "responses" : {
+          "200" : {
+            "description" : "Successful return of all Users",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Server error"
+          }
+        }
+      }
+    },
+    "/users/self" : {
+      "get" : {
+        "tags" : [ "Users" ],
+        "summary" : "Get user data",
+        "description" : "Get the current User's info",
+        "operationId" : "getSelf",
+        "responses" : {
+          "200" : {
+            "description" : "An object of User info",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "_id" : {
+                        "type" : "string",
+                        "example" : "12345abcdef"
+                      },
+                      "email" : {
+                        "type" : "string",
+                        "example" : "anyperson@anysite.com"
+                      },
+                      "wallet" : {
+                        "$ref" : "#/components/schemas/Wallets"
+                      },
+                      "artworkIDs" : {
+                        "type" : "string",
+                        "example" : "12345abcdef"
+                      },
+                      "transactionIDs" : {
+                        "type" : "string",
+                        "example" : "12345abcdef"
+                      },
+                      "profilePicture" : {
+                        "type" : "string",
+                        "example" : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+                      },
+                      "profileDescription" : {
+                        "type" : "string",
+                        "example" : "This is an example of a profile description."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/resetPasswordRequest" : {
+      "post" : {
+        "tags" : [ "Users" ],
+        "summary" : "Create a password reset request",
+        "description" : "Creates a password reset request for when a user loses access to their account",
+        "operationId" : "resetPasswordRequest",
+        "responses" : {
+          "200" : {
+            "description" : "Returned when an email is successfully sent to reset password",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "message" : {
+                        "type" : "string",
+                        "example" : "Successfully sent email."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "User doesn't exists"
+          },
+          "500" : {
+            "description" : "Server error"
+          }
+        }
+      }
+    },
+    "/users/resetPassword" : {
+      "post" : {
+        "tags" : [ "Users" ],
+        "summary" : "Create a password reset request",
+        "description" : "Creates a password reset request for when a user loses access to their account",
+        "operationId" : "resetPassword",
+        "responses" : {
+          "200" : {
+            "description" : "Returned when an email is successfully sent to reset password",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "message" : {
+                        "type" : "string",
+                        "example" : "Successfully reset password."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "No password reset requested"
+          },
+          "401" : {
+            "description" : "Invalid or expired reset password token"
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "User" : {
+        "type" : "object",
+        "required" : [ "email", "password" ],
+        "properties" : {
+          "email" : {
+            "type" : "string",
+            "format" : "email",
+            "example" : "anyperson@anysite.com"
+          },
+          "password" : {
+            "type" : "string",
+            "example" : "password123"
+          },
+          "verified" : {
+            "type" : "boolean",
+            "default" : false,
+            "example" : false
+          },
+          "wallets" : {
+            "$ref" : "#/components/schemas/Wallets"
+          }
+        },
+        "description" : "An object representing **User** of the website and the information that is linked to them."
+      },
+      "Wallets" : {
+        "type" : "object",
+        "properties" : {
+          "walletID" : {
+            "type" : "string"
+          },
+          "walletName" : {
+            "type" : "string"
+          }
+        }
+      }
+    }
+  }
+}
