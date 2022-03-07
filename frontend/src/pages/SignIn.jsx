@@ -56,6 +56,8 @@ const SignInPage = (state) => {
       <Link to='/signup'>dont have an account?</Link>
       <br />
       <Link to='/resetpasswordrequest'>forgot your password?</Link>
+      <br />
+      <Link to='/verifyemailrequest'>resend verification email?</Link>
     </div>
   )
 }
