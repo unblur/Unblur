@@ -15,7 +15,7 @@ app.get('/', (req, res) => {
   res.send('unblur')
 })
 
-// Allow cross-origin
+// CORS
 app.use(cors())
 
 // Body parser
