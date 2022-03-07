@@ -68,20 +68,18 @@ const blurImage = async (imagePath, imageOutPath, percentBlur) => {
   return new Promise(async (resolve, reject) => {
     const FRONT_END_IMAGE_MAX_HEIGHT_MAX_WIDTH = 300
     const image = await Jimp.read(imagePath)
-    const biggerDimension =
-      image.bitmap.width > image.bitmap.height
-        ? image.bitmap.width
-        : image.bitmap.height
+    const { width, height } = image.bitmap
+    const biggerDimension = Math.max(width, height)
+    const ratio = FRONT_END_IMAGE_MAX_HEIGHT_MAX_WIDTH / biggerDimension
+    await image.resize(width * ratio, height * ratio).write(imageOutPath)
     const tileWidth =
       FRONT_END_IMAGE_MAX_HEIGHT_MAX_WIDTH / imageWidthAlgo(percentBlur)
-    const tilerRatio =
-      ((tileWidth / 100) * biggerDimension) /
-      FRONT_END_IMAGE_MAX_HEIGHT_MAX_WIDTH
+    const tilerRatio = tileWidth / 100
 
     console.log(`Tiler ratio: ${tilerRatio}`)
 
     exec(
-      `python3 ./tiler/tiler.py ${imagePath} ./tiler/tiles/circles/gen_circle_100 ${tilerRatio} ${imageOutPath}`,
+      `python3 ./tiler/tiler.py ${imageOutPath} ./tiler/tiles/circles/gen_circle_100 ${tilerRatio} ${imageOutPath}`,
       (error, stdout, stderr) => {
         if (error) {
           reject()
