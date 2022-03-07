@@ -18,14 +18,14 @@ import VerifyEmail from './pages/VerifyEmail'
 function App() {
   const { user } = useSelector((state) => state.auth)
   const dispatch = useDispatch()
-  const { signInWithJWT } = bindActionCreators(authActions, dispatch)
 
   useEffect(() => {
+    const { signInWithJWT } = bindActionCreators(authActions, dispatch)
     const token = localStorage.getItem('jwtToken')
     if (token) {
       signInWithJWT(token)
     }
-  }, [signInWithJWT])
+  }, [dispatch])
 
   return (
     <>
