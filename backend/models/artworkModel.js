@@ -6,7 +6,13 @@ const artworkSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       required: true,
     },
+    // This is the unblurred image that is NOT statically served
     image: {
+      type: String,
+      required: true,
+    },
+    // This is the image that can be requested from the frontend
+    blurredImage: {
       type: String,
       required: true,
     },
