@@ -54,6 +54,8 @@ const SignInPage = (state) => {
       <button onClick={onSignUpButtonPress}>sign in</button>
       <br />
       <Link to='/signup'>dont have an account?</Link>
+      <br />
+      <Link to='/resetpasswordrequest'>forgot your password?</Link>
     </div>
   )
 }

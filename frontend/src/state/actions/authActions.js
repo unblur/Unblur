@@ -71,12 +71,43 @@ const signOut = () => (dispatch) => {
   localStorage.removeItem('jwtToken')
 }
 
+const resetPasswordRequest = (email) => async (dispatch) => {
+  try {
+    const res = await axios.post(
+      `http://localhost:8000/api/users/resetpasswordrequest`,
+      {
+        email,
+      }
+    )
+    dispatch({ type: setAuthMessages, payload: [res.data.message] })
+  } catch (e) {
+    dispatch({ type: setAuthErrors, payload: [e.response.data.message] })
+  }
+}
+
+const resetPassword = (token, id, password, onSuccess) => async (dispatch) => {
+  try {
+    const res = await axios.post(
+      `http://localhost:8000/api/users/resetpassword?token=${token}&id=${id}`,
+      {
+        password,
+      }
+    )
+    dispatch({ type: setAuthMessages, payload: [res.data.message] })
+    onSuccess()
+  } catch (e) {
+    dispatch({ type: setAuthErrors, payload: [e.response.data.message] })
+  }
+}
+
 const actions = {
   signIn,
   signUp,
   verifyEmail,
   signOut,
   signInWithJWT,
+  resetPasswordRequest,
+  resetPassword,
 }
 
 export default actions

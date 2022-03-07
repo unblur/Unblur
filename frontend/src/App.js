@@ -14,6 +14,8 @@ import Browse from './pages/Browse'
 import Profile from './pages/Profile'
 import SignUpPage from './pages/SignUp'
 import VerifyEmail from './pages/VerifyEmail'
+import ResetPasswordRequest from './pages/ResetPasswordRequest'
+import ResetPassword from './pages/ResetPassword'
 
 function App() {
   const { user } = useSelector((state) => state.auth)
@@ -38,6 +40,11 @@ function App() {
                 <Route path='/signin' element={<SignIn />} />
                 <Route path='/signup' element={<SignUpPage />} />
                 <Route path='/verifyemail' element={<VerifyEmail />} />
+                <Route
+                  path='/resetpasswordrequest'
+                  element={<ResetPasswordRequest />}
+                />
+                <Route path='/resetpassword' element={<ResetPassword />} />
               </>
             )}
             {user && (
