@@ -14,6 +14,7 @@ import Browse from './pages/Browse'
 import Profile from './pages/Profile'
 import SignUpPage from './pages/SignUp'
 import VerifyEmail from './pages/VerifyEmail'
+import { UploadImage } from './pages/UploadImage'
 
 function App() {
   const { user } = useSelector((state) => state.auth)
@@ -43,6 +44,7 @@ function App() {
             {user && (
               <>
                 <Route path='/profile' element={<Profile />} />
+                <Route path='/upload' element={<UploadImage />} />
               </>
             )}
             <Route path='/browse' element={<Browse />} />
