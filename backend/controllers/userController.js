@@ -293,9 +293,11 @@ const resetPasswordRequest = asyncHandler(async (req, res) => {
 
   // Create a password reset link
   if (process.env.NODE_ENV == 'development') {
-    console.log(`${clientURL}/resetpassword?token=${resetToken}&id=${user._id}`)
+    console.log(
+      `http://localhost:3000/resetpassword?token=${resetToken}&id=${user._id}`
+    )
   } else {
-    const link = `${clientURL}/resetpassword?token=${resetToken}&id=${user._id}`
+    const link = `http://localhost:3000/resetpassword?token=${resetToken}&id=${user._id}`
     const sendStatus = await sendEmail(
       user.email,
       'Password Reset Request',
