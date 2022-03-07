@@ -12,14 +12,15 @@ function useQuery() {
 const VerifyEmail = () => {
   const [verificationDone, setVerificationDone] = useState(false)
   const dispatch = useDispatch()
-  const { verifyEmail } = bindActionCreators(authActions, dispatch)
   const query = useQuery()
 
   useEffect(() => {
+    const { verifyEmail } = bindActionCreators(authActions, dispatch)
     const token = query.get('token') || ''
     const id = query.get('id') || ''
+    console.log(token, id)
     verifyEmail(token, id, () => setVerificationDone(true))
-  }, [query, verifyEmail])
+  }, [query, dispatch])
 
   return (
     <>
