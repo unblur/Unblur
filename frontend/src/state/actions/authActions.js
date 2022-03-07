@@ -85,6 +85,21 @@ const resetPasswordRequest = (email) => async (dispatch) => {
   }
 }
 
+const resetPassword = (token, id, password, onSuccess) => async (dispatch) => {
+  try {
+    const res = await axios.post(
+      `http://localhost:8000/api/users/resetpassword?token=${token}&id=${id}`,
+      {
+        password,
+      }
+    )
+    dispatch({ type: setAuthMessages, payload: [res.data.message] })
+    onSuccess()
+  } catch (e) {
+    dispatch({ type: setAuthErrors, payload: [e.response.data.message] })
+  }
+}
+
 const actions = {
   signIn,
   signUp,
@@ -92,6 +107,7 @@ const actions = {
   signOut,
   signInWithJWT,
   resetPasswordRequest,
+  resetPassword,
 }
 
 export default actions
