@@ -1,10 +1,14 @@
 import { Link } from 'react-router-dom'
 import { FaCircle } from 'react-icons/fa'
+import { useSelector } from "react-redux"
+import { useDispatch } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import authActions from '../state/actions/authActions'
 
 const Header = () => {
-  const onClick = () => {
-    // TODO: Login/Register Modal
-  }
+  const { user } = useSelector(state => state.auth)
+  const dispatch = useDispatch();
+  const { signOut } = bindActionCreators(authActions, dispatch);
 
   return (
     <header className='header'>
@@ -19,15 +23,24 @@ const Header = () => {
             browse
           </Link>
         </li>
-        <li>
-          <Link to='/profile' className='btn'>
-            profile
+        {user &&
+          <li>
+            <Link to='/profile' className='btn'>
+              profile
           </Link>
-        </li>
+          </li>
+        }
         <li>
-          <button className='btn' onClick={onClick}>
-            sign in
-          </button>
+          {user &&
+            <button className='btn' onClick={() => signOut()}>
+              sign out
+            </button>
+          }
+          {!user &&
+            <Link to='/signin' className='btn'>
+              sign in
+            </Link>
+          }
         </li>
       </ul>
     </header>
