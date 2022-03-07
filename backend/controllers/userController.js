@@ -291,19 +291,21 @@ const resetPasswordRequest = asyncHandler(async (req, res) => {
     token: hash,
   })
 
-  // Creating a reset password link
-  const link = `${clientURL}/api/users/resetpassword?token=${resetToken}&id=${user._id}`
-
-  const sendStatus = await sendEmail(
-    user.email,
-    'Password Reset Request',
-    { link },
-    './templates/requestResetPassword.handlebars'
-  )
-
-  if (sendStatus.error) {
-    res.status(500)
-    throw new Error('Server error.')
+  // Create a password reset link
+  if (process.env.NODE_ENV == 'development') {
+    console.log(`${clientURL}/resetpassword?token=${resetToken}&id=${user._id}`)
+  } else {
+    const link = `${clientURL}/resetpassword?token=${resetToken}&id=${user._id}`
+    const sendStatus = await sendEmail(
+      user.email,
+      'Password Reset Request',
+      { link },
+      './templates/requestResetPassword.handlebars'
+    )
+    if (sendStatus.error) {
+      res.status(500)
+      throw new Error('Server error.')
+    }
   }
 
   res.json({ message: 'Successfully sent email.' })
