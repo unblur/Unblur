@@ -63,6 +63,20 @@ const verifyEmail = (token, id, onComplete) => async (dispatch) => {
   onComplete()
 }
 
+const verifyEmailRequest = (email) => async (dispatch) => {
+  try {
+    const res = await axios.post(
+      `http://localhost:8000/api/users/verifyemailrequest`,
+      {
+        email,
+      }
+    )
+    dispatch({ type: setAuthMessages, payload: [res.data.message] })
+  } catch (e) {
+    dispatch({ type: setAuthErrors, payload: [e.response.data.message] })
+  }
+}
+
 const signOut = () => (dispatch) => {
   dispatch({
     type: setAuthUser,
@@ -103,6 +117,7 @@ const resetPassword = (token, id, password, onSuccess) => async (dispatch) => {
 const actions = {
   signIn,
   signUp,
+  verifyEmailRequest,
   verifyEmail,
   signOut,
   signInWithJWT,
