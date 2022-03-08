@@ -37,7 +37,7 @@ const ResetPasswordRequest = () => {
           {messages.map((e) => (
             <p>{e}</p>
           ))}
-          <h1>Reset Password</h1>
+          <h1>Reset Password Request</h1>
           <p>Enter your email: </p>
           <input type='email' name='email' value={email} onChange={onChange} />
           <br />
