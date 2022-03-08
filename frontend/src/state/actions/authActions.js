@@ -71,7 +71,7 @@ const signOut = () => (dispatch) => {
   localStorage.removeItem('jwtToken')
 }
 
-const resetPasswordRequest = (email) => async (dispatch) => {
+const resetPasswordRequest = (email, onSuccess) => async (dispatch) => {
   try {
     const res = await axios.post(
       `http://localhost:8000/api/users/resetpasswordrequest`,
@@ -80,6 +80,7 @@ const resetPasswordRequest = (email) => async (dispatch) => {
       }
     )
     dispatch({ type: setAuthMessages, payload: [res.data.message] })
+    onSuccess()
   } catch (e) {
     dispatch({ type: setAuthErrors, payload: [e.response.data.message] })
   }
