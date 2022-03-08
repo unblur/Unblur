@@ -63,7 +63,7 @@ const verifyEmail = (token, id, onComplete) => async (dispatch) => {
   onComplete()
 }
 
-const verifyEmailRequest = (email) => async (dispatch) => {
+const verifyEmailRequest = (email, onSuccess) => async (dispatch) => {
   try {
     const res = await axios.post(
       `http://localhost:8000/api/users/verifyemailrequest`,
@@ -72,6 +72,7 @@ const verifyEmailRequest = (email) => async (dispatch) => {
       }
     )
     dispatch({ type: setAuthMessages, payload: [res.data.message] })
+    onSuccess()
   } catch (e) {
     dispatch({ type: setAuthErrors, payload: [e.response.data.message] })
   }
