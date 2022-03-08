@@ -5,7 +5,6 @@ import authActions from '../state/actions/authActions'
 import { setAuthErrors } from '../state/reducers/actions'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Navigate } from 'react-router-dom'
-import { set } from 'express/lib/application'
 
 const ResetPassword = () => {
   const [resetDone, setResetDone] = useState(false)
@@ -60,6 +59,7 @@ const ResetPassword = () => {
             <p>{e}</p>
           ))}
           {!passwordsMatch && <p>Passwords don't match</p>}
+          <h1>Reset Password</h1>
           <p>New Password</p>
           <input
             type='password'
