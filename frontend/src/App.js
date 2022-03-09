@@ -17,6 +17,7 @@ import VerifyEmailRequest from './pages/VerifyEmailRequest'
 import VerifyEmail from './pages/VerifyEmail'
 import ResetPasswordRequest from './pages/ResetPasswordRequest'
 import ResetPassword from './pages/ResetPassword'
+import { UploadImage } from './pages/UploadImage'
 
 function App() {
   const { user } = useSelector((state) => state.auth)
@@ -55,6 +56,7 @@ function App() {
             {user && (
               <>
                 <Route path='/profile' element={<Profile />} />
+                <Route path='/upload' element={<UploadImage />} />
               </>
             )}
             <Route path='/browse' element={<Browse />} />
