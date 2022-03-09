@@ -22,12 +22,20 @@
     {
       "name": "Users",
       "description": "User related calls"
+    },
+    {
+      "name": "Artworks",
+      "description": "Artwork related calls"
+    },
+    {
+      "name": "Transactions",
+      "description": "Transaction related calls"
     }
   ],
   "paths": {
     "/Users/register": {
       "post": {
-        "tags": ["Users"],
+        "tags": ["Users", "Transactions", "Artworks"],
         "summary": "Register new user",
         "operationId": "registerUser",
         "description": "Register new user if user does not already exist",
@@ -446,8 +454,52 @@
           }
         }
       }
+    },
+    "/getTransactions": {
+      "post": {
+        "tags": ["Transactions"],
+        "summary": "Get all transactions",
+        "description": "Gets all current transactions that are stored in the databse",
+        "operationId": "getTransactions",
+        "responses": {
+          "200": {
+            "description": "An array of transaction objects as modeled below",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Transaction"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/artworks": {
+      "post": {
+        "tags": ["Artworks"],
+        "summary": "Get all artworks in the database",
+        "description": "Get all current artwork that are stored in the databse",
+        "operationId": "getArtworks",
+        "responses": {
+          "200": {
+            "description": "An array of transaction objects as modeled below",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Artwork"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
     }
   },
+
   "components": {
     "schemas": {
       "User": {
@@ -484,6 +536,101 @@
             "type": "string"
           }
         }
+      },
+      "Artwork": {
+        "type": "object",
+        "required": ["creatorID", "image", "algosToUnblur"],
+        "properties": {
+          "creatorID": {
+            "type": "string",
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000."
+          },
+          "image": {
+            "type": "string",
+            "example": "https://cdn.pixabay.com/photo/2015/10/05/22/37/sample-image.png"
+          },
+          "algosToUnblur": {
+            "type": "number",
+            "default": 43,
+            "example": 43
+          },
+          "dateUnblurred": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2022-02-02T02:22:22Z"
+          },
+          "commentIDs": {
+            "type": "array",
+            "format": "uuid",
+            "example": ["123e4567-e89b-12d3-a456-426614174000"]
+          },
+          "transasctionIDs": {
+            "type": "array",
+            "format": "uuid",
+            "example": ["123e4567-e89b-12d3-a456-426614174000"]
+          }
+        },
+        "description": "An object representing **Artwork** that was uploaded and the information that is linked to it."
+      },
+      "Comment": {
+        "type": "object",
+        "required": ["userID", "content"],
+        "properties": {
+          "userID": {
+            "type": "string",
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000."
+          },
+          "content": {
+            "type": "string",
+            "example": "This picture sucks dude"
+          }
+        },
+        "description": "An object representing **Comment** that was left on an uploaded piece of artwork"
+      },
+      "Transaction": {
+        "type": "object",
+        "required": ["donatorID", "receiverID", "algos", "artworkID"],
+        "properties": {
+          "donatorID": {
+            "type": "string",
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000."
+          },
+          "receiverID": {
+            "type": "string",
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000."
+          },
+          "algos": {
+            "type": "number",
+            "default": 43,
+            "example": 43
+          },
+          "artworkID": {
+            "type": "string",
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000."
+          }
+        },
+        "description": "An object representing **Transaction** that represents the transfer of a donation to a creator from a user"
+      },
+      "verifyEmailToken": {
+        "type": "object",
+        "required": ["userID", "token"],
+        "properties": {
+          "userID": {
+            "type": "string",
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000."
+          },
+          "token": {
+            "type": "string",
+            "format": "jwtToken"
+          }
+        },
+        "description": "An object representing **Verification Email** that is used to make sure users are linked to valid email accounts"
       }
     }
   }
