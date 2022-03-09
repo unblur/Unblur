@@ -1,4 +1,5 @@
 const express = require('express')
+const path = require('path')
 const dotenv = require('dotenv').config()
 const cors = require('cors')
 const connectDB = require('./config/db')
@@ -17,6 +18,10 @@ app.get('/', (req, res) => {
 
 // CORS
 app.use(cors())
+
+// Serving images
+// TODO: make sure fully unblurred images are blocked from being served statically
+app.use('/files', express.static(path.join(__dirname, '..', 'uploads')))
 
 // Body parser
 app.use(express.json())
