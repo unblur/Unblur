@@ -13,6 +13,7 @@ import SignIn from './pages/SignIn'
 import Browse from './pages/Browse'
 import Profile from './pages/Profile'
 import SignUpPage from './pages/SignUp'
+import VerifyEmailRequest from './pages/VerifyEmailRequest'
 import VerifyEmail from './pages/VerifyEmail'
 import ResetPasswordRequest from './pages/ResetPasswordRequest'
 import ResetPassword from './pages/ResetPassword'
@@ -39,6 +40,10 @@ function App() {
               <>
                 <Route path='/signin' element={<SignIn />} />
                 <Route path='/signup' element={<SignUpPage />} />
+                <Route
+                  path='/verifyemailrequest'
+                  element={<VerifyEmailRequest />}
+                />
                 <Route path='/verifyemail' element={<VerifyEmail />} />
                 <Route
                   path='/resetpasswordrequest'
