@@ -182,7 +182,7 @@ const verifyEmailRequest = asyncHandler(async (req, res) => {
   }
 
   // User has already been veriified
-  if (user.status(201).verified) {
+  if (user.verified) {
     res.json({ message: 'User has been already verified. Please login.' })
     return
   }
@@ -205,16 +205,22 @@ const verifyEmailRequest = asyncHandler(async (req, res) => {
   })
 
   // Create an email verification link
-  const link = `${clientURL}/api/users/verifyemail?token=${verificationToken}&id=${user._id}`
-  const sendStatus = await sendEmail(
-    user.email,
-    'Verify Email Address',
-    { link },
-    './templates/requestVerifyEmail.handlebars'
-  )
-  if (sendStatus.error) {
-    res.status(500)
-    throw new Error('Server error.')
+  if (process.env.NODE_ENV == 'development') {
+    console.log(
+      `http://localhost:3000/verifyemail?token=${verificationToken}&id=${user._id}`
+    )
+  } else {
+    const link = `http://localhost:3000/verifyemail?token=${verificationToken}&id=${user._id}`
+    const sendStatus = await sendEmail(
+      user.email,
+      'Verify Email Address',
+      { link },
+      './templates/requestVerifyEmail.handlebars'
+    )
+    if (sendStatus.error) {
+      res.status(500)
+      throw new Error('Server error.')
+    }
   }
 
   res.json({ message: 'Successfully sent email.' })
