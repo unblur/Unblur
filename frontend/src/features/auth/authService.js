@@ -7,6 +7,15 @@ const API_URL = `http://localhost:8000/api/users`
 const signUp = async (userData) => {
   const response = await axios.post(`${API_URL}/register`, userData)
 
+  console.log(response.data)
+
+  return response.data
+}
+
+// Sign in
+const signIn = async (userData) => {
+  const response = await axios.post(`${API_URL}/login`, userData)
+
   if (response.data) {
     localStorage.setItem('user', JSON.stringify(response.data))
   }
@@ -16,6 +25,7 @@ const signUp = async (userData) => {
 
 const authService = {
   signUp,
+  signIn,
 }
 
 export default authService

@@ -24,7 +24,8 @@ const SignUp = () => {
     }
 
     if (isSuccess || user) {
-      navigate('/')
+      toast.success(message)
+      navigate('/signin')
     }
 
     dispatch(reset())

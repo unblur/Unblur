@@ -25,13 +25,13 @@ function App() {
   const { user } = useSelector((state) => state.auth)
   const dispatch = useDispatch()
 
-  useEffect(() => {
-    const { signInWithJWT } = bindActionCreators(authActions, dispatch)
-    const token = localStorage.getItem('jwtToken')
-    if (token) {
-      signInWithJWT(token)
-    }
-  }, [dispatch])
+  // useEffect(() => {
+  //   const { signInWithJWT } = bindActionCreators(authActions, dispatch)
+  //   const token = localStorage.getItem('jwtToken')
+  //   if (token) {
+  //     signInWithJWT(token)
+  //   }
+  // }, [dispatch])
 
   return (
     <>
