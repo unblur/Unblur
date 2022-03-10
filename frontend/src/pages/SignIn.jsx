@@ -1,65 +1,84 @@
-import React, { useState } from 'react'
-import { bindActionCreators } from 'redux'
-import { useDispatch, useSelector } from 'react-redux'
-import authActions from '../state/actions/authActions'
-import { setAuthErrors } from '../state/reducers/actions'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
-const SignInPage = (state) => {
-  const [{ email, password }, setEmailPassword] = useState({
+const SignIn = () => {
+  const [formData, setFormData] = useState({
     email: '',
     password: '',
   })
-  const dispatch = useDispatch()
-  const { errors, messages } = useSelector((state) => state.auth)
-  const { signIn } = bindActionCreators(authActions, dispatch)
+  const { email, password } = formData
 
-  const onChangeForm = (event) => {
-    const { value, name } = event.target
-    setEmailPassword({ email, password, [name]: value })
+  const onChange = (e) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      [e.target.name]: e.target.value,
+    }))
   }
 
-  const onSignUpButtonPress = () => {
-    dispatch({
-      type: setAuthErrors,
-      payload: [],
-    })
-    signIn(email, password)
+  const onSubmit = (e) => {
+    e.preventDefault()
+
+    const userData = {
+      email,
+      password,
+    }
+
+    // dispatchEvent(signin(userData))
   }
 
   return (
-    <div>
-      {errors.map((e) => (
-        <p>{e}</p>
-      ))}
-      {messages.map((e) => (
-        <p>{e}</p>
-      ))}
-      <h1>Sign In</h1>
-      <p>Email</p>
-      <input
-        type='email'
-        value={email}
-        onChange={onChangeForm}
-        name='email'
-      ></input>
-      <p>Password</p>
-      <input
-        type='password'
-        value={password}
-        onChange={onChangeForm}
-        name='password'
-      ></input>
-      <br />
-      <button onClick={onSignUpButtonPress}>sign in</button>
-      <br />
-      <Link to='/signup'>dont have an account?</Link>
-      <br />
-      <Link to='/resetpasswordrequest'>forgot your password?</Link>
-      <br />
-      <Link to='/verifyemailrequest'>resend verification email?</Link>
-    </div>
+    <>
+      <section className='heading'>
+        <h1>Sign In</h1>
+      </section>
+
+      <section className='form'>
+        <form onSubmit={onSubmit}>
+          <div className='form-group'>
+            <label htmlFor='email'>email</label>
+            <input
+              type='email'
+              className='form-control'
+              id='email'
+              name='email'
+              value={email}
+              placeholder='john.doe@mail.com'
+              onChange={onChange}
+            />
+            <Link to='/verifyemailrequest' className='link link-left'>
+              resend verification email?
+            </Link>
+          </div>
+          <div className='form-group'>
+            <label htmlFor='password'>password</label>
+            <input
+              type='password'
+              className='form-control'
+              id='password'
+              name='password'
+              value={password}
+              placeholder='**************'
+              onChange={onChange}
+            />
+            <Link to='/resetpasswordrequest' className='link link-left'>
+              forgot your password?
+            </Link>
+          </div>
+          <div className='form-group'>
+            <button type='submit' className='btn btn-block btn-primary'>
+              Sign In
+            </button>
+          </div>
+          <div className='form-group'>
+            <div className='link-description'>dont have an account?</div>
+            <Link to='/signup' className='link'>
+              sign up
+            </Link>
+          </div>
+        </form>
+      </section>
+    </>
   )
 }
 
-export default SignInPage
+export default SignIn
