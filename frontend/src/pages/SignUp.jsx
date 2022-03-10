@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { bindActionCreators } from 'redux'
 import { useDispatch, useSelector } from 'react-redux'
 import authActions from '../state/actions/authActions'
 import { setAuthErrors } from '../state/reducers/actions'
 import { Link } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
 const SignUpPage = (state) => {
   const [{ email, password, confirmPassword }, setEmailPassword] = useState({
@@ -17,6 +18,16 @@ const SignUpPage = (state) => {
 
   const passwordsMatch = password === confirmPassword
 
+  // useEffect(() => {
+  //   if (errors) {
+  //     toast.error(errors)
+  //   }
+
+  //   if (messages) {
+  //     toast.warning(messages)
+  //   }
+  // }, [errors, messages])
+
   const onChangeForm = (event) => {
     const { value, name } = event.target
     setEmailPassword({ email, password, confirmPassword, [name]: value })
@@ -24,6 +35,7 @@ const SignUpPage = (state) => {
 
   const onSignUp = () => {
     if (!passwordsMatch) {
+      toast.error('Passwords do not match.')
       return
     }
 
@@ -44,7 +56,7 @@ const SignUpPage = (state) => {
       {messages.map((e) => (
         <p>{e}</p>
       ))}
-      {!passwordsMatch && <p>Passwords don't match</p>}
+      {/* {!passwordsMatch && <p>Passwords don't match</p>} */}
       <h1>Sign Up</h1>
       <p>Email</p>
       <input
@@ -68,7 +80,10 @@ const SignUpPage = (state) => {
         name='confirmPassword'
       ></input>
       <br />
-      {passwordsMatch && <button onClick={onSignUp}>sign up</button>}
+      {
+        // passwordsMatch &&
+        <button onClick={onSignUp}>sign up</button>
+      }
       <br />
       <Link to='/signin'>already have an account?</Link>
     </div>
