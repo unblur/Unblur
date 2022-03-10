@@ -11,10 +11,10 @@ import authActions from './state/actions/authActions'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import Header from './components/Header'
+import SignUp from './pages/SignUp'
 import SignIn from './pages/SignIn'
 import Browse from './pages/Browse'
 import Profile from './pages/Profile'
-import SignUpPage from './pages/SignUp'
 import VerifyEmailRequest from './pages/VerifyEmailRequest'
 import VerifyEmail from './pages/VerifyEmail'
 import ResetPasswordRequest from './pages/ResetPasswordRequest'
@@ -37,12 +37,12 @@ function App() {
     <>
       <Router>
         <div className='container'>
-          <Header />
+          {/* <Header /> */}
           <Routes>
             {!user && (
               <>
                 <Route path='/signin' element={<SignIn />} />
-                <Route path='/signup' element={<SignUpPage />} />
+                <Route path='/signup' element={<SignUp />} />
                 <Route
                   path='/verifyemailrequest'
                   element={<VerifyEmailRequest />}
