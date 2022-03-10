@@ -8,6 +8,8 @@ import {
 import { useSelector, useDispatch } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import authActions from './state/actions/authActions'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import Header from './components/Header'
 import SignIn from './pages/SignIn'
 import Browse from './pages/Browse'
@@ -64,6 +66,7 @@ function App() {
           </Routes>
         </div>
       </Router>
+      <ToastContainer />
     </>
   )
 }
