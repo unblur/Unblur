@@ -113,10 +113,10 @@ const loginUser = asyncHandler(async (req, res) => {
 })
 
 // @desc    Verify user email
-// @route   GET /api/users/verifyemail
+// @route   POST /api/users/verifyemail
 // @access  Public
 const verifyEmail = asyncHandler(async (req, res) => {
-  const { token, id } = req.query
+  const { token, id } = req.body
   const verifyEmailToken = await VerifyEmailToken.findOne({ userID: id })
 
   // Check if a verify email token has been created (there's been a verify email request)

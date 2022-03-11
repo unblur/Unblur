@@ -48,6 +48,18 @@ export const verifyEmailRequest = createAsyncThunk(
   }
 )
 
+// Verify email
+export const verifyEmail = createAsyncThunk(
+  'auth/verifyemail',
+  async (data, thunkAPI) => {
+    try {
+      return await authService.verifyEmail(data)
+    } catch (error) {
+      return thunkAPI.rejectWithValue(getErrorMessage(error))
+    }
+  }
+)
+
 // Reset password request
 export const resetPasswordRequest = createAsyncThunk(
   'auth/resetpasswordrequest',
@@ -124,6 +136,21 @@ export const authSlice = createSlice({
         state.message = action.payload.message
       })
       .addCase(verifyEmailRequest.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        state.message = action.payload
+      })
+
+      // Verify email
+      .addCase(verifyEmail.pending, (state) => {
+        state.isLoading = true
+      })
+      .addCase(verifyEmail.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.isSuccess = true
+        state.message = action.payload.message
+      })
+      .addCase(verifyEmail.rejected, (state, action) => {
         state.isLoading = false
         state.isError = true
         state.message = action.payload

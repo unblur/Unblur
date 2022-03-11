@@ -1,36 +1,40 @@
-import React, { useEffect, useState } from 'react'
-import { useLocation, Navigate } from 'react-router'
-import { bindActionCreators } from 'redux'
-import { useDispatch } from 'react-redux'
-import authActions from '../state/actions/authActions'
-
-function useQuery() {
-  const { search } = useLocation()
-  return React.useMemo(() => new URLSearchParams(search), [search])
-}
+import { useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import { useDispatch, useSelector } from 'react-redux'
+import { verifyEmail, reset } from '../features/auth/authSlice'
 
 const VerifyEmail = () => {
-  const [verificationDone, setVerificationDone] = useState(false)
+  const [searchParams, _] = useSearchParams()
+  const navigate = useNavigate()
   const dispatch = useDispatch()
-  const query = useQuery()
+  const { isError, isSuccess, message } = useSelector((state) => state.auth)
 
   useEffect(() => {
-    const { verifyEmail } = bindActionCreators(authActions, dispatch)
-    const token = query.get('token') || ''
-    const id = query.get('id') || ''
-    console.log(token, id)
-    verifyEmail(token, id, () => setVerificationDone(true))
-  }, [query, dispatch])
+    const data = {
+      token: searchParams.get('token') || '',
+      id: searchParams.get('id') || '',
+    }
+    dispatch(verifyEmail(data))
+  }, [dispatch, searchParams])
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(message)
+      navigate('/signin')
+    }
+
+    if (isSuccess) {
+      toast.success(message)
+      navigate('/signin')
+    }
+
+    dispatch(reset())
+  }, [isError, isSuccess, message, dispatch, navigate])
 
   return (
     <>
-      {verificationDone ? (
-        <Navigate to='/signin' />
-      ) : (
-        <div>
-          <p>verifying email</p>
-        </div>
-      )}
+      <div>verifying email...</div>
     </>
   )
 }

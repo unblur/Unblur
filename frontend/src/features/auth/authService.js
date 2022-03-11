@@ -30,6 +30,13 @@ const verifyEmailRequest = async (email) => {
   return response.data
 }
 
+// Verify email
+const verifyEmail = async (data) => {
+  const response = await axios.post(`${API_URL}/verifyemail`, data)
+
+  return response.data
+}
+
 // Send reset password request
 const resetPasswordRequest = async (email) => {
   const response = await axios.post(`${API_URL}/resetpasswordrequest`, {
@@ -43,6 +50,7 @@ const authService = {
   signUp,
   signIn,
   verifyEmailRequest,
+  verifyEmail,
   resetPasswordRequest,
 }
 
