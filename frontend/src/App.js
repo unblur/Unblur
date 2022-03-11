@@ -19,19 +19,10 @@ import VerifyEmailRequest from './pages/VerifyEmailRequest'
 import VerifyEmail from './pages/VerifyEmail'
 import ResetPasswordRequest from './pages/ResetPasswordRequest'
 import ResetPassword from './pages/ResetPassword'
-import { UploadImage } from './pages/UploadImage'
+import UploadImage from './pages/UploadImage'
 
 function App() {
   const { user } = useSelector((state) => state.auth)
-  const dispatch = useDispatch()
-
-  // useEffect(() => {
-  //   const { signInWithJWT } = bindActionCreators(authActions, dispatch)
-  //   const token = localStorage.getItem('jwtToken')
-  //   if (token) {
-  //     signInWithJWT(token)
-  //   }
-  // }, [dispatch])
 
   return (
     <>
