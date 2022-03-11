@@ -36,7 +36,7 @@ const Browse = () => {
         artworks.map((artwork) => (
           // TODO: Make component for artwork
           // TODO: Test if this works
-          <div>
+          <div key={artwork._id}>
             {/*This inline css is temporary*/}
             <img
               src={`http://localhost:8000/files/${artwork.blurredImage}`}
