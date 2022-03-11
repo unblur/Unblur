@@ -19,13 +19,7 @@ export const signUp = createAsyncThunk(
     try {
       return await authService.signUp(user)
     } catch (error) {
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString()
-      return thunkAPI.rejectWithValue(message)
+      return thunkAPI.rejectWithValue(getErrorMessage(error))
     }
   }
 )
@@ -37,16 +31,43 @@ export const signIn = createAsyncThunk(
     try {
       return await authService.signIn(user)
     } catch (error) {
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString()
-      return thunkAPI.rejectWithValue(message)
+      return thunkAPI.rejectWithValue(getErrorMessage(error))
     }
   }
 )
+
+// Verify email request
+export const verifyEmailRequest = createAsyncThunk(
+  'auth/verifyemailrequest',
+  async (email, thunkAPI) => {
+    try {
+      return await authService.verifyEmailRequest(email)
+    } catch (error) {
+      return thunkAPI.rejectWithValue(getErrorMessage(error))
+    }
+  }
+)
+
+// Reset password request
+export const resetPasswordRequest = createAsyncThunk(
+  'auth/resetpasswordrequest',
+  async (email, thunkAPI) => {
+    try {
+      return await authService.resetPasswordRequest(email)
+    } catch (error) {
+      return thunkAPI.rejectWithValue(getErrorMessage(error))
+    }
+  }
+)
+
+// Helper to get error message
+const getErrorMessage = (error) => {
+  return (
+    (error.response && error.response.data && error.response.data.message) ||
+    error.message ||
+    error.toString()
+  )
+}
 
 export const authSlice = createSlice({
   name: 'auth',
@@ -61,6 +82,7 @@ export const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // Sign up
       .addCase(signUp.pending, (state) => {
         state.isLoading = true
       })
@@ -75,6 +97,8 @@ export const authSlice = createSlice({
         state.message = action.payload
         state.user = null
       })
+
+      // Sign in
       .addCase(signIn.pending, (state) => {
         state.isLoading = true
       })
@@ -88,6 +112,36 @@ export const authSlice = createSlice({
         state.isError = true
         state.message = action.payload
         state.user = null
+      })
+
+      // Verify email request
+      .addCase(verifyEmailRequest.pending, (state) => {
+        state.isLoading = true
+      })
+      .addCase(verifyEmailRequest.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.isSuccess = true
+        state.message = action.payload.message
+      })
+      .addCase(verifyEmailRequest.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        state.message = action.payload
+      })
+
+      // Reset password request
+      .addCase(resetPasswordRequest.pending, (state) => {
+        state.isLoading = true
+      })
+      .addCase(resetPasswordRequest.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.isSuccess = true
+        state.message = action.payload.message
+      })
+      .addCase(resetPasswordRequest.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        state.message = action.payload
       })
   },
 })
