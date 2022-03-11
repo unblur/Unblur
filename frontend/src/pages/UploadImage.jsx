@@ -17,6 +17,7 @@ const UploadImage = () => {
   useEffect(() => {
     if (isError) {
       toast.error(message)
+      setFile(null)
     }
 
     if (isSuccess) {
@@ -34,11 +35,19 @@ const UploadImage = () => {
   const onSubmit = (e) => {
     e.preventDefault()
 
+    if (!file) {
+      toast.error('Please upload an image.')
+      return
+    }
+
+    if (algosToUnblur === '') {
+      toast.error('Please enter algos to unblur.')
+      return
+    }
+
     const formData = new FormData()
     formData.append('image', file)
     formData.append('algosToUnblur', algosToUnblur)
-
-    console.log(formData)
 
     dispatch(uploadArtwork(formData))
   }

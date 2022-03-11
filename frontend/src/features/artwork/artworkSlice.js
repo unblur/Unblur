@@ -45,7 +45,14 @@ const getErrorMessage = (error) => {
 export const artworkSlice = createSlice({
   name: 'artwork',
   initialState,
-  reducers: { reset: (state) => initialState },
+  reducers: {
+    reset: (state) => {
+      state.isLoading = false
+      state.isSuccess = false
+      state.isError = false
+      state.message = ''
+    },
+  },
   extraReducers: (builder) => {
     builder
       // Get all artworks
@@ -70,6 +77,7 @@ export const artworkSlice = createSlice({
       .addCase(uploadArtwork.fulfilled, (state, action) => {
         state.isLoading = false
         state.isSuccess = true
+        state.message = action.payload.message
       })
       .addCase(uploadArtwork.rejected, (state, action) => {
         state.isLoading = false
