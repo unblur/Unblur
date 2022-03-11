@@ -1,10 +1,12 @@
 const errorHandler = (err, req, res, next) => {
-  const statusCode = res.statusCode ? res.statusCode : 500
+  const statusCode = res.statusCode !== 200 ? res.statusCode : 500
 
   res.status(statusCode)
 
+  const message = statusCode === 500 ? 'Server error' : err.message
+
   res.json({
-    message: err.message,
+    message,
     stack: process.env.NODE_ENV === 'production' ? null : err.stack,
   })
 }

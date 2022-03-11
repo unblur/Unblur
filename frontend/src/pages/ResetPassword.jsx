@@ -1,85 +1,114 @@
-import { useState } from 'react'
-import { bindActionCreators } from 'redux'
+import { useState, useEffect } from 'react'
+import { useNavigate, useSearchParams, Link } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import { useDispatch, useSelector } from 'react-redux'
-import authActions from '../state/actions/authActions'
-import { setAuthErrors } from '../state/reducers/actions'
-import { Link, useSearchParams } from 'react-router-dom'
-import { Navigate } from 'react-router-dom'
+import { resetPassword, reset } from '../features/auth/authSlice'
 
 const ResetPassword = () => {
-  const [resetDone, setResetDone] = useState(false)
-  const [searchParams, setSearchParams] = useSearchParams()
-  const [{ password, confirmPassword }, setPassword] = useState({
+  const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const { isLoading, isError, isSuccess, message } = useSelector(
+    (state) => state.auth
+  )
+
+  const [formData, setFormData] = useState({
     password: '',
     confirmPassword: '',
   })
-  const dispatch = useDispatch()
-  const { errors, messages } = useSelector((state) => state.auth)
-  const { resetPassword } = bindActionCreators(authActions, dispatch)
+  const { password, confirmPassword } = formData
 
-  const passwordsMatch = password === confirmPassword
+  useEffect(() => {
+    if (isError) {
+      toast.error(message)
+    }
+
+    if (isSuccess) {
+      toast.success(message)
+      navigate('/signin')
+    }
+
+    dispatch(reset())
+  }, [isError, isSuccess, message, dispatch, navigate])
 
   const onChange = (e) => {
-    const { name, value } = e.target
-    setPassword((prevState) => ({
+    setFormData((prevState) => ({
       ...prevState,
-      [name]: value,
+      [e.target.name]: e.target.value,
     }))
   }
 
   const onSubmit = (e) => {
-    if (!passwordsMatch) {
+    e.preventDefault()
+
+    if (password !== confirmPassword) {
+      toast.error('Passwords do not match')
       return
     }
 
-    dispatch({
-      type: setAuthErrors,
-      payload: [],
-    })
+    const data = {
+      token: searchParams.get('token') || '',
+      id: searchParams.get('id') || '',
+      password,
+    }
 
-    const token = searchParams.get('token') || ''
-    const id = searchParams.get('id') || ''
-    console.log(token, id)
-    resetPassword(token, id, password, () => {
-      setPassword({ password: '', confirmPassword: '' })
-      setResetDone(true)
-    })
+    dispatch(resetPassword(data))
+  }
+
+  // TODO: update loading screen
+  if (isLoading) {
+    return (
+      <>
+        <div>loading...</div>
+      </>
+    )
   }
 
   return (
     <>
-      {resetDone ? (
-        <Navigate to='/signin' />
-      ) : (
-        <div>
-          {errors.map((e) => (
-            <p>{e}</p>
-          ))}
-          {messages.map((e) => (
-            <p>{e}</p>
-          ))}
-          {!passwordsMatch && <p>Passwords don't match</p>}
-          <h1>Reset Password</h1>
-          <p>New Password</p>
-          <input
-            type='password'
-            value={password}
-            onChange={onChange}
-            name='password'
-          ></input>
-          <p>Confirm Password</p>
-          <input
-            type='password'
-            value={confirmPassword}
-            onChange={onChange}
-            name='confirmPassword'
-          ></input>
-          <br />
-          {passwordsMatch && <button onClick={onSubmit}>reset password</button>}
-          <br />
-          <Link to='/signin'>back to sign in</Link>
-        </div>
-      )}
+      <section className='heading'>
+        <h1>Reset Password</h1>
+      </section>
+
+      <section className='form'>
+        <form onSubmit={onSubmit}>
+          <div className='form-group'>
+            <label htmlFor='password'>password</label>
+            <input
+              type='password'
+              className='form-control'
+              id='password'
+              name='password'
+              value={password}
+              placeholder='**************'
+              onChange={onChange}
+            />
+          </div>
+          <div className='form-group'>
+            <label htmlFor='confirmPassword'>confirm password</label>
+            <input
+              type='password'
+              className='form-control'
+              id='confirmPassword'
+              name='confirmPassword'
+              value={confirmPassword}
+              placeholder='**************'
+              onChange={onChange}
+            />
+          </div>
+          <div className='form-group'>
+            <button type='submit' className='btn btn-block btn-primary'>
+              Send
+            </button>
+          </div>
+          <div className='form-group'>
+            <div className='link-description'>already have an account?</div>
+            <Link to='/signin' className='link'>
+              sign in
+            </Link>
+          </div>
+        </form>
+      </section>
     </>
   )
 }

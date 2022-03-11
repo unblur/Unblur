@@ -320,8 +320,7 @@ const resetPasswordRequest = asyncHandler(async (req, res) => {
 // @route   POST /api/users/resetpassword
 // @access  Public
 const resetPassword = asyncHandler(async (req, res) => {
-  const { token, id } = req.query
-  const { password } = req.body
+  const { token, id, password } = req.body
   const resetPasswordToken = await ResetPasswordToken.findOne({ userID: id })
 
   // Check if a reset password token has been created (there's been a password reset request)

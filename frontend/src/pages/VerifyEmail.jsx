@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { verifyEmail, reset } from '../features/auth/authSlice'
 
 const VerifyEmail = () => {
-  const [searchParams, _] = useSearchParams()
+  const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const { isError, isSuccess, message } = useSelector((state) => state.auth)
