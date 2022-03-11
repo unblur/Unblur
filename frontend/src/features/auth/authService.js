@@ -21,6 +21,10 @@ const signIn = async (userData) => {
   return response.data
 }
 
+const signOut = () => {
+  localStorage.removeItem('user')
+}
+
 // Send verify email request
 const verifyEmailRequest = async (email) => {
   const response = await axios.post(`${API_URL}/verifyemailrequest`, { email })
@@ -54,6 +58,7 @@ const resetPassword = async (data) => {
 const authService = {
   signUp,
   signIn,
+  signOut,
   verifyEmailRequest,
   verifyEmail,
   resetPasswordRequest,
