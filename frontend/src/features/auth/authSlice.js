@@ -36,6 +36,11 @@ export const signIn = createAsyncThunk(
   }
 )
 
+// Sign out
+export const signOut = createAsyncThunk('auth/signout', async () => {
+  await authService.signOut()
+})
+
 // Verify email request
 export const verifyEmailRequest = createAsyncThunk(
   'auth/verifyemailrequest',
@@ -135,6 +140,11 @@ export const authSlice = createSlice({
         state.isLoading = false
         state.isError = true
         state.message = action.payload
+        state.user = null
+      })
+
+      // Sign out
+      .addCase(signOut.fulfilled, (state) => {
         state.user = null
       })
 
