@@ -30,57 +30,21 @@ const getArtworks = asyncHandler(async (req, res) => {
   res.status(200).json(artworks)
 })
 
-// // @desc    Get all artworks
-// // @route   POST /api/artworks/upload
-// // @access  Public
-// const uploadArtwork = (req, res) => {
-//   upload(
-//     req,
-//     res,
-//     asyncHandler(async (err) => {
-//       if (err) throw new Error('Something went wrong uploading image')
-//       // TODO: figure out why throwing error here causes UnhandledPromiseRejectionWarning:
-//       // if (!req.body.algosToUnblur) throw new Error('Missing field')
-
-//       const fileName = req.file.filename.split('.')[0]
-//       const fileExtension = req.file.filename.split('.')[1]
-//       const blurredImagePath = `./uploads/${fileName}-blurred.${fileExtension}`
-
-//       await blurImage(`./uploads/${req.file.filename}`, blurredImagePath, 100)
-
-//       await Artwork.create({
-//         creatorID: req.user.id,
-//         image: req.file.filename,
-//         blurredImage: `${fileName}-blurred.${fileExtension}`,
-//         algosToUnblur: req.body.algosToUnblur,
-//       })
-
-//       res.json({
-//         message: 'Successfully uploaded image',
-//       })
-//     })
-//   )
-// }
-
-// @desc    Get all artworks
+// @desc    Upload an artwork
 // @route   POST /api/artworks/upload
-// @access  Public
-const uploadArtwork = asyncHandler(async (req, res) => {
-  if (!req.body.algosToUnblur) {
-    res.status(400)
-    throw new Error('Please enter algos to unblur.')
-  }
-
-  const fileName = req.file.filename.split('.')[0]
-  const fileExtension = req.file.filename.split('.')[1]
-  const blurredImagePath = `./uploads/${fileName}-blurred.${fileExtension}`
-
+// @access  Private
+const uploadArtwork = (req, res) => {
   upload(
     req,
     res,
     asyncHandler(async (err) => {
       if (err) throw new Error('Something went wrong uploading image')
       // TODO: figure out why throwing error here causes UnhandledPromiseRejectionWarning:
+      // if (!req.body.algosToUnblur) throw new Error('Missing field')
+
+      const fileName = req.file.filename.split('.')[0]
+      const fileExtension = req.file.filename.split('.')[1]
+      const blurredImagePath = `./uploads/${fileName}-blurred.${fileExtension}`
 
       await blurImage(`./uploads/${req.file.filename}`, blurredImagePath, 100)
 
@@ -90,13 +54,13 @@ const uploadArtwork = asyncHandler(async (req, res) => {
         blurredImage: `${fileName}-blurred.${fileExtension}`,
         algosToUnblur: req.body.algosToUnblur,
       })
+
+      res.json({
+        message: 'Successfully uploaded image',
+      })
     })
   )
-
-  res.json({
-    message: 'Successfully uploaded image',
-  })
-})
+}
 
 const blurImage = async (imagePath, imageOutPath, percentBlur) => {
   const imageWidthAlgo = (blur) => 300 - 2.5 * blur

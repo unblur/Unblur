@@ -50,7 +50,6 @@ const Browse = () => {
           </div>
         ))}
 
-      {/* TODO: (zhen) figure out how this works */}
       {!isLoading && !!!artworks.length && <div>no artworks to show</div>}
     </>
   )
