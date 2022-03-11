@@ -102,9 +102,8 @@ const ResetPassword = () => {
             </button>
           </div>
           <div className='form-group'>
-            <div className='link-description'>already have an account?</div>
             <Link to='/signin' className='link'>
-              sign in
+              back to sign in
             </Link>
           </div>
         </form>
