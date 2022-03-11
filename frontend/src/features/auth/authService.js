@@ -7,8 +7,6 @@ const API_URL = `http://localhost:8000/api/users`
 const signUp = async (userData) => {
   const response = await axios.post(`${API_URL}/register`, userData)
 
-  console.log(response.data)
-
   return response.data
 }
 
@@ -46,12 +44,20 @@ const resetPasswordRequest = async (email) => {
   return response.data
 }
 
+// Reset password
+const resetPassword = async (data) => {
+  const response = await axios.post(`${API_URL}/resetpassword`, data)
+
+  return response.data
+}
+
 const authService = {
   signUp,
   signIn,
   verifyEmailRequest,
   verifyEmail,
   resetPasswordRequest,
+  resetPassword,
 }
 
 export default authService
