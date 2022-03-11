@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import {
   BrowserRouter as Router,
   Routes,
@@ -6,8 +5,6 @@ import {
   Navigate,
 } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import authActions from './state/actions/authActions'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import Header from './components/Header'
