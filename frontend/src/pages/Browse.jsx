@@ -1,43 +1,15 @@
-import { useState, useEffect } from 'react'
-import axios from 'axios'
+import { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
+import { reset as authReset } from '../features/auth/authSlice'
 
 const Browse = () => {
-  const [artworks, setArtworks] = useState([])
-  const [loading, setLoading] = useState(true)
+  const dispatch = useDispatch()
 
   useEffect(() => {
-    axios
-      .get('http://localhost:8000/api/artworks')
-      .then((res) => {
-        setArtworks(res.data)
-        setLoading(false)
-      })
-      .catch((err) => {
-        setLoading(false)
-      })
-  }, [])
+    dispatch(authReset())
+  }, [dispatch])
 
-  return (
-    <div>
-      {loading && <p>loading...</p>}
-      {!loading &&
-        artworks.map((artwork) => (
-          <div>
-            {/*This inline css is temporary*/}
-            <img
-              src={`http://localhost:8000/files/${artwork.blurredImage}`}
-              style={{
-                border: '1px solid black',
-                padding: 5,
-                maxWidth: 300,
-                maxHeight: 300,
-              }}
-            />
-          </div>
-        ))}
-      {!loading && !!!artworks.length && <p>no artworks to show</p>}
-    </div>
-  )
+  return <div>this is the browse page</div>
 }
 
 export default Browse
