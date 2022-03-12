@@ -1,78 +1,140 @@
-import React, { useState } from 'react'
-import { bindActionCreators } from 'redux'
+import { useState, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import { useDispatch, useSelector } from 'react-redux'
-import authActions from '../state/actions/authActions'
-import { setAuthErrors } from '../state/reducers/actions'
-import { Link } from 'react-router-dom'
+import { signUp, reset } from '../features/auth/authSlice'
 
-const SignUpPage = (state) => {
-  const [{ email, password, confirmPassword }, setEmailPassword] = useState({
+const SignUp = () => {
+  const [formData, setFormData] = useState({
     email: '',
     password: '',
     confirmPassword: '',
   })
+  const { email, password, confirmPassword } = formData
+
+  const navigate = useNavigate()
   const dispatch = useDispatch()
-  const { errors, messages } = useSelector((state) => state.auth)
-  const { signUp } = bindActionCreators(authActions, dispatch)
+  const { isLoading, isError, isSuccess, message } = useSelector(
+    (state) => state.auth
+  )
 
-  const passwordsMatch = password === confirmPassword
+  useEffect(() => {
+    if (isError) {
+      toast.error(message)
+    }
 
-  const onChangeForm = (event) => {
-    const { value, name } = event.target
-    setEmailPassword({ email, password, confirmPassword, [name]: value })
+    if (isSuccess) {
+      toast.success(message)
+      navigate('/signin')
+    }
+
+    dispatch(reset())
+  }, [isError, isSuccess, message, dispatch, navigate])
+
+  const onChange = (e) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      [e.target.name]: e.target.value,
+    }))
   }
 
-  const onSignUp = () => {
-    if (!passwordsMatch) {
+  const onSubmit = (e) => {
+    e.preventDefault()
+
+    if (password !== confirmPassword) {
+      toast.error('Passwords do not match.')
       return
     }
 
-    dispatch({
-      type: setAuthErrors,
-      payload: [],
-    })
-    signUp(email, password, () => {
-      setEmailPassword({ email: '', password: '', confirmPassword: '' })
-    })
+    const userData = {
+      email,
+      password,
+    }
+
+    dispatch(signUp(userData))
+  }
+
+  // TODO: update loading screen
+  if (isLoading) {
+    return (
+      <>
+        <div>loading...</div>
+      </>
+    )
   }
 
   return (
-    <div>
-      {errors.map((e) => (
-        <p>{e}</p>
-      ))}
-      {messages.map((e) => (
-        <p>{e}</p>
-      ))}
-      {!passwordsMatch && <p>Passwords don't match</p>}
-      <h1>Sign Up</h1>
-      <p>Email</p>
-      <input
-        type='email'
-        value={email}
-        onChange={onChangeForm}
-        name='email'
-      ></input>
-      <p>Password</p>
-      <input
-        type='password'
-        value={password}
-        onChange={onChangeForm}
-        name='password'
-      ></input>
-      <p>Confirm Password</p>
-      <input
-        type='password'
-        value={confirmPassword}
-        onChange={onChangeForm}
-        name='confirmPassword'
-      ></input>
-      <br />
-      {passwordsMatch && <button onClick={onSignUp}>sign up</button>}
-      <br />
-      <Link to='/signin'>already have an account?</Link>
-    </div>
+    <>
+      <section className='heading'>
+        <h1>Sign Up</h1>
+      </section>
+
+      <section className='form'>
+        <form onSubmit={onSubmit}>
+          <div className='form-group'>
+            <label htmlFor='email'>email</label>
+            <input
+              type='email'
+              className='form-control'
+              id='email'
+              name='email'
+              value={email}
+              placeholder='john.doe@mail.com'
+              onChange={onChange}
+            />
+          </div>
+          <div className='form-group'>
+            <label htmlFor='password'>password</label>
+            <input
+              type='password'
+              className='form-control'
+              id='password'
+              name='password'
+              value={password}
+              placeholder='**************'
+              onChange={onChange}
+            />
+          </div>
+          <div className='form-group'>
+            <label htmlFor='confirmPassword'>confirm password</label>
+            <input
+              type='password'
+              className='form-control'
+              id='confirmPassword'
+              name='confirmPassword'
+              value={confirmPassword}
+              placeholder='**************'
+              onChange={onChange}
+            />
+          </div>
+          {/* TODO: add support for username */}
+          {/* <div className='form-group'>
+            <label htmlFor='username'>username</label>
+            <input
+              type='text'
+              className='form-control'
+              id='username'
+              name='username'
+              value={username}
+              placeholder='john_art'
+              onChange={onChange}
+            />
+          </div> */}
+          <div className='form-group'>
+            <button type='submit' className='btn btn-block btn-primary'>
+              Sign Up
+            </button>
+          </div>
+          <div className='form-group'>
+            <div className='link-description'>already have an account?</div>
+            <Link to='/signin' className='link'>
+              sign in
+            </Link>
+          </div>
+        </form>
+      </section>
+    </>
   )
 }
 
-export default SignUpPage
+export default SignUp

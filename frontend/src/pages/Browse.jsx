@@ -1,28 +1,42 @@
-import { useState, useEffect } from 'react'
-import axios from 'axios'
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { reset as authReset } from '../features/auth/authSlice'
+import { getArtworks, reset } from '../features/artwork/artworkSlice'
+import { toast } from 'react-toastify'
 
 const Browse = () => {
-  const [artworks, setArtworks] = useState([])
-  const [loading, setLoading] = useState(true)
+  const dispatch = useDispatch()
+  const { artworks, isLoading, isError, isSuccess, message } = useSelector(
+    (state) => state.artwork
+  )
 
   useEffect(() => {
-    axios
-      .get('http://localhost:8000/api/artworks')
-      .then((res) => {
-        setArtworks(res.data)
-        setLoading(false)
-      })
-      .catch((err) => {
-        setLoading(false)
-      })
-  }, [])
+    dispatch(authReset())
+    dispatch(getArtworks())
+  }, [dispatch])
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(message)
+    }
+
+    dispatch(reset())
+  }, [isError, isSuccess, message, dispatch])
 
   return (
-    <div>
-      {loading && <p>loading...</p>}
-      {!loading &&
+    <>
+      <section className='heading'>
+        <h1>Browse</h1>
+      </section>
+
+      {/* TODO: update loading screen */}
+      {isLoading && <div>loading...</div>}
+
+      {!isLoading &&
         artworks.map((artwork) => (
-          <div>
+          // TODO: Make component for artwork
+          // TODO: Test if this works
+          <div key={artwork._id}>
             {/*This inline css is temporary*/}
             <img
               src={`http://localhost:8000/files/${artwork.blurredImage}`}
@@ -35,8 +49,9 @@ const Browse = () => {
             />
           </div>
         ))}
-      {!loading && !!!artworks.length && <p>no artworks to show</p>}
-    </div>
+
+      {!isLoading && !!!artworks.length && <div>no artworks to show</div>}
+    </>
   )
 }
 

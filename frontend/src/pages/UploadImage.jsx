@@ -1,69 +1,107 @@
-import { useState } from 'react'
-import axios from 'axios'
-import { Navigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import { useDispatch, useSelector } from 'react-redux'
+import { uploadArtwork, reset } from '../features/artwork/artworkSlice'
 
-export const UploadImage = () => {
-  const [message, setMessage] = useState('')
-  const [file, setFile] = useState(null)
+const UploadImage = () => {
   const [algosToUnblur, setAlgosToUnblur] = useState(10)
-  const [success, setSuccess] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [file, setFile] = useState(null)
 
-  const onFormSubmit = (e) => {
-    e.preventDefault()
-    const formData = new FormData()
-    formData.append('image', file)
-    formData.append('algosToUnblur', algosToUnblur)
-    const token = localStorage.getItem('jwtToken')
-    const config = {
-      headers: {
-        'content-type': 'multipart/form-data',
-        Authorization: `Bearer ${token}`,
-      },
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const { isLoading, isError, isSuccess, message } = useSelector(
+    (state) => state.artwork
+  )
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(message)
+      setFile(null)
     }
-    setLoading(true)
-    axios
-      .post('http://localhost:8000/api/artworks/upload', formData, config)
-      .then((response) => {
-        setLoading(false)
-        setSuccess(true)
-      })
-      .catch((error) => {
-        setLoading(false)
-        setMessage('Something went wrong uploading the image')
-      })
-  }
+
+    if (isSuccess) {
+      toast.success(message)
+      navigate('/browse')
+    }
+
+    dispatch(reset())
+  }, [isError, isSuccess, message, dispatch, navigate])
 
   const onChange = (e) => {
     setFile(e.target.files[0])
   }
 
-  if (loading) {
-    return <p>Uploading this may take a second...</p>
+  const onSubmit = (e) => {
+    e.preventDefault()
+
+    if (!file) {
+      toast.error('Please upload an image.')
+      return
+    }
+
+    if (algosToUnblur === '') {
+      toast.error('Please enter algos to unblur.')
+      return
+    }
+
+    const formData = new FormData()
+    formData.append('image', file)
+    formData.append('algosToUnblur', algosToUnblur)
+
+    dispatch(uploadArtwork(formData))
   }
 
-  if (success) {
-    return <Navigate to='/browse' />
+  // TODO: update loading screen
+  if (isLoading) {
+    return (
+      <>
+        <div>uploading this may take a second...</div>
+      </>
+    )
   }
 
   return (
-    <div>
-      <form onSubmit={onFormSubmit}>
-        {message && <p>{message}</p>}
+    <>
+      <section className='heading'>
         <h1>Upload Image</h1>
-        <input type='file' name='image' onChange={onChange} />
-        <br />
-        <input
-          type='number'
-          name='algosToUnblur'
-          value={algosToUnblur}
-          onChange={(e) => {
-            setAlgosToUnblur(e.target.value)
-          }}
-        />
-        <br />
-        <button type='submit'>Upload</button>
-      </form>
-    </div>
+      </section>
+
+      <section className='form'>
+        <form onSubmit={onSubmit}>
+          <div className='form-group'>
+            <label htmlFor='imageToUpload'>image to upload</label>
+            <input
+              type='file'
+              name='image'
+              className='form-control'
+              onChange={onChange}
+            />
+          </div>
+
+          <div className='form-group'>
+            <label htmlFor='algosToUnblur'>algos to unblur</label>
+            <input
+              type='number'
+              name='algosToUnblur'
+              className='form-control'
+              id='algosToUnblur'
+              value={algosToUnblur}
+              onChange={(e) => {
+                setAlgosToUnblur(e.target.value)
+              }}
+            />
+          </div>
+
+          <div className='form-group'>
+            <button type='submit' className='btn btn-block btn-primary'>
+              Upload
+            </button>
+          </div>
+        </form>
+      </section>
+    </>
   )
 }
+
+export default UploadImage

@@ -1,7 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
 
 :root {
-  --primary-color: #c040ff;
+  --primary-color: #ad00ff;
   /* --secondary-color: ; */
   --light-color: #f4f4f4;
   --mid-color: #ccc;
@@ -17,6 +17,7 @@
 
 body {
   font-family: 'Roboto', sans-serif;
+  font-weight: 400;
 }
 
 a {
@@ -34,24 +35,98 @@ ul {
   text-align: center;
 }
 
+/* Headings */
+.heading {
+  font-size: 2rem;
+  margin-bottom: 50px;
+  padding: 0 20px;
+}
+
+.heading h1 {
+  font-weight: 300;
+}
+
+/* Buttons */
 .btn {
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 1rem;
   background-color: #fff;
   color: #000;
+  text-align: center;
   text-decoration: none;
   border: none;
+  border-radius: 5px;
   cursor: pointer;
-  font-size: 1rem;
+  padding: 10px 20px;
 }
 
+.btn-block {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+/* Forms */
+.form {
+  width: 70%;
+  margin: 0 auto;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--mid-color);
+  border-radius: 5px;
+  margin-bottom: 5px;
+  font-family: inherit;
+}
+
+.form-group label {
+  font-weight: bold;
+  text-align: left;
+  display: block;
+  margin: 0 0 5px 3px;
+}
+
+.form-group input:placeholder-shown {
+  font-style: italic;
+}
+
+.form-group .link {
+  color: var(--primary-color);
+  font-size: 0.9rem;
+  margin: 0 0 5px 3px;
+}
+
+.form-group .link-left {
+  display: block;
+  text-align: left;
+}
+
+.form-group .link-description {
+  font-size: 0.9rem;
+  color: #777;
+}
+
+/* Header Component */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1.2rem 0;
-  border-bottom: 1px solid var(--mid-color);
+  /* border-bottom: 1px solid var(--mid-color); */
   margin-bottom: 3rem;
 }
 
@@ -62,5 +137,25 @@ ul {
 }
 
 .header ul li {
-  margin-left: 30px;
+  margin-left: 20px;
+}
+
+.header .header-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  background-color: #fff;
+  color: #000;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px 10px;
+}
+
+.header .logo .header-link {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--primary-color);
 }

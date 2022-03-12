@@ -1,55 +1,70 @@
-import { Link } from 'react-router-dom'
-import { FaCircle } from 'react-icons/fa'
-import { useSelector, useDispatch } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import authActions from '../state/actions/authActions'
+import { Link, useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { signOut, reset } from '../features/auth/authSlice'
 
 const Header = () => {
-  const { user } = useSelector((state) => state.auth)
+  const navigate = useNavigate()
   const dispatch = useDispatch()
-  const { signOut } = bindActionCreators(authActions, dispatch)
+  const { user } = useSelector((state) => state.auth)
+
+  const onSignOut = () => {
+    dispatch(signOut())
+    dispatch(reset())
+    navigate('/browse')
+  }
 
   return (
-    <header className='header'>
-      <div className='logo'>
-        <Link to='/' className='btn'>
-          <FaCircle /> <span>&nbsp; unblur</span>
-        </Link>
-      </div>
-      <ul>
-        <li>
-          <Link to='/' className='btn'>
-            browse
+    <>
+      <header className='header'>
+        <div className='logo'>
+          <Link to='/browse' className='header-link'>
+            UNBLUR
           </Link>
-        </li>
-        {user && (
-          <>
-            <li>
-              <Link to='/profile' className='btn'>
-                profile
-              </Link>
-            </li>
-            <li>
-              <Link to='/upload' className='btn'>
-                upload
-              </Link>
-            </li>
-          </>
-        )}
-        <li>
-          {user && (
-            <button className='btn' onClick={() => signOut()}>
-              sign out
-            </button>
-          )}
-          {!user && (
-            <Link to='/signin' className='btn'>
-              sign in
+        </div>
+
+        <ul>
+          <li>
+            <Link to='/browse' className='header-link'>
+              browse
             </Link>
+          </li>
+          {user && (
+            <>
+              <li>
+                <Link to='/profile' className='header-link'>
+                  profile
+                </Link>
+              </li>
+              <li>
+                <Link to='/upload' className='header-link'>
+                  upload
+                </Link>
+              </li>
+            </>
           )}
-        </li>
-      </ul>
-    </header>
+          <li>
+            {user && (
+              <button
+                className='header-link'
+                style={{ whiteSpace: 'nowrap' }}
+                onClick={onSignOut}
+              >
+                sign out
+              </button>
+            )}
+            {!user && (
+              <Link
+                to='/signin'
+                className='header-link'
+                style={{ whiteSpace: 'nowrap' }}
+              >
+                sign in
+              </Link>
+            )}
+          </li>
+        </ul>
+      </header>
+    </>
   )
 }
 
