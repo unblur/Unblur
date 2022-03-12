@@ -16,14 +16,14 @@ const registerUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body
   if (!email || !password) {
     res.status(400)
-    throw new Error('Please enter all fields')
+    throw new Error('Please enter all fields.')
   }
 
   // Check if user exists
   const userExists = await User.findOne({ email })
   if (userExists) {
-    res.status(401)
-    throw new Error('User already exists')
+    res.status(400)
+    throw new Error('User already exists. Please log in.')
   }
 
   // Hash password
@@ -36,8 +36,8 @@ const registerUser = asyncHandler(async (req, res) => {
     password: hashedPassword,
   })
   if (!user) {
-    res.status(402)
-    throw new Error('Invalid user data')
+    res.status(400)
+    throw new Error('Invalid user data.')
   }
 
   // Create email verification token
@@ -50,6 +50,7 @@ const registerUser = asyncHandler(async (req, res) => {
     userID: user._id,
     token: hashedToken,
   })
+
   // Create an email verification link
   if (process.env.NODE_ENV == 'development') {
     console.log(
@@ -70,7 +71,7 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   // Successful registration
-  res.status(201).json({
+  res.json({
     _id: user.id,
     email: user.email,
     message: 'Successfully registered. Please verify your email to log in.',
@@ -87,20 +88,20 @@ const loginUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email })
   if (!user) {
     res.status(400)
-    throw new Error('User does not exist')
+    throw new Error('Invalid credentials.')
   }
 
   // Check if user is verified
   if (!user.verified) {
-    res.status(401)
-    throw new Error('User not verified')
+    res.status(400)
+    throw new Error('Please verify your email to log in.')
   }
 
   // Check password matches
   const match = await bcrypt.compare(password, user.password)
   if (!match) {
-    res.status(402)
-    throw new Error('Invalid credentials')
+    res.status(400)
+    throw new Error('Invalid credentials.')
   }
 
   // Successful login
@@ -112,38 +113,36 @@ const loginUser = asyncHandler(async (req, res) => {
 })
 
 // @desc    Verify user email
-// @route   GET /api/users/verifyemail
+// @route   POST /api/users/verifyemail
 // @access  Public
 const verifyEmail = asyncHandler(async (req, res) => {
-  const { token, id } = req.query
+  const { token, id } = req.body
   const verifyEmailToken = await VerifyEmailToken.findOne({ userID: id })
 
   // Check if a verify email token has been created (there's been a verify email request)
   if (!verifyEmailToken) {
     res.status(400)
-    throw new Error('No email verification requested')
+    throw new Error('No email verification requested.')
   }
 
   // Check if user exisits
   const user = await User.findById(id)
   if (!user) {
-    res.status(401)
-    throw new Error('User not found')
+    res.status(400)
+    throw new Error('User not found.')
   }
 
   // Check if user is already verified if not then compare the token coming in with the request to the one we have stored for the particular user
   if (user.verified) {
-    res.status(201).json({
-      message: 'User has been already verified. Please login.',
-    })
-    return
+    res.status(400)
+    throw new Error('User has already been verified. Please log in.')
   }
 
   // Check if the verify email token being sent to us is the same we have in file for the specific user
   const isValid = await bcrypt.compare(token, verifyEmailToken.token)
   if (!isValid) {
-    res.status(402)
-    throw new Error('Invalid or expired verify email token')
+    res.status(400)
+    throw new Error('Expired link. Please resend email verification request.')
   }
 
   // Update the user's verification status
@@ -151,10 +150,9 @@ const verifyEmail = asyncHandler(async (req, res) => {
   await user.save()
 
   const updatedUser = await User.findById(id)
-
   if (!updatedUser.verified) {
     res.status(500)
-    throw new Error('Error verifying email')
+    throw new Error('Error verifying email.')
   }
 
   sendEmail(
@@ -178,17 +176,16 @@ const verifyEmailRequest = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email })
   if (!user) {
     res.status(400)
-    throw new Error('User not found')
+    throw new Error('User not found.')
   }
 
   // User has already been veriified
   if (user.verified) {
-    res.json({ message: 'User has been already verified. Please login.' })
-    return
+    res.status(400)
+    throw new Error('User has been already verified. Please login.')
   }
 
   const verifyEmailToken = await VerifyEmailToken.findOne({ userID: user._id })
-
   if (verifyEmailToken) {
     await VerifyEmailToken.deleteOne({ _id: verifyEmailToken._id })
   }
@@ -258,7 +255,7 @@ const getUsers = asyncHandler(async (req, res) => {
   const users = await User.find().select('-password -createdAt -updatedAt -__v')
   if (!users) {
     res.status(500)
-    throw new Error('Server error')
+    throw new Error('Server error.')
   }
 
   res.json(users)
@@ -274,7 +271,7 @@ const resetPasswordRequest = asyncHandler(async (req, res) => {
   // Check if user doesn't exists
   if (!user) {
     res.status(400)
-    throw new Error("User doesn't exists")
+    throw new Error('User not found')
   }
 
   // Check if a password reset token already exists
@@ -323,22 +320,21 @@ const resetPasswordRequest = asyncHandler(async (req, res) => {
 // @route   POST /api/users/resetpassword
 // @access  Public
 const resetPassword = asyncHandler(async (req, res) => {
-  const { token, id } = req.query
-  const { password } = req.body
+  const { token, id, password } = req.body
   const resetPasswordToken = await ResetPasswordToken.findOne({ userID: id })
 
   // Check if a reset password token has been created (there's been a password reset request)
   if (!resetPasswordToken) {
     res.status(400)
-    throw new Error('No password reset requested')
+    throw new Error('No password reset requested.')
   }
 
   const isValid = await bcrypt.compare(token, resetPasswordToken.token)
 
   // Check if the reset password token being sent to us is the same we have in file for the specific user
   if (!isValid) {
-    res.status(401)
-    throw new Error('Invalid or expired reset password token')
+    res.status(400)
+    throw new Error('Expired link. Please resend forgot password request.')
   }
 
   // Everything was a success, hash the new password

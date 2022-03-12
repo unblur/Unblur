@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
 })
 
 const upload = multer({
-  storage: storage,
+  storage,
 }).single('image')
 
 // @desc    Get all artworks
@@ -30,37 +30,57 @@ const getArtworks = asyncHandler(async (req, res) => {
   res.status(200).json(artworks)
 })
 
-// @desc    Get all artworks
-// @route   POST /api/artworks/upload
-// @access  Public
-const uploadArtwork = (req, res) => {
+const uploadWrapper = asyncHandler(async (req, res, next) => {
   upload(
     req,
     res,
     asyncHandler(async (err) => {
-      if (err) throw new Error('Something went wrong uploading image')
-      // TODO: figure out why throwing error here causes UnhandledPromiseRejectionWarning:
-      // if (!req.body.algosToUnblur) throw new Error('Missing field')
+      if (err) {
+        next(new Error('Something went wrong uploading image.'))
+      }
 
-      const fileName = req.file.filename.split('.')[0]
-      const fileExtension = req.file.filename.split('.')[1]
-      const blurredImagePath = `./uploads/${fileName}-blurred.${fileExtension}`
-
-      await blurImage(`./uploads/${req.file.filename}`, blurredImagePath, 100)
-
-      await Artwork.create({
-        creatorID: req.user.id,
-        image: req.file.filename,
-        blurredImage: `${fileName}-blurred.${fileExtension}`,
-        algosToUnblur: req.body.algosToUnblur,
-      })
-
-      res.json({
-        message: 'Successfully uploaded image',
-      })
+      next()
     })
   )
-}
+})
+
+// @desc    Upload an artwork
+// @route   POST /api/artworks/upload
+// @access  Private
+const uploadArtwork = asyncHandler(async (req, res) => {
+  // TODO: figure out why throwing error here causes UnhandledPromiseRejectionWarning:
+  if (!req.body.algosToUnblur) {
+    throw new Error('Please enter algos to unblur.')
+  }
+
+  const fileName = req.file.filename.split('.')[0]
+  const fileExtension = req.file.filename.split('.')[1]
+  const blurredImagePath = `./uploads/${fileName}-blurred.${fileExtension}`
+
+  await blurImage(
+    `./uploads/${req.file.filename}`,
+    blurredImagePath,
+    100
+  ).catch((e) => {
+    res.status(500)
+    throw new Error('Error blurring. Please retry.')
+  })
+
+  const artwork = await Artwork.create({
+    creatorID: req.user.id,
+    image: req.file.filename,
+    blurredImage: `${fileName}-blurred.${fileExtension}`,
+    algosToUnblur: req.body.algosToUnblur,
+  })
+  if (!artwork) {
+    res.status(400)
+    throw new Error('Invalid artwork data.')
+  }
+
+  res.json({
+    message: 'Successfully uploaded image.',
+  })
+})
 
 const blurImage = async (imagePath, imageOutPath, percentBlur) => {
   const imageWidthAlgo = (blur) => 300 - 2.5 * blur
@@ -92,6 +112,7 @@ const blurImage = async (imagePath, imageOutPath, percentBlur) => {
 }
 
 module.exports = {
+  uploadWrapper,
   getArtworks,
   uploadArtwork,
 }

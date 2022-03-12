@@ -1,51 +1,82 @@
-import { useState } from 'react'
-import { bindActionCreators } from 'redux'
+import { useState, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import { useDispatch, useSelector } from 'react-redux'
-import authActions from '../state/actions/authActions'
-import { Link } from 'react-router-dom'
-import { setAuthErrors } from '../state/reducers/actions'
-import { Navigate } from 'react-router-dom'
+import { resetPasswordRequest, reset } from '../features/auth/authSlice'
 
 const ResetPasswordRequest = () => {
-  const [sentEmailDone, setSentEmailDone] = useState(false)
   const [email, setEmail] = useState('')
+
+  const navigate = useNavigate()
   const dispatch = useDispatch()
-  const { errors, messages } = useSelector((state) => state.auth)
-  const { resetPasswordRequest } = bindActionCreators(authActions, dispatch)
+  const { isLoading, isError, isSuccess, message } = useSelector(
+    (state) => state.auth
+  )
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(message)
+    }
+
+    if (isSuccess) {
+      toast.success(message)
+      navigate('/signin')
+    }
+
+    dispatch(reset())
+  }, [isError, isSuccess, message, dispatch, navigate])
 
   const onChange = (e) => {
     setEmail(e.target.value)
   }
 
-  const onSubmit = () => {
-    dispatch({
-      type: setAuthErrors,
-      payload: [],
-    })
-    resetPasswordRequest(email, () => setSentEmailDone(true))
+  const onSubmit = (e) => {
+    e.preventDefault()
+
+    dispatch(resetPasswordRequest(email))
+  }
+
+  // TODO: update loading screen
+  if (isLoading) {
+    return (
+      <>
+        <div>loading...</div>
+      </>
+    )
   }
 
   return (
     <>
-      {sentEmailDone ? (
-        <Navigate to='/signin' />
-      ) : (
-        <div>
-          {errors.map((e) => (
-            <p>{e}</p>
-          ))}
-          {messages.map((e) => (
-            <p>{e}</p>
-          ))}
-          <h1>Reset Password Request</h1>
-          <p>Enter your email: </p>
-          <input type='email' name='email' value={email} onChange={onChange} />
-          <br />
-          <button onClick={onSubmit}>submit</button>
-          <br />
-          <Link to='/signin'>back to sign in</Link>
-        </div>
-      )}
+      <section className='heading'>
+        <h1>Send Password Reset Email</h1>
+      </section>
+
+      <section className='form'>
+        <form onSubmit={onSubmit}>
+          <div className='form-group'>
+            <label htmlFor='email'>email</label>
+            <input
+              type='email'
+              className='form-control'
+              id='email'
+              name='email'
+              value={email}
+              placeholder='john.doe@mail.com'
+              onChange={onChange}
+            />
+          </div>
+          <div className='form-group'>
+            <button type='submit' className='btn btn-block btn-primary'>
+              Send
+            </button>
+          </div>
+          <div className='form-group'>
+            <Link to='/signin' className='link'>
+              back to sign in
+            </Link>
+          </div>
+        </form>
+      </section>
     </>
   )
 }
