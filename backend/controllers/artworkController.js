@@ -99,7 +99,7 @@ const blurImage = async (imagePath, imageOutPath, percentBlur) => {
     console.log(`Tiler ratio: ${tilerRatio}`)
 
     exec(
-      `python3 ./tiler/tiler.py ${imageOutPath} ./tiler/tiles/circles/gen_circle_100 ${tilerRatio} ${imageOutPath}`,
+      `python ./tiler/tiler.py ${imageOutPath} ./tiler/tiles/circles/gen_circle_100 ${tilerRatio} ${imageOutPath}`,
       (error, stdout, stderr) => {
         if (error) {
           reject()

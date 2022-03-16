@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { reset as authReset } from '../features/auth/authSlice'
 import { getArtworks, reset } from '../features/artwork/artworkSlice'
 import { toast } from 'react-toastify'
+import Card from '../components/Card'
 
 const Browse = () => {
   const dispatch = useDispatch()
@@ -33,22 +34,7 @@ const Browse = () => {
       {isLoading && <div>loading...</div>}
 
       {!isLoading &&
-        artworks.map((artwork) => (
-          // TODO: Make component for artwork
-          // TODO: Test if this works
-          <div key={artwork._id}>
-            {/*This inline css is temporary*/}
-            <img
-              src={`http://localhost:8000/files/${artwork.blurredImage}`}
-              style={{
-                border: '1px solid black',
-                padding: 5,
-                maxWidth: 300,
-                maxHeight: 300,
-              }}
-            />
-          </div>
-        ))}
+        artworks.map((artwork) => <Card key={artwork._id} artwork={artwork} />)}
 
       {!isLoading && !!!artworks.length && <div>no artworks to show</div>}
     </>
