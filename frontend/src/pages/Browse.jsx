@@ -33,8 +33,12 @@ const Browse = () => {
       {/* TODO: update loading screen */}
       {isLoading && <div>loading...</div>}
 
-      {!isLoading &&
-        artworks.map((artwork) => <Card key={artwork._id} artwork={artwork} />)}
+      <div className='cards-container'>
+        {!isLoading &&
+          artworks.map((artwork) => (
+            <Card key={artwork._id} artwork={artwork} />
+          ))}
+      </div>
 
       {!isLoading && !!!artworks.length && <div>no artworks to show</div>}
     </>
