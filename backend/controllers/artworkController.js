@@ -63,7 +63,9 @@ const uploadArtwork = asyncHandler(async (req, res) => {
     100
   ).catch((e) => {
     res.status(500)
-    throw new Error('Error blurring. Please retry.')
+    throw new Error(
+      'Change the exec() command. Use `python` if `python3` does not work.'
+    )
   })
 
   const artwork = await Artwork.create({
