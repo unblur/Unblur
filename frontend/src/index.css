@@ -194,13 +194,14 @@ ul {
   display: flex;
   justify-content: center;
   align-items: center;
-  /* margin-bottom: 5px; */
+  flex: 2;
 }
 
 .card-image {
   position: relative;
   width: var(--card-image-content-max-width);
   height: var(--card-image-content-max-height);
+  margin-bottom: 5px;
 }
 
 .card-image:before {
@@ -215,6 +216,7 @@ ul {
 .card-progress-description-container {
   width: var(--card-image-content-max-width);
   text-align: left;
+  flex: 1;
 }
 
 .card-progress-bar {

@@ -1,5 +1,19 @@
 const Card = (props) => {
   const { artwork } = props
+  const { creatorID, title, description, transactionIDs } = artwork
+
+  // TODO: implement based on transactionIDs
+  const getPercentageUnblurred = () => {
+    const percent = 10
+
+    return `${percent}%`
+  }
+
+  // TODO: get username from creatorID
+  const getUsername = () => {
+    return 'zharnite'
+  }
+
   return (
     <div className='card-container'>
       <div className='card-image-container'>
@@ -18,26 +32,23 @@ const Card = (props) => {
 
       <div className='card-progress-description-container'>
         <div className='card-progress-bar'>
-          {/* TODO: update width */}
-          <div style={{ width: '50%' }}></div>
+          <div style={{ width: getPercentageUnblurred() }}></div>
         </div>
 
         <div className='card-title'>
           {/* TODO: replace with actual title */}
-          Starry Night
+          {/* Starry Night */}
+          {title}
         </div>
 
         <div className='card-creator'>
           {/* TODO: replace with actual creator */}
-          zharnite
+          {getUsername()}
         </div>
 
         {/* TODO: fix spacing at the bottom */}
         <div className='card-description'>
-          <span>
-            Starry, starry night. Paint your palette blue and gray. Look out on
-            a summer's day. With eyes that know the darkness in my soul.
-          </span>
+          <span>{description}</span>
         </div>
       </div>
     </div>
