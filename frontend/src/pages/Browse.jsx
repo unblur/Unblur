@@ -4,7 +4,6 @@ import { reset as authReset } from '../features/auth/authSlice'
 import { getArtworks, reset } from '../features/artwork/artworkSlice'
 import { toast } from 'react-toastify'
 import CardsContainer from '../components/CardsContainer'
-import Card from '../components/Card'
 
 const Browse = () => {
   const dispatch = useDispatch()
