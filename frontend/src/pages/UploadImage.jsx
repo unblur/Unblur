@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { uploadArtwork, reset } from '../features/artwork/artworkSlice'
 
 const UploadImage = () => {
-  // const [algosToUnblur, setAlgosToUnblur] = useState(10)
   const [file, setFile] = useState(null)
   const [formData, setFormData] = useState({
     algosToUnblur: 10,
@@ -123,6 +122,8 @@ const UploadImage = () => {
             />
           </div>
 
+          {/* TODO: identify this as optional and other fields as required */}
+          {/* TODO: change this to a textarea */}
           <div className='form-group'>
             <label htmlFor='description'>description</label>
             <input

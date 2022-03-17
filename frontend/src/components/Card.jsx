@@ -15,17 +15,13 @@ const Card = (props) => {
   }
 
   return (
+    // TODO: clickable card container that brings you to the art page
     <div className='card-container'>
       <div className='card-image-container'>
-        {/*This inline css is temporary*/}
-        {/* <img
-          src={`http://localhost:8000/files/${artwork.blurredImage}`}
-          className='image'
-        /> */}
         <div
           className='card-image'
           style={{
-            background: `url(http://localhost:8000/files/${artwork.blurredImage}) no-repeat center center/cover`,
+            backgroundImage: `url(http://localhost:8000/files/${artwork.blurredImage})`,
           }}
         ></div>
       </div>
@@ -35,18 +31,10 @@ const Card = (props) => {
           <div style={{ width: getPercentageUnblurred() }}></div>
         </div>
 
-        <div className='card-title'>
-          {/* TODO: replace with actual title */}
-          {/* Starry Night */}
-          {title}
-        </div>
+        <div className='card-title truncate'>{title}</div>
 
-        <div className='card-creator'>
-          {/* TODO: replace with actual creator */}
-          {getUsername()}
-        </div>
+        <div className='card-creator truncate'>{getUsername()}</div>
 
-        {/* TODO: fix spacing at the bottom */}
         <div className='card-description'>
           <span>{description}</span>
         </div>

@@ -7,7 +7,7 @@
   --mid-color: #ccc;
   --mid-dark-color: #777;
   --dark-color: #333;
-  --max-width: 1200px;
+  --max-width: 1250px;
 }
 
 * {
@@ -34,6 +34,14 @@ ul {
   margin: 0 auto;
   padding: 0 2rem;
   text-align: center;
+}
+
+/* Utilities */
+.truncate {
+  width: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Headings */
@@ -202,6 +210,9 @@ ul {
   width: var(--card-image-content-max-width);
   height: var(--card-image-content-max-height);
   margin-bottom: 5px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
 }
 
 .card-image:before {
