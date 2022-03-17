@@ -71,6 +71,8 @@ const uploadArtwork = asyncHandler(async (req, res) => {
     image: req.file.filename,
     blurredImage: `${fileName}-blurred.${fileExtension}`,
     algosToUnblur: req.body.algosToUnblur,
+    title: req.body.title,
+    description: req.body.description,
   })
   if (!artwork) {
     res.status(400)
@@ -98,6 +100,7 @@ const blurImage = async (imagePath, imageOutPath, percentBlur) => {
 
     console.log(`Tiler ratio: ${tilerRatio}`)
 
+    // FIXME: change from python to python3 or from python3 to python
     exec(
       `python ./tiler/tiler.py ${imageOutPath} ./tiler/tiles/circles/gen_circle_100 ${tilerRatio} ${imageOutPath}`,
       (error, stdout, stderr) => {
