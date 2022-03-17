@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { reset as authReset } from '../features/auth/authSlice'
 import { getArtworks, reset } from '../features/artwork/artworkSlice'
 import { toast } from 'react-toastify'
+import CardsContainer from '../components/CardsContainer'
 import Card from '../components/Card'
 
 const Browse = () => {
@@ -33,12 +34,7 @@ const Browse = () => {
       {/* TODO: update loading screen */}
       {isLoading && <div>loading...</div>}
 
-      <div className='cards-container'>
-        {!isLoading &&
-          artworks.map((artwork) => (
-            <Card key={artwork._id} artwork={artwork} />
-          ))}
-      </div>
+      {!isLoading && <CardsContainer artworks={artworks} />}
 
       {!isLoading && !!!artworks.length && <div>no artworks to show</div>}
     </>
