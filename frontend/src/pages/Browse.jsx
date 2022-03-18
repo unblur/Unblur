@@ -27,7 +27,7 @@ const Browse = () => {
   return (
     <>
       <section className='heading'>
-        <h1>Browse</h1>
+        <h1 className='left-align'>Browse</h1>
       </section>
 
       {/* TODO: update loading screen */}

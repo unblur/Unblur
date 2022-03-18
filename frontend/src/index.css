@@ -44,6 +44,10 @@ ul {
   text-overflow: ellipsis;
 }
 
+.left-align {
+  text-align: left;
+}
+
 /* Headings */
 .heading {
   font-size: 2rem;
