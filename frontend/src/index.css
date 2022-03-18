@@ -48,6 +48,11 @@ ul {
   text-align: left;
 }
 
+.light-text {
+  font-weight: 300;
+  color: var(--mid-dark-color);
+}
+
 /* Headings */
 .heading {
   font-size: 2rem;
@@ -266,4 +271,9 @@ ul {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+}
+
+/* Profile */
+.profile-username {
+  font-size: 1.3rem;
 }
