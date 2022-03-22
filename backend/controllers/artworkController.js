@@ -63,7 +63,9 @@ const uploadArtwork = asyncHandler(async (req, res) => {
     100
   ).catch((e) => {
     res.status(500)
-    throw new Error('Error blurring. Please retry.')
+    throw new Error(
+      'Change the exec() command. Use `python` if `python3` does not work.'
+    )
   })
 
   const artwork = await Artwork.create({
@@ -71,6 +73,8 @@ const uploadArtwork = asyncHandler(async (req, res) => {
     image: req.file.filename,
     blurredImage: `${fileName}-blurred.${fileExtension}`,
     algosToUnblur: req.body.algosToUnblur,
+    title: req.body.title,
+    description: req.body.description,
   })
   if (!artwork) {
     res.status(400)
@@ -98,8 +102,9 @@ const blurImage = async (imagePath, imageOutPath, percentBlur) => {
 
     console.log(`Tiler ratio: ${tilerRatio}`)
 
+    // FIXME: change from python to python3 or from python3 to python
     exec(
-      `python3 ./tiler/tiler.py ${imageOutPath} ./tiler/tiles/circles/gen_circle_100 ${tilerRatio} ${imageOutPath}`,
+      `python ./tiler/tiler.py ${imageOutPath} ./tiler/tiles/circles/gen_circle_100 ${tilerRatio} ${imageOutPath}`,
       (error, stdout, stderr) => {
         if (error) {
           reject()
