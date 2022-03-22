@@ -5,8 +5,9 @@
   /* --secondary-color: ; */
   --light-color: #f4f4f4;
   --mid-color: #ccc;
+  --mid-dark-color: #777;
   --dark-color: #333;
-  --max-width: 1200px;
+  --max-width: 1250px;
 }
 
 * {
@@ -33,6 +34,18 @@ ul {
   margin: 0 auto;
   padding: 0 2rem;
   text-align: center;
+}
+
+/* Utilities */
+.truncate {
+  width: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.left-align {
+  text-align: left;
 }
 
 /* Headings */
@@ -117,7 +130,7 @@ ul {
 
 .form-group .link-description {
   font-size: 0.9rem;
-  color: #777;
+  color: var(--mid-dark-color);
 }
 
 /* Header Component */
@@ -163,4 +176,99 @@ ul {
 .header .header-link-active {
   color: var(--primary-color);
   font-weight: 500;
+}
+
+/* Card Component */
+.cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+
+  /* Card Variables */
+  --card-height: 400px;
+  --card-width: 280px;
+  --card-image-content-max-width: 250px;
+  --card-image-content-max-height: 250px;
+}
+
+.card-container {
+  border: 1px solid var(--mid-color);
+  margin: 5px;
+  padding: 10px;
+  width: var(--card-width);
+  min-width: var(--card-width);
+  height: var(--card-height);
+  min-height: var(--card-height);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-image-container {
+  height: inherit;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 2;
+}
+
+.card-image {
+  position: relative;
+  width: var(--card-image-content-max-width);
+  height: var(--card-image-content-max-height);
+  margin-bottom: 5px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+.card-image:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.card-progress-description-container {
+  width: var(--card-image-content-max-width);
+  text-align: left;
+  flex: 1;
+}
+
+.card-progress-bar {
+  background-color: black;
+  margin-bottom: 10px;
+}
+
+.card-progress-bar > div:first-child {
+  background-color: var(--primary-color);
+  height: 10px;
+  width: 0%;
+}
+
+.card-title {
+  font-weight: 500;
+  font-size: 1.3rem;
+  margin-bottom: 1px;
+}
+
+.card-creator {
+  font-weight: 300;
+  margin-bottom: 10px;
+  color: var(--mid-dark-color);
+}
+
+.card-description {
+  max-width: inherit;
+}
+
+.card-description > span {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }

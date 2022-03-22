@@ -3,8 +3,12 @@ const errorHandler = (err, req, res, next) => {
 
   res.status(statusCode)
 
-  const message =
-    statusCode === 500 && !err.message ? 'Server error' : err.message
+  const message = statusCode === 500 ? 'Server error' : err.message
+
+  // Log server errors
+  if (statusCode === 500) {
+    console.log(`[Server Error]: ${err.stack}`)
+  }
 
   res.json({
     message,

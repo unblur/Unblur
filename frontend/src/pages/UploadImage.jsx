@@ -5,8 +5,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import { uploadArtwork, reset } from '../features/artwork/artworkSlice'
 
 const UploadImage = () => {
-  const [algosToUnblur, setAlgosToUnblur] = useState(10)
   const [file, setFile] = useState(null)
+  const [formData, setFormData] = useState({
+    algosToUnblur: 10,
+    title: '',
+    description: '',
+  })
+  const { algosToUnblur, title, description } = formData
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -32,6 +37,13 @@ const UploadImage = () => {
     setFile(e.target.files[0])
   }
 
+  const onChangeForm = (e) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      [e.target.name]: e.target.value,
+    }))
+  }
+
   const onSubmit = (e) => {
     e.preventDefault()
 
@@ -45,9 +57,16 @@ const UploadImage = () => {
       return
     }
 
+    if (!title.replace(/\s/g, '').length) {
+      toast.error('Please enter a title.')
+      return
+    }
+
     const formData = new FormData()
     formData.append('image', file)
     formData.append('algosToUnblur', algosToUnblur)
+    formData.append('title', title.trim())
+    formData.append('description', description.trim())
 
     dispatch(uploadArtwork(formData))
   }
@@ -87,9 +106,33 @@ const UploadImage = () => {
               className='form-control'
               id='algosToUnblur'
               value={algosToUnblur}
-              onChange={(e) => {
-                setAlgosToUnblur(e.target.value)
-              }}
+              onChange={onChangeForm}
+            />
+          </div>
+
+          <div className='form-group'>
+            <label htmlFor='title'>title</label>
+            <input
+              type='text'
+              name='title'
+              className='form-control'
+              id='title'
+              value={title}
+              onChange={onChangeForm}
+            />
+          </div>
+
+          {/* TODO: identify this as optional and other fields as required */}
+          {/* TODO: change this to a textarea */}
+          <div className='form-group'>
+            <label htmlFor='description'>description</label>
+            <input
+              type='text'
+              name='description'
+              className='form-control'
+              id='description'
+              value={description}
+              onChange={onChangeForm}
             />
           </div>
 

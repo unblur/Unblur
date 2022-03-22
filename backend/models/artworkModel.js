@@ -16,6 +16,11 @@ const artworkSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    title: {
+      type: String,
+      required: true,
+    },
+    description: String,
     algosToUnblur: {
       type: Number,
       required: true,
