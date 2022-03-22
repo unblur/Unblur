@@ -17,6 +17,7 @@ import VerifyEmail from './pages/VerifyEmail'
 import ResetPasswordRequest from './pages/ResetPasswordRequest'
 import ResetPassword from './pages/ResetPassword'
 import UploadImage from './pages/UploadImage'
+import Art from './pages/Art'
 
 function App() {
   const { user } = useSelector((state) => state.auth)
@@ -50,6 +51,7 @@ function App() {
               </>
             )}
             <Route path='/browse' element={<Browse />} />
+            <Route path='/art/:id' element={<Art />} />
             <Route path='*' element={<Navigate to='/browse' />} />
           </Routes>
         </div>
