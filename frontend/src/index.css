@@ -53,6 +53,16 @@ ul {
   color: var(--mid-dark-color);
 }
 
+.reset-text-styles,
+.reset-text-styles:active,
+.reset-text-styles:focus,
+.reset-text-styles:hover,
+.reset-text-styles:visited,
+.reset-text-styles:link {
+  text-decoration: none;
+  color: #000;
+}
+
 /* Headings */
 .heading {
   font-size: 2rem;
