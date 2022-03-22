@@ -173,6 +173,11 @@ ul {
   color: var(--primary-color);
 }
 
+.header .header-link-active {
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
 /* Card Component */
 .cards-container {
   display: flex;
