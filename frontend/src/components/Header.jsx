@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { NavLink, Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { signOut, reset } from '../features/auth/authSlice'
 
@@ -24,21 +24,36 @@ const Header = () => {
 
         <ul>
           <li>
-            <Link to='/browse' className='header-link'>
+            <NavLink
+              to='/browse'
+              className={({ isActive }) =>
+                `header-link ${isActive && 'header-link-active'}`
+              }
+            >
               browse
-            </Link>
+            </NavLink>
           </li>
           {user && (
             <>
               <li>
-                <Link to='/profile' className='header-link'>
+                <NavLink
+                  to='/profile'
+                  className={({ isActive }) =>
+                    `header-link ${isActive && 'header-link-active'}`
+                  }
+                >
                   profile
-                </Link>
+                </NavLink>
               </li>
               <li>
-                <Link to='/upload' className='header-link'>
+                <NavLink
+                  to='/upload'
+                  className={({ isActive }) =>
+                    `header-link ${isActive && 'header-link-active'}`
+                  }
+                >
                   upload
-                </Link>
+                </NavLink>
               </li>
             </>
           )}
@@ -53,13 +68,15 @@ const Header = () => {
               </button>
             )}
             {!user && (
-              <Link
+              <NavLink
                 to='/signin'
-                className='header-link'
+                className={({ isActive }) =>
+                  `header-link ${isActive && 'header-link-active'}`
+                }
                 style={{ whiteSpace: 'nowrap' }}
               >
                 sign in
-              </Link>
+              </NavLink>
             )}
           </li>
         </ul>
