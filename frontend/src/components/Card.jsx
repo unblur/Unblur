@@ -7,8 +7,8 @@ const Card = (props) => {
 
   // TODO: get isCreator and isSupporter from props (pass from profile)
   // Default to false (browse) unless true
-  const isCreator = false
-  const isSupporter = false
+  const isCreator = false // || props.isCreator
+  const isSupporter = false // || props.isSupporter
 
   // TODO: implement based on transactionIDs
   const getPercentageUnblurred = () => {
