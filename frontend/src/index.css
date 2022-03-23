@@ -63,6 +63,11 @@ ul {
   color: #000;
 }
 
+/* Icons */
+.edit-icon:hover {
+  color: var(--primary-color);
+}
+
 /* Headings */
 .heading {
   font-size: 2rem;
