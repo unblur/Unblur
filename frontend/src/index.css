@@ -7,7 +7,7 @@
   --mid-color: #ccc;
   --mid-dark-color: #777;
   --dark-color: #333;
-  --max-width: 1250px;
+  --max-width: 1300px;
 }
 
 * {
@@ -51,6 +51,16 @@ ul {
 .light-text {
   font-weight: 300;
   color: var(--mid-dark-color);
+}
+
+.reset-text-styles,
+.reset-text-styles:active,
+.reset-text-styles:focus,
+.reset-text-styles:hover,
+.reset-text-styles:visited,
+.reset-text-styles:link {
+  text-decoration: none;
+  color: #000;
 }
 
 /* Headings */
@@ -199,7 +209,7 @@ ul {
 
 .card-container {
   border: 1px solid var(--mid-color);
-  margin: 5px;
+  margin: 10px;
   padding: 10px;
   width: var(--card-width);
   min-width: var(--card-width);
@@ -209,6 +219,12 @@ ul {
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
+  transition: box-shadow 0.3s;
+}
+
+.card-container:hover {
+  box-shadow: 0 0 10px var(--mid-dark-color);
+  cursor: pointer;
 }
 
 .card-image-container {
