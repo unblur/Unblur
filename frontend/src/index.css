@@ -331,3 +331,12 @@ ul {
 .profile-username {
   font-size: 1.3rem;
 }
+
+/* Artwork */
+.artwork-container {
+  border: 5px solid black;
+}
+
+.artwork-container .artwork {
+  border-radius: 5px;
+}
