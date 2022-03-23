@@ -7,8 +7,10 @@ const Profile = () => {
       <section className='heading left-align'>
         {/* TODO: replace with profileName */}
         <h1>
+          Zhen's Profile
           <Link to='/settings' className='reset-text-styles'>
-            Zhen's Profile <FaPen size={40} />
+            {' '}
+            <FaPen size={30} className='edit-icon' />
           </Link>
         </h1>
         {/* TODO: replace with username */}
