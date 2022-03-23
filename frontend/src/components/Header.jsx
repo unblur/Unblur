@@ -55,6 +55,16 @@ const Header = () => {
                   upload
                 </NavLink>
               </li>
+              <li>
+                <NavLink
+                  to='/settings'
+                  className={({ isActive }) =>
+                    `header-link ${isActive && 'header-link-active'}`
+                  }
+                >
+                  settings
+                </NavLink>
+              </li>
             </>
           )}
           <li>

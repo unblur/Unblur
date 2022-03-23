@@ -12,6 +12,7 @@ import SignUp from './pages/SignUp'
 import SignIn from './pages/SignIn'
 import Browse from './pages/Browse'
 import Profile from './pages/Profile'
+import Settings from './pages/Settings'
 import VerifyEmailRequest from './pages/VerifyEmailRequest'
 import VerifyEmail from './pages/VerifyEmail'
 import ResetPasswordRequest from './pages/ResetPasswordRequest'
@@ -48,6 +49,7 @@ function App() {
               <>
                 <Route path='/profile' element={<Profile />} />
                 <Route path='/upload' element={<UploadImage />} />
+                <Route path='/settings' element={<Settings />} />
               </>
             )}
             <Route path='/browse' element={<Browse />} />
