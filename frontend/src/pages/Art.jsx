@@ -39,34 +39,42 @@ const Art = () => {
 
   return (
     <>
-      {/* TODO: update image url */}
       <div className='artwork-container'>
-        <img
-          src={`http://localhost:8000/files/${blurredImage}`}
-          className='artwork'
-        />
-      </div>
-
-      <div className='artwork-info-container'>
-        <h2>{title}</h2>
-
-        {/* TODO: translate creatorID to creator's profile name or username if they don't have one */}
-        <div>convert to profileName or username: {creatorID}</div>
-
-        <div className='card-progress-bar'>
-          <div style={{ width: getPercentageUnblurred() }}></div>
+        {/* TODO: update image url */}
+        <div className='artwork-image-container'>
+          <img
+            src={`http://localhost:8000/files/${blurredImage}`}
+            className='artwork'
+          />
         </div>
-        <div>{getPercentageUnblurred()} complete</div>
-        <div>algos to unblur: {algosToUnblur}</div>
 
-        <div>{description}</div>
+        <div className='artwork-info-container'>
+          <h1>{title}</h1>
 
-        {/* TODO: update contributors and algos raised */}
-        <div>update number of contributors</div>
-        <div>update number of algos raised</div>
+          {/* TODO: translate creatorID to creator's profile name or username if they don't have one */}
+          <div className='artwork-creator light-text'>zharnite</div>
 
-        {/* TODO: button to contribute, new modal pops up */}
-        <div>Button: contribute to the project</div>
+          <div className='artwork-progress'>
+            <div className='card-progress-bar'>
+              <div style={{ width: getPercentageUnblurred() }}></div>
+            </div>
+            <div className='percentage-complete'>
+              {getPercentageUnblurred()} complete
+            </div>
+          </div>
+
+          <div className='artwork-description'>{description}</div>
+
+          {/* TODO: update contributors and algos raised */}
+          <div className='artwork-summary-box'>
+            <div>contributors: -1</div>
+            <div>algos raised: -1</div>
+            <div>algos needed: {algosToUnblur}</div>
+
+            {/* TODO: button to contribute, new modal pops up */}
+            <div>Button: contribute to the project</div>
+          </div>
+        </div>
       </div>
     </>
   )
