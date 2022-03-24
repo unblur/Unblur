@@ -67,12 +67,25 @@ const Art = () => {
 
           {/* TODO: update contributors and algos raised */}
           <div className='artwork-summary-box'>
-            <div>contributors: -1</div>
-            <div>algos raised: -1</div>
-            <div>algos needed: {algosToUnblur}</div>
+            <div className='summary-numbers'>
+              <div className='summary-number'>
+                <div className='artwork-stat'>-1</div>
+                <div className='artwork-stat-label'>contributors</div>
+              </div>
+              <div className='summary-number'>
+                <div className='artwork-stat'>9767237238</div>
+                <div className='artwork-stat-label'>algos raised</div>
+              </div>
+              <div className='summary-number'>
+                <div className='artwork-stat'>{algosToUnblur}</div>
+                <div className='artwork-stat-label'>algos needed</div>
+              </div>
+            </div>
 
             {/* TODO: button to contribute, new modal pops up */}
-            <div>Button: contribute to the project</div>
+            <div className='summary-button'>
+              <button className='btn btn-primary'>contribute</button>
+            </div>
           </div>
         </div>
       </div>

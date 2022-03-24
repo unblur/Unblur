@@ -394,4 +394,30 @@ ul {
   border: 1px solid var(--mid-color);
   border-radius: 1px;
   padding: 1rem;
+  width: fit-content;
+}
+
+.artwork-summary-box .summary-numbers {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  /* align-items: center; */
+  flex-wrap: wrap;
+}
+
+.artwork-summary-box .summary-number {
+  margin-bottom: 1rem;
+}
+
+.artwork-summary-box .summary-number:not(:last-child) {
+  padding-right: 2rem;
+}
+
+.artwork-summary-box .artwork-stat {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.artwork-summary-box .artwork-stat-label {
+  white-space: nowrap;
 }
