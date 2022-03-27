@@ -51,7 +51,8 @@ const Profile = () => {
         <div className='profile-username light-text'>@{self.username}</div>
       </section>
 
-      {/* TODO: everything else */}
+      {/* TODO: filter cards by type */}
+      {/* TODO: display cards based on artworkIDs and transactionIDs (contains artworkID, but can't duplicate it). pass info to CardsContainer and that componenet will render depending on the information passed to it. Or make a new component called ProfileCardsContainer and ProfileCard to make code more clean */}
     </>
   )
 }
