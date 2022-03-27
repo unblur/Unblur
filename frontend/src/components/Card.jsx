@@ -23,7 +23,7 @@ const Card = (props) => {
   }
 
   return (
-    <Link to={artPage} className='reset-text-styles'>
+    <Link to={artPage} state={artwork} className='reset-text-styles'>
       <div className='card-container'>
         {/* Card tags */}
         {isSupporter && (
