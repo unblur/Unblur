@@ -239,6 +239,7 @@ const getSelf = asyncHandler(async (req, res) => {
   res.json({
     _id: user.id,
     email: user.email,
+    username: user.username,
     wallet: user.wallet,
     artworkIDs: user.artworkIDs,
     transactionIDs: user.transactionIDs,
