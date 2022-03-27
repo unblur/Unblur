@@ -89,6 +89,11 @@ export const resetPassword = createAsyncThunk(
   }
 )
 
+// Get self
+export const getSelf = createAsyncThunk('auth/getself', async () => {
+  // TODO: get self
+})
+
 // Helper to get error message
 const getErrorMessage = (error) => {
   return (
