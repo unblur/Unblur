@@ -28,7 +28,9 @@ const ResetPassword = () => {
       navigate('/signin')
     }
 
-    dispatch(reset())
+    if (isSuccess || isError) {
+      dispatch(reset())
+    }
   }, [isError, isSuccess, message, dispatch, navigate])
 
   const onChange = (e) => {

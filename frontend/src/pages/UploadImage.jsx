@@ -30,7 +30,9 @@ const UploadImage = () => {
       navigate('/browse')
     }
 
-    dispatch(reset())
+    if (isSuccess || isError) {
+      dispatch(reset())
+    }
   }, [isError, isSuccess, message, dispatch, navigate])
 
   const onChange = (e) => {

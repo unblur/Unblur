@@ -55,6 +55,19 @@ const resetPassword = async (data) => {
   return response.data
 }
 
+// Get self
+const getSelf = async (token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+
+  const response = await axios.get(`${API_URL}/self`, config)
+
+  return response.data
+}
+
 const authService = {
   signUp,
   signIn,
@@ -63,6 +76,7 @@ const authService = {
   verifyEmail,
   resetPasswordRequest,
   resetPassword,
+  getSelf,
 }
 
 export default authService

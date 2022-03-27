@@ -21,7 +21,9 @@ const Browse = () => {
       toast.error(message)
     }
 
-    dispatch(reset())
+    if (isError || isSuccess) {
+      dispatch(reset())
+    }
   }, [isError, isSuccess, message, dispatch])
 
   return (
