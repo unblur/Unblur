@@ -1,13 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
 
 :root {
+  /* Colors */
   --primary-color: #ad00ff;
   /* --secondary-color: ; */
   --light-color: #f4f4f4;
   --mid-color: #ccc;
   --mid-dark-color: #777;
   --dark-color: #333;
+
+  /* Sizes */
   --max-width: 1300px;
+  --half-width: 650px;
+  --blurred-image-size: 200px;
 }
 
 * {
@@ -32,7 +37,7 @@ ul {
 .container {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 0 1rem;
   text-align: center;
 }
 
@@ -330,4 +335,89 @@ ul {
 /* Profile */
 .profile-username {
   font-size: 1.3rem;
+}
+
+/* Artwork */
+.artwork-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 1rem;
+}
+
+.artwork-image-container {
+  flex: 1;
+  margin: 0 1rem 1rem 1rem;
+}
+
+.artwork-image-container .artwork {
+  min-width: var(--blurred-image-size);
+  max-width: 100%;
+  border-radius: 5px;
+}
+
+.artwork-info-container {
+  /* border: 2px solid red; */
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  /* align-items: center; */
+  /* justify-content: center; */
+  text-align: left;
+  width: 100%;
+  margin: 0;
+  word-wrap: break-word;
+}
+
+.artwork-creator {
+  margin-bottom: 1rem;
+}
+
+.artwork-progress {
+  margin-bottom: 1rem;
+}
+
+.artwork-progress .card-progress-bar {
+  margin-bottom: 5px;
+}
+
+.artwork-progress .percentage-complete {
+  font-size: 0.8rem;
+}
+
+.artwork-description {
+  margin-bottom: 1.5rem;
+}
+
+.artwork-summary-box {
+  border: 1px solid var(--mid-color);
+  border-radius: 1px;
+  padding: 1rem;
+  width: fit-content;
+}
+
+.artwork-summary-box .summary-numbers {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  /* align-items: center; */
+  flex-wrap: wrap;
+}
+
+.artwork-summary-box .summary-number {
+  margin-bottom: 1rem;
+}
+
+.artwork-summary-box .summary-number:not(:last-child) {
+  padding-right: 2rem;
+}
+
+.artwork-summary-box .artwork-stat {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.artwork-summary-box .artwork-stat-label {
+  white-space: nowrap;
 }
