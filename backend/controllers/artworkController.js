@@ -44,11 +44,24 @@ const uploadWrapper = asyncHandler(async (req, res, next) => {
   )
 })
 
+// @desc    Get an artwork
+// @route   GET /api/artworks/:id
+// @access  Public
+const getArtwork = asyncHandler(async (req, res) => {
+  const artwork = await Artwork.findById(req.params.id).select('-image')
+
+  if (!artwork) {
+    res.status(500)
+    throw new Error('Server error')
+  }
+
+  res.status(200).json(artwork)
+})
+
 // @desc    Upload an artwork
 // @route   POST /api/artworks/upload
 // @access  Private
 const uploadArtwork = asyncHandler(async (req, res) => {
-  // TODO: figure out why throwing error here causes UnhandledPromiseRejectionWarning:
   if (!req.body.algosToUnblur) {
     throw new Error('Please enter algos to unblur.')
   }
@@ -80,6 +93,12 @@ const uploadArtwork = asyncHandler(async (req, res) => {
     res.status(400)
     throw new Error('Invalid artwork data.')
   }
+
+  // Add artwork ID to user
+  // https://stackoverflow.com/questions/33049707/push-items-into-mongo-array-via-mongoose
+  // May run into some concurrent issues with .save()
+  req.user.artworkIDs.push(artwork.id)
+  await req.user.save()
 
   res.json({
     message: 'Successfully uploaded image.',
@@ -119,5 +138,6 @@ const blurImage = async (imagePath, imageOutPath, percentBlur) => {
 module.exports = {
   uploadWrapper,
   getArtworks,
+  getArtwork,
   uploadArtwork,
 }

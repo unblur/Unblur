@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { useDispatch, useSelector } from 'react-redux'
-import { signIn, reset } from '../features/auth/authSlice'
+import { signIn, getSelf, reset } from '../features/auth/authSlice'
 
 const SignIn = () => {
   const [formData, setFormData] = useState({
@@ -23,10 +23,13 @@ const SignIn = () => {
     }
 
     if (isSuccess || user) {
+      dispatch(getSelf())
       navigate('/browse')
     }
 
-    dispatch(reset())
+    if (isSuccess || isError || user) {
+      dispatch(reset())
+    }
   }, [user, isError, isSuccess, message, navigate, dispatch])
 
   const onChange = (e) => {
@@ -89,6 +92,7 @@ const SignIn = () => {
               value={password}
               placeholder='**************'
               onChange={onChange}
+              autoComplete='off'
             />
             <Link to='/resetpasswordrequest' className='link link-left'>
               forgot your password?

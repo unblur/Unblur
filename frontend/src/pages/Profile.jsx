@@ -1,23 +1,155 @@
+import { useEffect, useState } from 'react'
 import { FaPen } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
+import { getSelf, reset } from '../features/auth/authSlice'
+import { toast } from 'react-toastify'
+import axios from 'axios'
+import CardsContainer from '../components/CardsContainer'
 
 const Profile = () => {
+  // TODO: optimize - move to redux state
+  const [createdArtworks, setCreatedArtworks] = useState([])
+  const [supportedArtworks, setSupportedArtworks] = useState([])
+  const [transactions, setTransactions] = useState([])
+
+  // TODO: update API_URL
+  const API_URL = `http://localhost:8000/api`
+
+  const dispatch = useDispatch()
+  const { self, isLoading, isError, isSuccess, message } = useSelector(
+    (state) => state.auth
+  )
+
+  const getArtworksCreated = async () => {
+    const endpoints = self.artworkIDs.map(
+      (artworkID) => `${API_URL}/artworks/${artworkID}`
+    )
+
+    const artworks = await axios
+      .all(endpoints.map((endpoint) => axios.get(endpoint)))
+      .then((artworks) => {
+        return artworks.map((artwork) => {
+          artwork.data.isCreator = true
+          return artwork.data
+        })
+      })
+
+    return artworks
+  }
+
+  const getTransactions = async () => {
+    const endpoints = self.transactionIDs.map(
+      (transactionID) => `${API_URL}/transactions/${transactionID}`
+    )
+
+    const transactions = await axios
+      .all(endpoints.map((endpoint) => axios.get(endpoint)))
+      .then((transactions) => {
+        return transactions.map((transaction) => transaction.data)
+      })
+
+    return transactions
+  }
+
+  const getArtworksSupported = async (transactions) => {
+    const artworkIDs = [
+      ...new Set(
+        transactions.map((transaction) => {
+          return transaction.artworkID
+        })
+      ),
+    ]
+
+    const endpoints = artworkIDs.map(
+      (artworkID) => `${API_URL}/artworks/${artworkID}`
+    )
+
+    const artworks = await axios
+      .all(endpoints.map((endpoint) => axios.get(endpoint)))
+      .then((artworks) => {
+        return artworks.map((artwork) => {
+          artwork.data.isSupporter = true
+          return artwork.data
+        })
+      })
+
+    return artworks
+  }
+
+  const loadProfileState = () => {
+    getTransactions().then((transactions) => {
+      setTransactions(transactions)
+
+      // Get supported artworks from transactions
+      getArtworksSupported(transactions).then((artworks) => {
+        setSupportedArtworks(artworks)
+      })
+    })
+
+    getArtworksCreated().then((artworks) => {
+      setCreatedArtworks(artworks)
+    })
+  }
+
+  useEffect(() => {
+    if (!self) {
+      dispatch(getSelf())
+    }
+
+    if (self) {
+      loadProfileState()
+    }
+  }, [dispatch])
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(message)
+    }
+
+    if (isSuccess) {
+      loadProfileState()
+    }
+
+    if (isError || isSuccess) {
+      dispatch(reset())
+    }
+  }, [isError, isSuccess, message, dispatch])
+
+  // FIXME: remove debug
+  // console.log(self)
+
+  // TODO: update loading screen
+  if (isLoading || !self) {
+    return (
+      <>
+        <div>loading...</div>
+      </>
+    )
+  }
+
   return (
     <>
       <section className='heading left-align'>
-        {/* TODO: replace with profileName */}
         <h1>
-          Zhen's Profile
+          {`${self.profileName || self.username}'s Profile`}
+
           <Link to='/settings' className='reset-text-styles'>
             {' '}
             <FaPen size={30} className='edit-icon' />
           </Link>
         </h1>
-        {/* TODO: replace with username */}
-        <div className='profile-username light-text'>@zharnite</div>
+        <div className='profile-username light-text'>@{self.username}</div>
       </section>
 
-      {/* TODO: everything else */}
+      {/* TODO: filter cards by type */}
+      {createdArtworks.length > 0 && (
+        <CardsContainer artworks={createdArtworks} />
+      )}
+      {supportedArtworks.length > 0 && (
+        <CardsContainer artworks={supportedArtworks} />
+      )}
     </>
   )
 }

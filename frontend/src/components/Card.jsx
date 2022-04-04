@@ -5,10 +5,8 @@ const Card = (props) => {
   const { creatorID, title, description, transactionIDs } = artwork
   const artPage = `/art/${artwork._id}`
 
-  // TODO: get isCreator and isSupporter from props (pass from profile)
-  // Default to false (browse) unless true
-  const isCreator = false // || props.isCreator
-  const isSupporter = false // || props.isSupporter
+  const isCreator = false || artwork.isCreator
+  const isSupporter = false || artwork.isSupporter
 
   // TODO: implement based on transactionIDs
   const getPercentageUnblurred = () => {

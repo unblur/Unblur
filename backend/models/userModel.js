@@ -7,6 +7,12 @@ const userSchema = mongoose.Schema(
       required: true,
       unique: true,
     },
+    username: {
+      type: String,
+      // TODO: @angel implement
+      // required: true,
+      // unique: true,
+    },
     password: {
       type: String,
       required: true,
