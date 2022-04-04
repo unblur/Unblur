@@ -6,6 +6,7 @@ const user = JSON.parse(localStorage.getItem('user'))
 
 const initialState = {
   user: user ? user : null,
+  self: null,
   isError: false,
   isSuccess: false,
   isLoading: false,
@@ -89,6 +90,16 @@ export const resetPassword = createAsyncThunk(
   }
 )
 
+// Get self
+export const getSelf = createAsyncThunk('auth/getself', async (_, thunkAPI) => {
+  try {
+    const token = thunkAPI.getState().auth.user.token
+    return await authService.getSelf(token)
+  } catch (error) {
+    return thunkAPI.rejectWithValue(getErrorMessage(error))
+  }
+})
+
 // Helper to get error message
 const getErrorMessage = (error) => {
   return (
@@ -146,6 +157,7 @@ export const authSlice = createSlice({
       // Sign out
       .addCase(signOut.fulfilled, (state) => {
         state.user = null
+        state.self = null
       })
 
       // Verify email request
@@ -206,6 +218,21 @@ export const authSlice = createSlice({
         state.isLoading = false
         state.isError = true
         state.message = action.payload
+      })
+
+      // Get self
+      .addCase(getSelf.pending, (state) => {
+        state.isLoading = true
+      })
+      .addCase(getSelf.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.isSuccess = true
+        state.self = action.payload
+      })
+      .addCase(getSelf.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        // state.message = action.payload
       })
   },
 })
