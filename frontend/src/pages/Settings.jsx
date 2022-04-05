@@ -69,7 +69,6 @@ const Settings = () => {
 
           {/* TODO: List of wallets with walletName and walletID. Allows user to update and add new wallets */}
 
-          {/* TODO: reset password by sending a password reset link to their email */}
           <div className='form-group'>
             <button type='submit' className='btn btn-block btn-primary'>
               Save
