@@ -1,6 +1,56 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { FaWallet } from 'react-icons/fa'
+import WalletConnect from '@walletconnect/client'
+import QRCodeModal from 'algorand-walletconnect-qrcode-modal'
 
+const walletConnectInit = async (e) => {
+  e.preventDefault()
+
+  // bridge url
+  const bridge = 'https://bridge.walletconnect.org'
+
+  // create new connector
+  const connector = new WalletConnect({ bridge, qrcodeModal: QRCodeModal })
+
+  // check if already connected
+  if (!connector.connected) {
+    // create new session
+    console.log('hit')
+    await connector.createSession()
+  }
+  connector.on('session_update', async (error, payload) => {
+    console.log(`connector.on("session_update")`)
+
+    if (error) {
+      throw error
+    }
+
+    const { accounts } = payload.params[0]
+    this.onSessionUpdate(accounts)
+  })
+
+  connector.on('connect', (error, payload) => {
+    console.log(`connector.on("connect")`)
+
+    if (error) {
+      throw error
+    }
+
+    this.onConnect(payload)
+  })
+
+  connector.on('disconnect', (error, payload) => {
+    console.log(`connector.on("disconnect")`)
+
+    if (error) {
+      throw error
+    }
+
+    this.onDisconnect()
+  })
+}
+// ==================================================================
 const Settings = () => {
   // TODO: populate user's state
   const [formData, setFormData] = useState({
@@ -60,6 +110,15 @@ const Settings = () => {
               placeholder='profile name'
               onChange={onChange}
             />
+          </div>
+          <div className='form-group'>
+            <label>connect wallet</label>
+            <button
+              className='btn btn-wallet-connect'
+              onClick={walletConnectInit}
+            >
+              <FaWallet /> &nbsp; WalletConnect
+            </button>
           </div>
           <div className='form-group'>
             <Link to='/resetpasswordrequest' className='link'>
