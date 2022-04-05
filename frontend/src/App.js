@@ -38,11 +38,6 @@ function App() {
                   element={<VerifyEmailRequest />}
                 />
                 <Route path='/verifyemail' element={<VerifyEmail />} />
-                <Route
-                  path='/resetpasswordrequest'
-                  element={<ResetPasswordRequest />}
-                />
-                <Route path='/resetpassword' element={<ResetPassword />} />
               </>
             )}
             {user && (
@@ -54,6 +49,11 @@ function App() {
             )}
             <Route path='/browse' element={<Browse />} />
             <Route path='/art/:id' element={<Art />} />
+            <Route
+              path='/resetpasswordrequest'
+              element={<ResetPasswordRequest />}
+            />
+            <Route path='/resetpassword' element={<ResetPassword />} />
             <Route path='*' element={<Navigate to='/browse' />} />
           </Routes>
         </div>
