@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 const Settings = () => {
   // TODO: populate user's state
@@ -59,6 +60,11 @@ const Settings = () => {
               placeholder='profile name'
               onChange={onChange}
             />
+          </div>
+          <div className='form-group'>
+            <Link to='/resetpasswordrequest' className='link'>
+              reset password
+            </Link>
           </div>
 
           {/* TODO: List of wallets with walletName and walletID. Allows user to update and add new wallets */}
