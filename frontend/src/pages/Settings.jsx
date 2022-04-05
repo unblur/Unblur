@@ -1,15 +1,31 @@
 import { useState } from 'react'
 
 const Settings = () => {
+  // TODO: populate user's state
   const [formData, setFormData] = useState({
     username: '',
     profileName: '',
-    wallets: [],
   })
   const { username, profileName } = formData
+  // const [wallets, setWallets] = useState([
+  //   {
+  //     walletName: '',
+  //     walletID: '',
+  //   },
+  // ])
 
+  const onChange = (e) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      [e.target.name]: e.target.value,
+    }))
+  }
+
+  // TODO: update wallets state when wallets are changed
+  const onWalletChange = (e) => {}
+
+  // TODO: Update the user's profile with new information
   const onSubmit = () => {}
-  const onChange = () => {}
 
   return (
     <>
@@ -20,7 +36,7 @@ const Settings = () => {
       <section className='form'>
         <form onSubmit={onSubmit}>
           {/* TODO: changing username should be unique or not allowed at all */}
-          {/* <div className='form-group'>
+          <div className='form-group'>
             <label htmlFor='username'>username</label>
             <input
               type='text'
@@ -31,7 +47,7 @@ const Settings = () => {
               placeholder='username'
               onChange={onChange}
             />
-          </div> */}
+          </div>
           <div className='form-group'>
             <label htmlFor='profileName'>profile name</label>
             <input
@@ -40,10 +56,12 @@ const Settings = () => {
               id='profileName'
               name='profileName'
               value={profileName}
-              placeholder='profileName'
+              placeholder='profile name'
               onChange={onChange}
             />
           </div>
+
+          {/* TODO: List of wallets with walletName and walletID. Allows user to update and add new wallets */}
 
           {/* TODO: reset password by sending a password reset link to their email */}
           <div className='form-group'>

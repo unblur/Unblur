@@ -361,7 +361,8 @@ const resetPassword = asyncHandler(async (req, res) => {
 // Generate JWT
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: '7d',
+    // FIXME: auto sign the user out if token is expired on the browser
+    expiresIn: '60d',
   })
 }
 
