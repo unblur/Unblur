@@ -308,6 +308,21 @@ const getUsers = asyncHandler(async (req, res) => {
   res.json(users)
 })
 
+// @desc    Get one user
+// @route   GET /api/user/:id
+// @access  Public
+const getUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.query.id).select(
+    '-wallet -email -password -verfied -createdAt -updatedAt -__v'
+  )
+  if (!user) {
+    res.status(400)
+    throw new Error('User not found')
+  }
+
+  res.json(user)
+})
+
 // @desc    Create a password reset request
 // @route   POST /api/users/resetpasswordrequest
 // @access  Public
@@ -418,6 +433,7 @@ module.exports = {
   updateSelf,
   getSelf,
   getUsers,
+  getUser,
   resetPasswordRequest,
   resetPassword,
   verifyEmail,
