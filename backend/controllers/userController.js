@@ -90,10 +90,14 @@ const registerUser = asyncHandler(async (req, res) => {
 // @route   POST /api/users/login
 // @access  Public
 const loginUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body
+  const { emailOrUsername, password } = req.body
 
   // Check if user exists
-  const user = await User.findOne({ email })
+  const [userEmail, userName] = await Promise.all([
+    User.findOne({ email: emailOrUsername }),
+    User.findOne({ username: emailOrUsername }),
+  ])
+  const user = userEmail || userName
   if (!user) {
     res.status(400)
     throw new Error('Invalid credentials.')
