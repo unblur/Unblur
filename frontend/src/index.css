@@ -427,3 +427,9 @@ ul {
 .artwork-summary-box .artwork-stat-label {
   white-space: nowrap;
 }
+
+/* Settings */
+.wallet-address {
+  text-align: left;
+  margin: 0 0 5px 3px;
+}

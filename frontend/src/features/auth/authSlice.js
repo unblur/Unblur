@@ -11,6 +11,7 @@ const initialState = {
   isSuccess: false,
   isLoading: false,
   message: '',
+  statusCode: 0,
 }
 
 // Sign up
@@ -100,6 +101,19 @@ export const getSelf = createAsyncThunk('auth/getself', async (_, thunkAPI) => {
   }
 })
 
+// Update self
+export const updateSelf = createAsyncThunk(
+  'auth/updateself',
+  async (data, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token
+      return await authService.updateSelf(token, data)
+    } catch (error) {
+      return thunkAPI.rejectWithValue(getErrorMessage(error))
+    }
+  }
+)
+
 // Helper to get error message
 const getErrorMessage = (error) => {
   return (
@@ -118,6 +132,7 @@ export const authSlice = createSlice({
       state.isSuccess = false
       state.isError = false
       state.message = ''
+      state.statusCode = 0
     },
   },
   extraReducers: (builder) => {
@@ -233,6 +248,23 @@ export const authSlice = createSlice({
         state.isLoading = false
         state.isError = true
         // state.message = action.payload
+      })
+
+      // Update self
+      .addCase(updateSelf.pending, (state) => {
+        state.isLoading = true
+      })
+      .addCase(updateSelf.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.isSuccess = true
+        state.self = action.payload
+        state.message = action.payload.message
+      })
+      .addCase(updateSelf.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        state.message = action.payload
+        state.statusCode = action.payload.statusCode
       })
   },
 })

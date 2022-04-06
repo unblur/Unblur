@@ -21,12 +21,7 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    wallets: [
-      {
-        walletID: String,
-        walletName: String,
-      },
-    ],
+    wallet: String,
     artworkIDs: [mongoose.Schema.Types.ObjectId],
     transactionIDs: [mongoose.Schema.Types.ObjectId],
     profilePicture: String,

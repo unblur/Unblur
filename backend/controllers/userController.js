@@ -228,6 +228,38 @@ const verifyEmailRequest = asyncHandler(async (req, res) => {
 // @access  Private
 const updateSelf = asyncHandler(async (req, res) => {
   const user = req.user
+  const { username, profileName, wallet } = req.body
+
+  // Check if username exists
+  const usernameExists = await User.findOne({ username })
+  if (usernameExists) {
+    res.status(400)
+    throw new Error('Username already exists. Please choose another username.')
+  }
+
+  // Save the new fields
+  user.username = username
+  user.profileName = profileName
+  user.wallet = wallet
+
+  const updatedUser = await user.save()
+  if (!updatedUser) {
+    res.status(500)
+    throw new Error('Server error.')
+  }
+
+  res.json({
+    _id: updatedUser.id,
+    email: updatedUser.email,
+    username: updatedUser.username,
+    wallet: updatedUser.wallet,
+    artworkIDs: updatedUser.artworkIDs,
+    transactionIDs: updatedUser.transactionIDs,
+    profilePicture: updatedUser.profilePicture,
+    profileName: updatedUser.profileName,
+    profileDescription: updatedUser.profileDescription,
+    message: 'Successfully updated user information.',
+  })
 })
 
 // @desc    Get user data
