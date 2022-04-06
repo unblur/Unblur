@@ -6,10 +6,10 @@ import { signIn, getSelf, reset } from '../features/auth/authSlice'
 
 const SignIn = () => {
   const [formData, setFormData] = useState({
-    email: '',
+    emailOrUsername: '',
     password: '',
   })
-  const { email, password } = formData
+  const { emailOrUsername, password } = formData
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -43,7 +43,7 @@ const SignIn = () => {
     e.preventDefault()
 
     const userData = {
-      email,
+      emailOrUsername,
       password,
     }
 
@@ -68,13 +68,13 @@ const SignIn = () => {
       <section className='form'>
         <form onSubmit={onSubmit}>
           <div className='form-group'>
-            <label htmlFor='email'>email</label>
+            <label htmlFor='emailOrUsername'>email or username</label>
             <input
-              type='email'
+              type='text'
               className='form-control'
-              id='email'
-              name='email'
-              value={email}
+              id='emailOrUsername'
+              name='emailOrUsername'
+              value={emailOrUsername}
               placeholder='john.doe@mail.com'
               onChange={onChange}
             />

@@ -9,9 +9,8 @@ const userSchema = mongoose.Schema(
     },
     username: {
       type: String,
-      // TODO: @angel implement
-      // required: true,
-      // unique: true,
+      required: true,
+      unique: true,
     },
     password: {
       type: String,

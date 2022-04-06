@@ -13,8 +13,8 @@ const saltRounds = parseInt(process.env.SALT_ROUNDS)
 // @route   POST /api/users/register
 // @access  Public
 const registerUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body
-  if (!email || !password) {
+  const { email, username, password } = req.body
+  if (!email || !username || !password) {
     res.status(400)
     throw new Error('Please enter all fields.')
   }
@@ -26,6 +26,13 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error('User already exists. Please log in.')
   }
 
+  // Check if username exists
+  const usernameExists = await User.findOne({ username })
+  if (usernameExists) {
+    res.status(400)
+    throw new Error('Username already exists. Please choose another username.')
+  }
+
   // Hash password
   const salt = await bcrypt.genSalt(saltRounds)
   const hashedPassword = await bcrypt.hash(password, salt)
@@ -33,6 +40,7 @@ const registerUser = asyncHandler(async (req, res) => {
   // Create user
   const user = await User.create({
     email,
+    username,
     password: hashedPassword,
   })
   if (!user) {
@@ -82,10 +90,14 @@ const registerUser = asyncHandler(async (req, res) => {
 // @route   POST /api/users/login
 // @access  Public
 const loginUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body
+  const { emailOrUsername, password } = req.body
 
   // Check if user exists
-  const user = await User.findOne({ email })
+  const [userEmail, userName] = await Promise.all([
+    User.findOne({ email: emailOrUsername }),
+    User.findOne({ username: emailOrUsername }),
+  ])
+  const user = userEmail || userName
   if (!user) {
     res.status(400)
     throw new Error('Invalid credentials.')
