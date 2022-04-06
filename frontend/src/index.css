@@ -8,6 +8,7 @@
   --mid-color: #ccc;
   --mid-dark-color: #777;
   --dark-color: #333;
+  --wallet-connect-color: #4099ff;
 
   /* Sizes */
   --max-width: 1300px;
@@ -107,6 +108,11 @@ ul {
 
 .btn-primary {
   background-color: var(--primary-color);
+  color: #fff;
+}
+
+.btn-wallet-connect {
+  background-color: var(--wallet-connect-color);
   color: #fff;
 }
 
@@ -420,4 +426,10 @@ ul {
 
 .artwork-summary-box .artwork-stat-label {
   white-space: nowrap;
+}
+
+/* Settings */
+.wallet-address {
+  text-align: left;
+  margin: 0 0 5px 3px;
 }
