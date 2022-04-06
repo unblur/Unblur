@@ -297,7 +297,9 @@ const getSelf = asyncHandler(async (req, res) => {
 // @route   GET /api/users
 // @access  Public
 const getUsers = asyncHandler(async (req, res) => {
-  const users = await User.find().select('-password -createdAt -updatedAt -__v')
+  const users = await User.find().select(
+    '-wallet -email -password -verfied -createdAt -updatedAt -__v'
+  )
   if (!users) {
     res.status(500)
     throw new Error('Server error.')
