@@ -3,7 +3,7 @@ import { FaPen } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
-import { getSelf, reset } from '../features/auth/authSlice'
+import { getSelf, signOut, reset } from '../features/auth/authSlice'
 import { toast } from 'react-toastify'
 import axios from 'axios'
 import CardsContainer from '../components/CardsContainer'
@@ -106,6 +106,7 @@ const Profile = () => {
   useEffect(() => {
     if (isError) {
       toast.error(message)
+      dispatch(signOut())
     }
 
     if (isSuccess) {
@@ -116,9 +117,6 @@ const Profile = () => {
       dispatch(reset())
     }
   }, [isError, isSuccess, message, dispatch])
-
-  // FIXME: remove debug
-  // console.log(self)
 
   // TODO: update loading screen
   if (isLoading || !self) {
