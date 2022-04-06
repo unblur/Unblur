@@ -68,6 +68,19 @@ const getSelf = async (token) => {
   return response.data
 }
 
+// Update self
+const updateSelf = async (token, data) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+
+  const response = await axios.post(`${API_URL}/update`, data, config)
+
+  return response.data
+}
+
 const authService = {
   signUp,
   signIn,
@@ -77,6 +90,7 @@ const authService = {
   resetPasswordRequest,
   resetPassword,
   getSelf,
+  updateSelf,
 }
 
 export default authService

@@ -19,7 +19,7 @@ router.post('/resetpasswordrequest', resetPasswordRequest)
 router.post('/resetpassword', resetPassword)
 router.post('/verifyemailrequest', verifyEmailRequest)
 router.post('/verifyemail', verifyEmail)
-router.get('/update', protect, updateSelf)
+router.post('/update', protect, updateSelf)
 router.get('/self', protect, getSelf)
 router.get('/', getUsers)
 
