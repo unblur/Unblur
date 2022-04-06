@@ -88,6 +88,18 @@ const SignUp = () => {
             />
           </div>
           <div className='form-group'>
+            <label htmlFor='username'>username</label>
+            <input
+              type='text'
+              className='form-control'
+              id='username'
+              name='username'
+              value={username}
+              placeholder='john_art'
+              onChange={onChange}
+            />
+          </div>
+          <div className='form-group'>
             <label htmlFor='password'>password</label>
             <input
               type='password'
@@ -108,18 +120,6 @@ const SignUp = () => {
               name='confirmPassword'
               value={confirmPassword}
               placeholder='**************'
-              onChange={onChange}
-            />
-          </div>
-          <div className='form-group'>
-            <label htmlFor='username'>username</label>
-            <input
-              type='text'
-              className='form-control'
-              id='username'
-              name='username'
-              value={username}
-              placeholder='john_art'
               onChange={onChange}
             />
           </div>
