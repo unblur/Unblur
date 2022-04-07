@@ -1,4 +1,9 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import axios from 'axios'
+
+// TODO: update API_URL
+const API_URL = `http://localhost:8000/api`
 
 const Card = (props) => {
   const { artwork } = props
@@ -8,6 +13,16 @@ const Card = (props) => {
   const isCreator = false || artwork.isCreator
   const isSupporter = false || artwork.isSupporter
 
+  const [creator, setCreator] = useState({})
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await axios.get(`${API_URL}/users/${creatorID}`)
+      setCreator(response.data)
+    }
+    fetchData()
+  }, [])
+
   // TODO: implement based on transactionIDs
   const getPercentageUnblurred = () => {
     const percent = 10
@@ -15,9 +30,8 @@ const Card = (props) => {
     return `${percent}%`
   }
 
-  // TODO: get username from creatorID
   const getUsername = () => {
-    return 'zharnite'
+    return creator.username ?? ''
   }
 
   return (
