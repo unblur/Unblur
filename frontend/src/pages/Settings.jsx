@@ -7,6 +7,8 @@ import { toast } from 'react-toastify'
 import { getSelf, reset, signOut, updateSelf } from '../features/auth/authSlice'
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
+import algosdk from 'algosdk'
+import { formatJsonRpcRequest } from '@json-rpc-tools/utils'
 
 const Settings = () => {
   // TODO: populate user's state
@@ -85,14 +87,75 @@ const Settings = () => {
       await connector.createSession()
     }
 
-    connector.on('connect', (error, payload) => {
+    connector.on('connect', async (error, payload) => {
       if (error) {
         throw error
       }
 
       const { accounts } = payload.params[0]
       setWallet(accounts[0])
-      connector.killSession()
+      const algodToken = `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa`
+      const algoServer = 'http://localhost'
+      const algodPort = 4001
+      let algodClient = new algosdk.Algodv2(algodToken, algoServer, algodPort)
+      let suggestedParams = await algodClient.getTransactionParams().do()
+
+      // Draft transaction
+      const txn = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+        from: accounts[0],
+        to: '366WCM5IYO5HMQ5K6TEQ3LNP4G4IQEHWGWN74MDLQYQT2QFLJEIS2Z45MQ',
+        amount: 100000,
+        suggestedParams,
+      })
+
+      let txId = txn.txID().toString()
+
+      // Sign transaction
+      // txns is an array of algosdk.Transaction like below
+      // i.e txns = [txn, ...someotherTxns], but we've only built one transaction in our case
+      const txns = [txn]
+      const txnsToSign = txns.map((txn) => {
+        const encodedTxn = Buffer.from(
+          algosdk.encodeUnsignedTransaction(txn)
+        ).toString('base64')
+
+        return {
+          txn: encodedTxn,
+          message: 'Description of transaction being signed',
+          // Note: if the transaction does not need to be signed (because it's part of an atomic group
+          // that will be signed by another party), specify an empty singers array like so:
+          // signers: [],
+        }
+      })
+
+      const requestParams = [txnsToSign]
+
+      const request = await formatJsonRpcRequest('algo_signTxn', requestParams)
+
+      // send request to bridge
+      const result = await connector.sendCustomRequest(request)
+
+      const decodedResult = result.map((element) => {
+        return element ? new Uint8Array(Buffer.from(element, 'base64')) : null
+      })
+
+      let signedTxn = decodedResult[0]
+
+      await algodClient.sendRawTransaction(signedTxn).do()
+
+      let confirmedTxn = await algosdk.waitForConfirmation(algodClient, txId, 4)
+
+      console.log(
+        'Transaction ' +
+          txId +
+          ' confirmed in round ' +
+          confirmedTxn['confirmed-round']
+      )
+
+      let string = new TextDecoder().decode(confirmedTxn.txn.txn.note)
+      console.log('Note field: ', string)
+      console.log('Transaction Amount: %d microAlgos', confirmedTxn.txn.txn.amt)
+      console.log('Transaction Fee: %d microAlgos', confirmedTxn.txn.txn.fee)
     })
 
     connector.on('disconnect', (error, payload) => {
