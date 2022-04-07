@@ -1,9 +1,23 @@
-import { useEffect } from 'react'
-
+import { useEffect, useState } from 'react'
 import { useLocation, Navigate } from 'react-router-dom'
+import axios from 'axios'
+
+// TODO: update API_URL
+const API_URL = `http://localhost:8000/api`
 
 const Art = () => {
   const { state } = useLocation()
+  const [creator, setCreator] = useState({})
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await axios.get(`${API_URL}/users/${state.creatorID}`)
+      setCreator(response.data)
+    }
+
+    if (state.creatorID) {
+      fetchData()
+    }
+  }, [])
 
   if (!state) {
     return <Navigate to='/browse' />
@@ -52,7 +66,9 @@ const Art = () => {
           <h1>{title}</h1>
 
           {/* TODO: translate creatorID to creator's profile name or username if they don't have one */}
-          <div className='artwork-creator light-text'>zharnite</div>
+          <div className='artwork-creator light-text'>
+            {creator.username ?? ''}
+          </div>
 
           <div className='artwork-progress'>
             <div className='card-progress-bar'>
