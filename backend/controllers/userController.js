@@ -309,10 +309,10 @@ const getUsers = asyncHandler(async (req, res) => {
 })
 
 // @desc    Get one user
-// @route   GET /api/user/:id
+// @route   GET /api/users/:id
 // @access  Public
 const getUser = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.query.id).select(
+  const user = await User.findById(req.params.id).select(
     '-wallet -email -password -verfied -createdAt -updatedAt -__v'
   )
   if (!user) {
