@@ -1,4 +1,9 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import axios from 'axios'
+
+// TODO: update API_URL
+const API_URL = `http://localhost:8000/api`
 
 const Card = (props) => {
   const { artwork } = props
@@ -7,6 +12,16 @@ const Card = (props) => {
 
   const isCreator = false || artwork.isCreator
   const isSupporter = false || artwork.isSupporter
+
+  const [creator, setCreator] = useState({})
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await axios.get(`${API_URL}/users/${creatorID}`)
+      setCreator(response.data)
+    }
+    fetchData()
+  }, [])
 
   const isUnblurred = false
 
@@ -19,9 +34,8 @@ const Card = (props) => {
     return `${percent}%`
   }
 
-  // TODO: get username from creatorID
   const getUsername = () => {
-    return 'zharnite'
+    return creator.username ?? ''
   }
 
   const blurredImageLink = `http://localhost:8000/files/${artwork.blurredImage}`
