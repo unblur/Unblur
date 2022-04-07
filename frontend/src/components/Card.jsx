@@ -8,8 +8,12 @@ const Card = (props) => {
   const isCreator = false || artwork.isCreator
   const isSupporter = false || artwork.isSupporter
 
+  const isUnblurred = false
+
   // TODO: implement based on transactionIDs
   const getPercentageUnblurred = () => {
+    // TODO: set isUnblurred = true if (amount accumulated from transactions) >= algosToUnblur
+
     const percent = 10
 
     return `${percent}%`
@@ -19,6 +23,13 @@ const Card = (props) => {
   const getUsername = () => {
     return 'zharnite'
   }
+
+  const blurredImageLink = `http://localhost:8000/files/${artwork.blurredImage}`
+  const index = artwork.blurredImage.indexOf('-')
+  const unblurredImageLink = `http://localhost:8000/files/${artwork.blurredImage.substring(
+    0,
+    index
+  )}${artwork.blurredImage.substring(index + 8)}`
 
   return (
     <Link to={artPage} state={artwork} className='reset-text-styles'>
@@ -33,7 +44,9 @@ const Card = (props) => {
           <div
             className='card-image'
             style={{
-              backgroundImage: `url(http://localhost:8000/files/${artwork.blurredImage})`,
+              backgroundImage: `url(${
+                isUnblurred ? unblurredImageLink : blurredImageLink
+              })`,
             }}
           ></div>
         </div>
