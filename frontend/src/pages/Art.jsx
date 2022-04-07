@@ -19,6 +19,8 @@ const Art = () => {
     blurredImage,
   } = state
 
+  const isUnblurred = false
+
   // FIXME: temporary function to show percentage, will be changed after parseTransactions is implemented
   // TODO: computes the percentage based on algos raised, which is computed in parseTransactions
   // TODO: rename to computePercentageUnblurred to avoid confusion with getPercentageUnblurred in Card.jsx
@@ -33,9 +35,15 @@ const Art = () => {
     // TODO: compute number of contributors (use a set?)
     // TODO: compute number of algos raised (sum)
     // TODO: compute unblur percentage based on number of algos raised (computePercentageUnblurred function above)
+    // TODO: compute if the image should be unblurred. Show unblurred image if (amount accumulated from transactions) >= algosToUnblur. Set isUnblurred = true
   }
 
-  // TODO: show unblurred image if (amount accumulated from transactions) >= algosToUnblur
+  const blurredImageLink = `http://localhost:8000/files/${blurredImage}`
+  const index = blurredImage.indexOf('-')
+  const unblurredImageLink = `http://localhost:8000/files/${blurredImage.substring(
+    0,
+    index
+  )}${blurredImage.substring(index + 8)}`
 
   return (
     <>
@@ -43,7 +51,7 @@ const Art = () => {
         {/* TODO: update image url */}
         <div className='artwork-image-container'>
           <img
-            src={`http://localhost:8000/files/${blurredImage}`}
+            src={isUnblurred ? unblurredImageLink : blurredImageLink}
             className='artwork'
           />
         </div>
