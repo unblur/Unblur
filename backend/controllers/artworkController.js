@@ -21,7 +21,12 @@ const upload = multer({
 // @route   GET /api/artworks
 // @access  Public
 const getArtworks = asyncHandler(async (req, res) => {
-  const artworks = await Artwork.find().select('-image')
+  const ARTWORKS_PER_REQUEST = 12 // We have 4 responisve sizes are 12 works perfectly for all sizes
+  const page = Math.max(req.query.page || 1, 1)
+  const artworks = await Artwork.find()
+    .select('-image')
+    .skip((page - 1) * ARTWORKS_PER_REQUEST)
+    .limit(ARTWORKS_PER_REQUEST)
   if (!artworks) {
     res.status(500)
     throw new Error('Server error')
@@ -77,7 +82,7 @@ const uploadArtwork = asyncHandler(async (req, res) => {
   ).catch((e) => {
     res.status(500)
     throw new Error(
-      'Change the exec() command. Use `python` if `python3` does not work.'
+      'Add PYTHON_VERSION=python or PYTHON_VERSION=python3 in your .env'
     )
   })
 
@@ -121,9 +126,9 @@ const blurImage = async (imagePath, imageOutPath, percentBlur) => {
 
     console.log(`Tiler ratio: ${tilerRatio}`)
 
-    // FIXME: change from python to python3 or from python3 to python
+    // FIXME: change from python to python3 or from python3 to python. WE should add a config in our .env
     exec(
-      `python ./tiler/tiler.py ${imageOutPath} ./tiler/tiles/circles/gen_circle_100 ${tilerRatio} ${imageOutPath}`,
+      `${process.env.PYTHON_VERSION} ./tiler/tiler.py ${imageOutPath} ./tiler/tiles/circles/gen_circle_100 ${tilerRatio} ${imageOutPath}`,
       (error, stdout, stderr) => {
         if (error) {
           reject()
