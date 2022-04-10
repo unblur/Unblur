@@ -126,7 +126,6 @@ const blurImage = async (imagePath, imageOutPath, percentBlur) => {
 
     console.log(`Tiler ratio: ${tilerRatio}`)
 
-    // FIXME: change from python to python3 or from python3 to python. WE should add a config in our .env
     exec(
       `${process.env.PYTHON_VERSION} ./tiler/tiler.py ${imageOutPath} ./tiler/tiles/circles/gen_circle_100 ${tilerRatio} ${imageOutPath}`,
       (error, stdout, stderr) => {
