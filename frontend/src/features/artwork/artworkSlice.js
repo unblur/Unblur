@@ -12,9 +12,9 @@ const initialState = {
 // Get all artworks
 export const getArtworks = createAsyncThunk(
   'artwork/getall',
-  async (_, thunkAPI) => {
+  async (page, thunkAPI) => {
     try {
-      return await artworkService.getArtworks()
+      return await artworkService.getArtworks(page)
     } catch (error) {
       return thunkAPI.rejectWithValue(getErrorMessage(error))
     }
@@ -56,13 +56,18 @@ export const artworkSlice = createSlice({
   extraReducers: (builder) => {
     builder
       // Get all artworks
-      .addCase(getArtworks.pending, (state) => {
-        state.isLoading = true
+      .addCase(getArtworks.pending, (state, action) => {
+        state.isLoading = action.meta.arg === 1
       })
       .addCase(getArtworks.fulfilled, (state, action) => {
+        const { artworks, page } = action.payload
         state.isLoading = false
         state.isSuccess = true
-        state.artworks = action.payload
+        if (page > 1) {
+          state.artworks = [...state.artworks, ...artworks]
+        } else {
+          state.artworks = artworks
+        }
       })
       .addCase(getArtworks.rejected, (state, action) => {
         state.isLoading = false
