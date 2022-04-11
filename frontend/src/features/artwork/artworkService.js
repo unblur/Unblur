@@ -4,10 +4,13 @@ import axios from 'axios'
 const API_URL = `http://localhost:8000/api/artworks`
 
 // Get all artworks
-const getArtworks = async () => {
-  const response = await axios.get(API_URL)
+const getArtworks = async (page) => {
+  const response = await axios.get(`${API_URL}?page=${page}`)
 
-  return response.data
+  return {
+    page,
+    artworks: response.data,
+  }
 }
 
 // Upload artworks
