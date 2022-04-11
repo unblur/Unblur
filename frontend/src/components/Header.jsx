@@ -1,6 +1,8 @@
 import { NavLink, Link, useNavigate } from 'react-router-dom'
+import { GiHamburgerMenu } from 'react-icons/gi'
 import { useDispatch, useSelector } from 'react-redux'
 import { signOut, reset } from '../features/auth/authSlice'
+import { useState } from 'react'
 
 const Header = () => {
   const navigate = useNavigate()
@@ -13,6 +15,12 @@ const Header = () => {
     navigate('/browse')
   }
 
+  const [hamburgerOpen, setHamburgerOpen] = useState(false);
+
+  const toggleHamburger = () => {
+    setHamburgerOpen(!hamburgerOpen);
+  }
+
   return (
     <>
       <header className='header'>
@@ -22,7 +30,14 @@ const Header = () => {
           </Link>
         </div>
 
-        <ul>
+        <div 
+          className='header-link header-hamburger' 
+          onClick={toggleHamburger}
+        >
+          <GiHamburgerMenu size={25} />
+        </div>
+
+        <ul className={hamburgerOpen ? 'header-menu header-menu-open' : 'header-menu'}>
           <li>
             <NavLink
               to='/browse'
@@ -90,6 +105,7 @@ const Header = () => {
             )}
           </li>
         </ul>
+
       </header>
     </>
   )
