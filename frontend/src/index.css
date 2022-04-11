@@ -225,9 +225,7 @@ ul {
   .header .header-hamburger {display: block;}
   .header-menu .header-link {
     padding: 10px 25px;
-    align-items: right;
-    justify-content: right;
-    text-align: right;
+    width: 6rem
   }
 }
 
