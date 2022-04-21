@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLocation, Navigate } from 'react-router-dom'
 import axios from 'axios'
+import { toast } from 'react-toastify'
 
 // TODO: update API_URL
 const API_URL = `http://localhost:8000/api`
@@ -8,6 +9,7 @@ const API_URL = `http://localhost:8000/api`
 const Art = () => {
   const { state } = useLocation()
   const [creator, setCreator] = useState({})
+  const [algos, setAlgos] = useState(0)
   useEffect(() => {
     const fetchData = async () => {
       const response = await axios.get(`${API_URL}/users/${state.creatorID}`)
@@ -59,6 +61,32 @@ const Art = () => {
     index
   )}${blurredImage.substring(index + 8)}`
 
+  const onChange = (e) => {
+    setAlgos(e.target.value)
+  }
+
+  const onContribute = (e) => {
+    // TODO: User has a wallet connected, otherwise alert redirect
+
+    // Non negative and non zero check
+    if (algos <= 0) {
+      toast.error('Please enter a valid number of algos.')
+      return
+    }
+
+    // TODO: Check user has that amount in their wallet
+
+    // Confirmation
+    // TODO: make a better confirmation
+    const result = window.confirm(
+      `Are you sure you want to donate ${algos} algos?`
+    )
+    if (result) {
+      // TODO: Make transaction and toast promise status
+      return
+    }
+  }
+
   return (
     <>
       <div className='artwork-container'>
@@ -107,8 +135,18 @@ const Art = () => {
             </div>
 
             {/* TODO: button to contribute, new modal pops up */}
-            <div className='summary-button'>
-              <button className='btn btn-primary'>contribute</button>
+            <div className='form-group summary-button'>
+              <input
+                type='number'
+                className='form-control'
+                name='algos'
+                placeholder='algos'
+                value={algos}
+                onChange={onChange}
+              />
+              <button className='btn btn-primary' onClick={onContribute}>
+                contribute
+              </button>
             </div>
           </div>
         </div>
