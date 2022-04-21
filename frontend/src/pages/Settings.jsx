@@ -7,8 +7,14 @@ import { toast } from 'react-toastify'
 import { getSelf, reset, signOut, updateSelf } from '../features/auth/authSlice'
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
-import algosdk from 'algosdk'
-import { formatJsonRpcRequest } from '@json-rpc-tools/utils'
+import {
+  walletConnectInit,
+  onConnect,
+  selectAddress,
+  setConnected,
+  onSessionUpdate,
+  selectConnector,
+} from '../features/walletconnect/walletConnectSlice'
 
 const Settings = () => {
   // TODO: populate user's state
@@ -22,6 +28,13 @@ const Settings = () => {
   const dispatch = useDispatch()
   const { self, isLoading, isError, isSuccess, message, statusCode } =
     useSelector((state) => state.auth)
+
+  const { accounts, assets, connected, chain, fetching } = useSelector(
+    (state) => state.walletConnect
+  )
+
+  const address = useSelector(selectAddress)
+  const connector = useSelector(selectConnector)
 
   const loadProfileState = () => {
     setFormData(() => ({
@@ -65,6 +78,28 @@ const Settings = () => {
     }
   }, [isError, isSuccess, message, dispatch])
 
+  useEffect(() => {
+    console.log('useEffect of connector is hit.')
+    console.log(connector)
+    // Check if connection is already established
+    if (connector) {
+      console.log(connector)
+      console.log('connector exists.')
+      dispatch(setConnected(true))
+      if (!connector.connected) {
+        connector.createSession()
+      }
+      const { accounts } = connector
+      dispatch(onSessionUpdate(accounts))
+    }
+  }, [connector])
+
+  useEffect(() => {
+    if (address) {
+      setWallet(address)
+    }
+  }, [address])
+
   const onChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -72,98 +107,43 @@ const Settings = () => {
     }))
   }
 
-  const walletConnectInit = async (e) => {
+  const onWalletConnect = (e) => {
     e.preventDefault()
-
-    // bridge url
-    const bridge = 'https://bridge.walletconnect.org'
-
-    // create new connector
-    const connector = new WalletConnect({ bridge, qrcodeModal: QRCodeModal })
-
-    // check if already connected
-    if (!connector.connected) {
-      // create new session
-      await connector.createSession()
-    }
-
-    connector.on('connect', async (error, payload) => {
-      if (error) {
-        throw error
-      }
-
-      const { accounts } = payload.params[0]
-      setWallet(accounts[0])
-      const algodToken = `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa`
-      const algoServer = 'http://localhost'
-      const algodPort = 4001
-      let algodClient = new algosdk.Algodv2(algodToken, algoServer, algodPort)
-      let suggestedParams = await algodClient.getTransactionParams().do()
-
-      // Draft transaction
-      const txn = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-        from: accounts[0],
-        to: '366WCM5IYO5HMQ5K6TEQ3LNP4G4IQEHWGWN74MDLQYQT2QFLJEIS2Z45MQ',
-        amount: 100000,
-        suggestedParams,
-      })
-
-      let txId = txn.txID().toString()
-
-      // Sign transaction
-      // txns is an array of algosdk.Transaction like below
-      // i.e txns = [txn, ...someotherTxns], but we've only built one transaction in our case
-      const txns = [txn]
-      const txnsToSign = txns.map((txn) => {
-        const encodedTxn = Buffer.from(
-          algosdk.encodeUnsignedTransaction(txn)
-        ).toString('base64')
-
-        return {
-          txn: encodedTxn,
-          message: 'Description of transaction being signed',
-          // Note: if the transaction does not need to be signed (because it's part of an atomic group
-          // that will be signed by another party), specify an empty singers array like so:
-          // signers: [],
-        }
-      })
-
-      const requestParams = [txnsToSign]
-
-      const request = await formatJsonRpcRequest('algo_signTxn', requestParams)
-
-      // send request to bridge
-      const result = await connector.sendCustomRequest(request)
-
-      const decodedResult = result.map((element) => {
-        return element ? new Uint8Array(Buffer.from(element, 'base64')) : null
-      })
-
-      let signedTxn = decodedResult[0]
-
-      await algodClient.sendRawTransaction(signedTxn).do()
-
-      let confirmedTxn = await algosdk.waitForConfirmation(algodClient, txId, 4)
-
-      console.log(
-        'Transaction ' +
-          txId +
-          ' confirmed in round ' +
-          confirmedTxn['confirmed-round']
-      )
-
-      let string = new TextDecoder().decode(confirmedTxn.txn.txn.note)
-      console.log('Note field: ', string)
-      console.log('Transaction Amount: %d microAlgos', confirmedTxn.txn.txn.amt)
-      console.log('Transaction Fee: %d microAlgos', confirmedTxn.txn.txn.fee)
-    })
-
-    connector.on('disconnect', (error, payload) => {
-      if (error) {
-        throw error
-      }
-    })
+    dispatch(walletConnectInit())
+    console.log('walletConnectInit called.')
   }
+
+  // const walletConnectInit = async (e) => {
+  //   e.preventDefault()
+
+  //   // bridge url
+  //   const bridge = 'https://bridge.walletconnect.org'
+
+  //   // create new connector
+  //   const connector = new WalletConnect({ bridge, qrcodeModal: QRCodeModal })
+
+  //   // check if already connected
+  //   if (!connector.connected) {
+  //     // create new session
+  //     await connector.createSession()
+  //   }
+
+  //   connector.on('connect', (error, payload) => {
+  //     if (error) {
+  //       throw error
+  //     }
+
+  //     const { accounts } = payload.params[0]
+  //     setWallet(accounts[0])
+  //     connector.killSession()
+  //   })
+
+  //   connector.on('disconnect', (error, payload) => {
+  //     if (error) {
+  //       throw error
+  //     }
+  //   })
+  // }
 
   // TODO: Update the user's profile with new information
   const onSubmit = (e) => {
@@ -174,7 +154,7 @@ const Settings = () => {
       profileName,
       wallet,
     }
-
+    console.log('onSubmit called.')
     dispatch(updateSelf(userData))
   }
 
@@ -218,7 +198,7 @@ const Settings = () => {
             </div>
             <button
               className='btn btn-wallet-connect'
-              onClick={walletConnectInit}
+              onClick={onWalletConnect}
             >
               <FaWallet /> &nbsp; WalletConnect
             </button>
