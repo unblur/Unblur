@@ -117,6 +117,7 @@ const Settings = () => {
     // Check if connection is already established
     if (connector) {
       subscribeToEvents(connector)
+      dispatch(setConnected(true))
       if (!connector.connected) {
         connector.createSession()
         localStorage.setItem('isWalletConnected', true)
