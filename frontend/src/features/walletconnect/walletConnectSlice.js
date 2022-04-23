@@ -53,6 +53,7 @@ export const walletConnectSlice = createSlice({
     onSessionUpdate: (state, action) => {
       state.accounts = action.payload
       state.address = action.payload[0]
+      console.log(state.address)
     },
     setAccountAssets: (state, action) => {
       state.assets = action.payload
