@@ -274,6 +274,35 @@ const updateSelf = asyncHandler(async (req, res) => {
   })
 })
 
+// @desc    Update user wallet
+// @route   POST /api/users/wallet
+// @access  Private
+const updateWallet = asyncHandler(async (req, res) => {
+  const user = req.user
+  const { wallet } = req.body
+
+  // Save the new wallet address
+  user.wallet = wallet
+  const updatedUser = await user.save()
+  if (!updatedUser) {
+    res.status(500)
+    throw new Error('Server error.')
+  }
+
+  res.json({
+    _id: updatedUser.id,
+    email: updatedUser.email,
+    username: updatedUser.username,
+    wallet: updatedUser.wallet,
+    artworkIDs: updatedUser.artworkIDs,
+    transactionIDs: updatedUser.transactionIDs,
+    profilePicture: updatedUser.profilePicture,
+    profileName: updatedUser.profileName,
+    profileDescription: updatedUser.profileDescription,
+    message: 'Successfully updated user information.',
+  })
+})
+
 // @desc    Get user data
 // @route   GET /api/users/self
 // @access  Private
@@ -414,6 +443,7 @@ module.exports = {
   registerUser,
   loginUser,
   updateSelf,
+  updateWallet,
   getSelf,
   getUsers,
   resetPasswordRequest,
