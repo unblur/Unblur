@@ -25,7 +25,7 @@ export const walletConnectSlice = createSlice({
       console.log('switchChain chain: ', action.payload)
       state.chain = action.payload
     },
-    reset: (state) => {
+    resetConnection: (state) => {
       state.accounts = []
       state.address = ''
       state.assets = []
@@ -95,7 +95,7 @@ export const selectAddress = (state) =>
 export const {
   setFetching,
   switchChain,
-  reset,
+  resetConnection,
   walletConnectInit,
   setConnected,
   onConnect,

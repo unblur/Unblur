@@ -114,6 +114,19 @@ export const updateSelf = createAsyncThunk(
   }
 )
 
+// Update wallet
+export const updateWallet = createAsyncThunk(
+  'auth/wallet',
+  async (data, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token
+      return await authService.updateWallet(token, data)
+    } catch (error) {
+      return thunkAPI.rejectWithValue(getErrorMessage(error))
+    }
+  }
+)
+
 // Helper to get error message
 const getErrorMessage = (error) => {
   return (

@@ -1,10 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FaWallet } from 'react-icons/fa'
-import WalletConnect from '@walletconnect/client'
-import QRCodeModal from 'algorand-walletconnect-qrcode-modal'
 import { toast } from 'react-toastify'
-import { getSelf, reset, signOut, updateSelf } from '../features/auth/authSlice'
+import {
+  getSelf,
+  reset,
+  signOut,
+  updateSelf,
+  updateWallet,
+} from '../features/auth/authSlice'
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
 import {
@@ -14,6 +18,7 @@ import {
   setConnected,
   onSessionUpdate,
   selectConnector,
+  resetConnection,
 } from '../features/walletconnect/walletConnectSlice'
 
 const Settings = () => {
@@ -29,10 +34,6 @@ const Settings = () => {
   const { self, isLoading, isError, isSuccess, message, statusCode } =
     useSelector((state) => state.auth)
 
-  const { accounts, assets, connected, chain, fetching } = useSelector(
-    (state) => state.walletConnect
-  )
-
   const address = useSelector(selectAddress)
   const connector = useSelector(selectConnector)
 
@@ -42,6 +43,40 @@ const Settings = () => {
       profileName: self.profileName || '',
     }))
     setWallet(self.wallet)
+  }
+
+  const subscribeToEvents = (connector) => {
+    if (!connector) {
+      return
+    }
+    // Subscribe to connection events
+    connector.on('connect', (error, payload) => {
+      if (error) {
+        throw error
+      }
+      dispatch(onConnect(payload))
+    })
+
+    connector.on('session_update', (error, payload) => {
+      if (error) {
+        throw error
+      }
+      const { accounts } = payload.params[0]
+      dispatch(onSessionUpdate(accounts))
+    })
+
+    connector.on('disconnect', (error, payload) => {
+      if (error) {
+        throw error
+      }
+      localStorage.setItem('isWalletConnected', false)
+      const userData = {
+        wallet: '',
+      }
+      dispatch(updateWallet(userData))
+      toast.success('WalletConnect successfully disconnected.')
+      dispatch(resetConnection())
+    })
   }
 
   useEffect(() => {
@@ -79,24 +114,32 @@ const Settings = () => {
   }, [isError, isSuccess, message, dispatch])
 
   useEffect(() => {
-    console.log('useEffect of connector is hit.')
-    console.log(connector)
     // Check if connection is already established
     if (connector) {
-      console.log(connector)
-      console.log('connector exists.')
-      dispatch(setConnected(true))
+      subscribeToEvents(connector)
       if (!connector.connected) {
         connector.createSession()
+        localStorage.setItem('isWalletConnected', true)
+        toast.success('WalletConnect successfully connected.')
       }
       const { accounts } = connector
       dispatch(onSessionUpdate(accounts))
+    } else if (localStorage?.getItem('isWalletConnected') === 'true') {
+      dispatch(walletConnectInit())
     }
   }, [connector])
 
   useEffect(() => {
     if (address) {
       setWallet(address)
+
+      const userData = {
+        wallet: address,
+      }
+
+      dispatch(updateWallet(userData))
+    } else {
+      setWallet('')
     }
   }, [address])
 
@@ -109,41 +152,12 @@ const Settings = () => {
 
   const onWalletConnect = (e) => {
     e.preventDefault()
-    dispatch(walletConnectInit())
-    console.log('walletConnectInit called.')
+    if (!connector) {
+      dispatch(walletConnectInit())
+    } else {
+      toast.error('WalletConnect session already exists please disconnect.')
+    }
   }
-
-  // const walletConnectInit = async (e) => {
-  //   e.preventDefault()
-
-  //   // bridge url
-  //   const bridge = 'https://bridge.walletconnect.org'
-
-  //   // create new connector
-  //   const connector = new WalletConnect({ bridge, qrcodeModal: QRCodeModal })
-
-  //   // check if already connected
-  //   if (!connector.connected) {
-  //     // create new session
-  //     await connector.createSession()
-  //   }
-
-  //   connector.on('connect', (error, payload) => {
-  //     if (error) {
-  //       throw error
-  //     }
-
-  //     const { accounts } = payload.params[0]
-  //     setWallet(accounts[0])
-  //     connector.killSession()
-  //   })
-
-  //   connector.on('disconnect', (error, payload) => {
-  //     if (error) {
-  //       throw error
-  //     }
-  //   })
-  // }
 
   // TODO: Update the user's profile with new information
   const onSubmit = (e) => {
@@ -154,7 +168,6 @@ const Settings = () => {
       profileName,
       wallet,
     }
-    console.log('onSubmit called.')
     dispatch(updateSelf(userData))
   }
 
