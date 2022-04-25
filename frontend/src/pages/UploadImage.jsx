@@ -73,8 +73,6 @@ const UploadImage = () => {
       return
     }
 
-    console.log('on submit from upload image')
-    console.log(walletAddress)
     if (
       localStorage.getItem('isWalletConnected') === null ||
       localStorage.getItem('isWalletConnected') === 'false'

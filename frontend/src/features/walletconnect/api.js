@@ -23,6 +23,10 @@ export async function apiSubmitTransaction(
   receiverProfileName,
   connector
 ) {
+  if (!fromAddress || !toAddress) {
+    return null
+  }
+
   // Construct the transaction
   let params = await testNetClient.getTransactionParams().do()
   // comment out the next two lines to use suggested fee
@@ -55,10 +59,10 @@ export async function apiSubmitTransaction(
     suggestedParams: params,
   })
 
-  let unblurFeeTxId = unblurFeeTxn.txID().toString()
+  const unblurFeeTxId = unblurFeeTxn.txID().toString()
 
   const txns = [donationTxn, unblurFeeTxn]
-  let txgroup = algosdk.assignGroupID(txns)
+  const txgroup = algosdk.assignGroupID(txns)
 
   const txnsToSign = txns.map((txn) => {
     const encodedTxn = Buffer.from(

@@ -31,6 +31,7 @@ const Art = () => {
   useEffect(() => {
     const fetchData = async () => {
       const response = await axios.get(`${API_URL}/users/${state.creatorID}`)
+      console.log(response.data)
       setCreator(response.data)
     }
 
@@ -43,7 +44,7 @@ const Art = () => {
     if (!self) {
       dispatch(getSelf())
     }
-  }, [])
+  }, [self])
 
   useEffect(() => {
     if (
@@ -111,13 +112,16 @@ const Art = () => {
       localStorage.getItem('isWalletConnected') === null ||
       localStorage.getItem('isWalletConnected') === 'false'
     ) {
-      console.log('not set in local')
       toast.error('Please first connect a wallet.')
       return
     }
 
+    if (!creator.wallet) {
+      toast.error('Creator no longer accepting donations.')
+      return
+    }
+
     if (!self.wallet) {
-      console.log('not set in db?')
       toast.error('Please first connect a wallet.')
       return
     }
