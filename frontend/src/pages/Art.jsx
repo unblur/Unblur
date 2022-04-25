@@ -1,9 +1,25 @@
-import { useEffect } from 'react'
-
+import { useEffect, useState } from 'react'
 import { useLocation, Navigate } from 'react-router-dom'
+import axios from 'axios'
+import { toast } from 'react-toastify'
+
+// TODO: update API_URL
+const API_URL = `http://localhost:8000/api`
 
 const Art = () => {
   const { state } = useLocation()
+  const [creator, setCreator] = useState({})
+  const [algos, setAlgos] = useState(0)
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await axios.get(`${API_URL}/users/${state.creatorID}`)
+      setCreator(response.data)
+    }
+
+    if (state.creatorID) {
+      fetchData()
+    }
+  }, [])
 
   if (!state) {
     return <Navigate to='/browse' />
@@ -19,6 +35,8 @@ const Art = () => {
     blurredImage,
   } = state
 
+  const isUnblurred = false
+
   // FIXME: temporary function to show percentage, will be changed after parseTransactions is implemented
   // TODO: computes the percentage based on algos raised, which is computed in parseTransactions
   // TODO: rename to computePercentageUnblurred to avoid confusion with getPercentageUnblurred in Card.jsx
@@ -33,9 +51,41 @@ const Art = () => {
     // TODO: compute number of contributors (use a set?)
     // TODO: compute number of algos raised (sum)
     // TODO: compute unblur percentage based on number of algos raised (computePercentageUnblurred function above)
+    // TODO: compute if the image should be unblurred. Show unblurred image if (amount accumulated from transactions) >= algosToUnblur. Set isUnblurred = true
   }
 
-  // TODO: show unblurred image if (amount accumulated from transactions) >= algosToUnblur
+  const blurredImageLink = `http://localhost:8000/files/${blurredImage}`
+  const index = blurredImage.indexOf('-')
+  const unblurredImageLink = `http://localhost:8000/files/${blurredImage.substring(
+    0,
+    index
+  )}${blurredImage.substring(index + 8)}`
+
+  const onChange = (e) => {
+    setAlgos(e.target.value)
+  }
+
+  const onContribute = (e) => {
+    // TODO: User has a wallet connected, otherwise alert redirect
+
+    // Non negative and non zero check
+    if (algos <= 0) {
+      toast.error('Please enter a valid number of algos.')
+      return
+    }
+
+    // TODO: Check user has that amount in their wallet
+
+    // Confirmation
+    // TODO: make a better confirmation
+    const result = window.confirm(
+      `Are you sure you want to donate ${algos} algos?`
+    )
+    if (result) {
+      // TODO: Make transaction and toast promise status
+      return
+    }
+  }
 
   return (
     <>
@@ -43,7 +93,7 @@ const Art = () => {
         {/* TODO: update image url */}
         <div className='artwork-image-container'>
           <img
-            src={`http://localhost:8000/files/${blurredImage}`}
+            src={isUnblurred ? unblurredImageLink : blurredImageLink}
             className='artwork'
           />
         </div>
@@ -52,7 +102,9 @@ const Art = () => {
           <h1>{title}</h1>
 
           {/* TODO: translate creatorID to creator's profile name or username if they don't have one */}
-          <div className='artwork-creator light-text'>zharnite</div>
+          <div className='artwork-creator light-text'>
+            {creator.username ?? ''}
+          </div>
 
           <div className='artwork-progress'>
             <div className='card-progress-bar'>
@@ -83,8 +135,18 @@ const Art = () => {
             </div>
 
             {/* TODO: button to contribute, new modal pops up */}
-            <div className='summary-button'>
-              <button className='btn btn-primary'>contribute</button>
+            <div className='form-group summary-button'>
+              <input
+                type='number'
+                className='form-control'
+                name='algos'
+                placeholder='algos'
+                value={algos}
+                onChange={onChange}
+              />
+              <button className='btn btn-primary' onClick={onContribute}>
+                contribute
+              </button>
             </div>
           </div>
         </div>

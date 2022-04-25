@@ -209,6 +209,26 @@ ul {
   font-weight: 500;
 }
 
+.header .header-hamburger {
+  display: none;
+  padding: 0 0;
+}
+
+@media screen and (max-width: 600px) {
+  .header .header-menu {
+    flex-direction: column;
+    position: absolute;
+    top: calc(4.4rem + 5px);
+    right: 0;
+  }
+  .header .header-menu:not(.header-menu-open) {display: none;}
+  .header .header-hamburger {display: block;}
+  .header-menu .header-link {
+    padding: 10px 25px;
+    width: 6rem
+  }
+}
+
 /* Card Component */
 .cards-container {
   display: flex;
