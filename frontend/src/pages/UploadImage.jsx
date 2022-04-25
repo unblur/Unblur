@@ -3,10 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { useDispatch, useSelector } from 'react-redux'
 import { uploadArtwork, reset } from '../features/artwork/artworkSlice'
-import {
-  walletConnectInit,
-  selectAddress,
-} from '../features/walletconnect/walletConnectSlice'
+import { selectAddress } from '../features/walletconnect/walletConnectSlice'
 
 const UploadImage = () => {
   const [file, setFile] = useState(null)
