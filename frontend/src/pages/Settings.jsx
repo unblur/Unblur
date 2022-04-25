@@ -54,6 +54,7 @@ const Settings = () => {
       if (error) {
         throw error
       }
+      localStorage.setItem('isWalletConnected', true)
       dispatch(onConnect(payload))
     })
 
@@ -70,11 +71,11 @@ const Settings = () => {
         throw error
       }
       localStorage.setItem('isWalletConnected', false)
+      toast.success('Successfully disconnected wallet.')
       const userData = {
         wallet: '',
       }
       dispatch(updateWallet(userData))
-      toast.success('WalletConnect successfully disconnected.')
       dispatch(resetConnection())
     })
   }
@@ -120,8 +121,6 @@ const Settings = () => {
       dispatch(setConnected(true))
       if (!connector.connected) {
         connector.createSession()
-        localStorage.setItem('isWalletConnected', true)
-        toast.success('WalletConnect successfully connected.')
       }
       const { accounts } = connector
       dispatch(onSessionUpdate(accounts))
@@ -153,7 +152,7 @@ const Settings = () => {
 
   const onWalletConnect = (e) => {
     e.preventDefault()
-    if (!connector) {
+    if (!connector || (connector && !connector.connected)) {
       dispatch(walletConnectInit())
     } else {
       toast.error('WalletConnect session already exists please disconnect.')

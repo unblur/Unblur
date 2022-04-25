@@ -78,7 +78,10 @@ const UploadImage = () => {
 
     console.log('on submit from upload image')
     console.log(walletAddress)
-    if (!walletAddress) {
+    if (
+      localStorage.getItem('isWalletConnected') === null ||
+      localStorage.getItem('isWalletConnected') === 'false'
+    ) {
       toast.error('Please connect your wallet within the settings page.')
       return
     }
