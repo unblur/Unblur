@@ -123,7 +123,7 @@ const blurImage = async (imagePath, imageOutPath, percentBlur) => {
 
     // FIXME: change from python to python3 or from python3 to python
     exec(
-      `python ./tiler/tiler.py ${imageOutPath} ./tiler/tiles/circles/gen_circle_100 ${tilerRatio} ${imageOutPath}`,
+      `python3 ./tiler/tiler.py ${imageOutPath} ./tiler/tiles/circles/gen_circle_100 ${tilerRatio} ${imageOutPath}`,
       (error, stdout, stderr) => {
         if (error) {
           reject()
