@@ -326,13 +326,30 @@ const getSelf = asyncHandler(async (req, res) => {
 // @route   GET /api/users
 // @access  Public
 const getUsers = asyncHandler(async (req, res) => {
-  const users = await User.find().select('-password -createdAt -updatedAt -__v')
+  const users = await User.find().select(
+    '-wallet -email -password -verfied -createdAt -updatedAt -__v'
+  )
   if (!users) {
     res.status(500)
     throw new Error('Server error.')
   }
 
   res.json(users)
+})
+
+// @desc    Get one user
+// @route   GET /api/users/:id
+// @access  Public
+const getUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id).select(
+    '-wallet -email -password -verfied -createdAt -updatedAt -__v'
+  )
+  if (!user) {
+    res.status(400)
+    throw new Error('User not found')
+  }
+
+  res.json(user)
 })
 
 // @desc    Create a password reset request
@@ -446,6 +463,7 @@ module.exports = {
   updateWallet,
   getSelf,
   getUsers,
+  getUser,
   resetPasswordRequest,
   resetPassword,
   verifyEmail,

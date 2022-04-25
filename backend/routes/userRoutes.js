@@ -6,6 +6,7 @@ const {
   updateSelf,
   getSelf,
   getUsers,
+  getUser,
   resetPasswordRequest,
   resetPassword,
   verifyEmail,
@@ -24,5 +25,6 @@ router.post('/update', protect, updateSelf)
 router.post('/wallet', protect, updateWallet)
 router.get('/self', protect, getSelf)
 router.get('/', getUsers)
+router.get('/:id', getUser)
 
 module.exports = router
