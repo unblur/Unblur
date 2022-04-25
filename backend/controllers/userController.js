@@ -342,7 +342,7 @@ const getUsers = asyncHandler(async (req, res) => {
 // @access  Public
 const getUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id).select(
-    '-wallet -email -password -verfied -createdAt -updatedAt -__v'
+    '-email -password -verfied -createdAt -updatedAt -__v'
   )
   if (!user) {
     res.status(400)

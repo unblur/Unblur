@@ -64,21 +64,16 @@ export const walletConnectSlice = createSlice({
       }
     },
   },
-  extraReducers(builder) {
-    builder.addCase(getAccountAssets.fulfilled, (state, action) => {
-      state.assets = action.payload
-    })
-  },
 })
 
-export const getAccountAssets = createAsyncThunk(
-  'walletConnect/getAccountAssets',
-  async (accountData) => {
-    const { chain, address } = accountData
-    const response = apiGetAccountAssets(chain, address)
-    return response
-  }
-)
+// export const getAccountAssets = createAsyncThunk(
+//   'walletConnect/getAccountAssets',
+//   async (accountData) => {
+//     const { chain, address } = accountData
+//     const response = apiGetAccountAssets(chain, address)
+//     return response
+//   }
+// )
 
 export const selectFetching = (state) =>
   state.walletConnect && state.walletConnect.fetching

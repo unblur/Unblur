@@ -1,85 +1,100 @@
 import algosdk from 'algosdk'
+import { formatJsonRpcRequest } from '@json-rpc-tools/utils'
 
-const testNetClient = new algosdk.Algodv2(
-  '',
-  'https://testnet.algoexplorerapi.io',
-  ''
-)
+const algodToken = `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa`
+const algoServer = 'http://localhost'
+const algodPort = 4001
+const testNetClient = new algosdk.Algodv2(algodToken, algoServer, algodPort)
+const numMicroAlgos = 1000000
+const unblurPercentageFee = 0.01
+const unblurWallet =
+  'PHSKOSKMCORJVVBWNBGKISNAZLWHNOMOX3REKRNO3GRKETA65IM2O7X5YM'
 
-function clientForChain(chain) {
-  return testNetClient
+export async function apiGetAccountBalance(address) {
+  const accountInfo = await testNetClient.accountInformation(address).do()
+
+  return accountInfo.amount / numMicroAlgos
 }
 
-export async function apiGetAccountAssets(chain, address) {
-  const client = clientForChain(chain)
+export async function apiSubmitTransaction(
+  fromAddress,
+  toAddress,
+  algos,
+  receiverProfileName,
+  connector
+) {
+  // Construct the transaction
+  let params = await testNetClient.getTransactionParams().do()
+  // comment out the next two lines to use suggested fee
+  params.fee = algosdk.ALGORAND_MIN_TX_FEE
+  params.flatFee = true
 
-  const accountInfo = await client
-    .accountInformation(address)
-    .setIntDecoding(algosdk.IntDecoding.BIGINT)
-    .do()
+  const enc = new TextEncoder()
+  const donationNote = enc.encode(`Unblur donation to ${receiverProfileName}.`)
+  const unblurFeeNote = enc.encode(`Unblur transaction fee.`)
 
-  const algoBalance = accountInfo.amount
-  const assetsFromRes = accountInfo.assets
+  const orignalDonationInMicroAlgos = algos * numMicroAlgos
+  const unblurFee = orignalDonationInMicroAlgos * unblurPercentageFee
+  const donationInMicroAlgos = orignalDonationInMicroAlgos - unblurFee
 
-  const assets = assetsFromRes.map(
-    ({ 'asset-id': id, amount, creator, frozen }) => ({
-      id: Number(id),
-      amount,
-      creator,
-      frozen,
-      decimals: 0,
-    })
-  )
-
-  assets.sort((a, b) => a.id - b.id)
-
-  await Promise.all(
-    assets.map(async (asset) => {
-      const { params } = await client.getAssetByID(asset.id).do()
-      asset.name = params.name
-      asset.unitName = params['unit-name']
-      asset.url = params.url
-      asset.decimals = params.decimals
-    })
-  )
-
-  assets.unshift({
-    id: 0,
-    amount: algoBalance,
-    creator: '',
-    frozen: false,
-    decimals: 6,
-    name: 'Algo',
-    unitName: 'Algo',
+  let donationTxn = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+    from: fromAddress,
+    to: toAddress,
+    amount: donationInMicroAlgos,
+    note: donationNote,
+    suggestedParams: params,
   })
 
-  return assets
-}
+  let donationTxId = donationTxn.txID().toString()
 
-export async function apiGetTxnParams(chain) {
-  const params = await clientForChain(chain).getTransactionParams().do()
-  return params
-}
+  let unblurFeeTxn = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+    from: fromAddress,
+    to: unblurWallet,
+    amount: unblurFee,
+    note: unblurFeeNote,
+    suggestedParams: params,
+  })
 
-export async function apiSubmitTransactions(chain, stxns) {
-  const { txId } = await clientForChain(chain).sendRawTransaction(stxns).do()
-  return await waitForTransaction(chain, txId)
-}
+  let unblurFeeTxId = unblurFeeTxn.txID().toString()
 
-async function waitForTransaction(chain, txId) {
-  const client = clientForChain(chain)
+  const txns = [donationTxn, unblurFeeTxn]
+  let txgroup = algosdk.assignGroupID(txns)
 
-  let lastStatus = await client.status().do()
-  let lastRound = lastStatus['last-round']
-  while (true) {
-    const status = await client.pendingTransactionInformation(txId).do()
-    if (status['pool-error']) {
-      throw new Error(`Transaction Pool Error: ${status['pool-error']}`)
+  const txnsToSign = txns.map((txn) => {
+    const encodedTxn = Buffer.from(
+      algosdk.encodeUnsignedTransaction(txn)
+    ).toString('base64')
+
+    return {
+      txn: encodedTxn,
+      message: 'Transaction of donation and unblur fee.',
     }
-    if (status['confirmed-round']) {
-      return status['confirmed-round']
-    }
-    lastStatus = await client.statusAfterBlock(lastRound + 1).do()
-    lastRound = lastStatus['last-round']
+  })
+
+  const requestParams = [txnsToSign]
+
+  const request = await formatJsonRpcRequest('algo_signTxn', requestParams)
+
+  // send request to bridge
+  const result = await connector.sendCustomRequest(request)
+
+  const decodedResult = result.map((element) => {
+    return element ? new Uint8Array(Buffer.from(element, 'base64')) : null
+  })
+
+  let signedTxn = decodedResult
+
+  let tx = await testNetClient.sendRawTransaction(signedTxn).do()
+
+  let confirmedTxn = await algosdk.waitForConfirmation(
+    testNetClient,
+    tx.txId,
+    4
+  )
+
+  if (confirmedTxn) {
+    return donationTxId
+  } else {
+    return null
   }
 }
