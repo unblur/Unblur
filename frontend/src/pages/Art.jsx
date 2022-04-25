@@ -121,7 +121,7 @@ const Art = () => {
       return
     }
 
-    if (!self.wallet) {
+    if (!self?.wallet) {
       toast.error('Please first connect a wallet.')
       return
     }
