@@ -1,12 +1,9 @@
 import algosdk from 'algosdk'
 import { formatJsonRpcRequest } from '@json-rpc-tools/utils'
 
-const algodToken = `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa`
-const algodServer = 'http://localhost'
-const algodPort = 4001
-// const algodServer = 'https://testnet-algorand.api.purestake.io/ps2'
-// const algodToken = { 'X-API-Key': process.env.ALGO_API_KEY }
-// const algodPort = ''
+const algodServer = 'https://testnet-algorand.api.purestake.io/ps2'
+const algodToken = { 'X-API-Key': 'H9WedVpACAHJMWGFLvDYas27ArrwdMo8Sgn4noG1' }
+const algodPort = ''
 const testNetClient = new algosdk.Algodv2(algodToken, algodServer, algodPort)
 const numMicroAlgos = 1000000
 const unblurPercentageFee = 0.01
