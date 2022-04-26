@@ -19,6 +19,10 @@ const transactionSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       required: true,
     },
+    algoTxnID: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,

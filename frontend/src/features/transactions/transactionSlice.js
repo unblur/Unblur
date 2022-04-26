@@ -15,6 +15,7 @@ export const addTransaction = createAsyncThunk(
   'transaction/addtransaction',
   async (data, thunkAPI) => {
     try {
+      console.log('in slice add transaction call')
       const token = thunkAPI.getState().auth.user.token
       return await transactionService.addTransaction(token, data)
     } catch (error) {

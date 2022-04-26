@@ -11,6 +11,7 @@ const addTransaction = async (token, data) => {
     },
   }
 
+  console.log('in service add transaction call')
   const response = await axios.post(`${API_URL}/add`, data, config)
 
   return response.data

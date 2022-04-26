@@ -1,11 +1,24 @@
 const asyncHandler = require('express-async-handler')
 const Transaction = require('../models/transactionModel')
+const Artwork = require('../models/artworkModel')
+const User = require('../models/userModel')
+const mongoose = require('mongoose')
 
 // @desc    Add new transaction
 // @route   POST /api/transactions/add
 // @access  Private
 const addTransactions = asyncHandler(async (req, res) => {
-  const { donatorID, receiverID, algos, artworkID } = req.body
+  const { donatorID, receiverID, algos, artworkID, algoTxnID } = req.body
+  console.log('add Transactions controller method called.')
+
+  // Check if the algorand transaction is already in the DB
+  const txnInDB = await Transaction.findOne({ algoTxnID })
+  console.log(algoTxnID)
+  console.log(txnInDB)
+  if (txnInDB) {
+    res.status(200)
+    return
+  }
 
   // Create transaction
   const txn = await Transaction.create({
@@ -13,13 +26,37 @@ const addTransactions = asyncHandler(async (req, res) => {
     receiverID,
     algos,
     artworkID,
+    algoTxnID,
   })
+  console.log('txn saved in db')
+
   if (!txn) {
     res.status(400)
+    console.log('newly created txn doesnt exist')
     throw new Error('Server error adding transaction to database.')
   }
 
-  res.status(200)
+  // Update donator transaction list
+  const donator = await User.findById(donatorID)
+  if (!donator) {
+    res.status(400)
+    throw new Error('Server error adding transaction to database.')
+  }
+  donator.transactionIDs.push(txn._id)
+  await donator.save()
+  console.log('donator updated.')
+
+  // Update artwork transaction list
+  const artwork = await Artwork.findById(artworkID)
+  if (!artwork) {
+    res.status(400)
+    throw new Error('Server error adding transaction to database.')
+  }
+  artwork.transactionIDs.push(txn._id)
+  await artwork.save()
+  console.log('artwork updated.')
+
+  res.json({ message: 'Added transaction successfully.' })
 })
 
 // @desc    Get all transactions
