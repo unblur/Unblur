@@ -9,12 +9,9 @@ const mongoose = require('mongoose')
 // @access  Private
 const addTransactions = asyncHandler(async (req, res) => {
   const { donatorID, receiverID, algos, artworkID, algoTxnID } = req.body
-  console.log('add Transactions controller method called.')
 
   // Check if the algorand transaction is already in the DB
   const txnInDB = await Transaction.findOne({ algoTxnID })
-  console.log(algoTxnID)
-  console.log(txnInDB)
   if (txnInDB) {
     res.status(200)
     return
@@ -28,7 +25,6 @@ const addTransactions = asyncHandler(async (req, res) => {
     artworkID,
     algoTxnID,
   })
-  console.log('txn saved in db')
 
   if (!txn) {
     res.status(400)
@@ -44,7 +40,6 @@ const addTransactions = asyncHandler(async (req, res) => {
   }
   donator.transactionIDs.push(txn._id)
   await donator.save()
-  console.log('donator updated.')
 
   // Update artwork transaction list
   const artwork = await Artwork.findById(artworkID)
@@ -54,7 +49,6 @@ const addTransactions = asyncHandler(async (req, res) => {
   }
   artwork.transactionIDs.push(txn._id)
   await artwork.save()
-  console.log('artwork updated.')
 
   res.json({ message: 'Added transaction successfully.' })
 })

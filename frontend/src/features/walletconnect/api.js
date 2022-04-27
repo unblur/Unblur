@@ -96,9 +96,6 @@ export async function apiSubmitTransaction(
     4
   )
 
-  console.log('txn ID')
-  console.log(tx.txId)
-
   if (confirmedTxn) {
     return tx.txId
   } else {
