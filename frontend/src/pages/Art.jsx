@@ -33,7 +33,6 @@ const Art = () => {
   useEffect(() => {
     const fetchData = async () => {
       const response = await axios.get(`${API_URL}/users/${state.creatorID}`)
-      console.log(response.data)
       setCreator(response.data)
     }
 
@@ -135,8 +134,6 @@ const Art = () => {
     }
 
     const userBalance = await apiGetAccountBalance(self.wallet)
-    console.log('balance')
-    console.log(userBalance)
 
     if (userBalance < algos) {
       toast.error('You do not have enough algos within your wallet.')
@@ -166,7 +163,6 @@ const Art = () => {
           artworkID: _id,
           algoTxnID: confirmData,
         }
-        console.log('hit here 1')
         dispatch(addTransaction(transactionData))
       } else {
         toast.error('An issue occured with the transaction.')
