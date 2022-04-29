@@ -13,8 +13,7 @@ const addTransactions = asyncHandler(async (req, res) => {
   // Check if the algorand transaction is already in the DB
   const txnInDB = await Transaction.findOne({ algoTxnID })
   if (txnInDB) {
-    res.status(200)
-    return
+    res.json({})
   }
 
   // Create transaction
