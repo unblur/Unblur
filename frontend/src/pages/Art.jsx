@@ -2,6 +2,18 @@ import { useEffect, useState } from 'react'
 import { useLocation, Navigate } from 'react-router-dom'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import { getSelf } from '../features/auth/authSlice'
+import { useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
+import {
+  apiGetAccountBalance,
+  apiSubmitTransaction,
+} from '../features/walletconnect/api'
+import {
+  selectConnector,
+  walletConnectInit,
+} from '../features/walletconnect/walletConnectSlice'
+import { addTransaction } from '../features/transactions/transactionSlice'
 
 // TODO: update API_URL
 const API_URL = `http://localhost:8000/api`
@@ -10,6 +22,14 @@ const Art = () => {
   const { state } = useLocation()
   const [creator, setCreator] = useState({})
   const [algos, setAlgos] = useState(0)
+
+  const dispatch = useDispatch()
+  const { self } = useSelector((state) => state.auth)
+
+  const connector = useSelector(selectConnector)
+
+  // const { isError, isSuccess } = useSelector((state) => state.transactions)
+
   useEffect(() => {
     const fetchData = async () => {
       const response = await axios.get(`${API_URL}/users/${state.creatorID}`)
@@ -20,6 +40,27 @@ const Art = () => {
       fetchData()
     }
   }, [])
+
+  useEffect(() => {
+    if (!self) {
+      dispatch(getSelf())
+    }
+  }, [self])
+
+  useEffect(() => {
+    if (
+      (connector === undefined || connector === null) &&
+      localStorage?.getItem('isWalletConnected') === 'true'
+    ) {
+      dispatch(walletConnectInit())
+    }
+  }, [connector])
+
+  // useEffect(() => {
+  //   if (isSuccess) {
+  //     dispatch(reset())
+  //   }
+  // }, [isSuccess])
 
   if (!state) {
     return <Navigate to='/browse' />
@@ -65,7 +106,7 @@ const Art = () => {
     setAlgos(e.target.value)
   }
 
-  const onContribute = (e) => {
+  const onContribute = async (e) => {
     // TODO: User has a wallet connected, otherwise alert redirect
 
     // Non negative and non zero check
@@ -74,7 +115,30 @@ const Art = () => {
       return
     }
 
-    // TODO: Check user has that amount in their wallet
+    if (
+      localStorage.getItem('isWalletConnected') === null ||
+      localStorage.getItem('isWalletConnected') === 'false'
+    ) {
+      toast.error('Please first connect a wallet.')
+      return
+    }
+
+    if (!creator.wallet) {
+      toast.error('Creator no longer accepting donations.')
+      return
+    }
+
+    if (!self?.wallet) {
+      toast.error('Please first connect a wallet.')
+      return
+    }
+
+    const userBalance = await apiGetAccountBalance(self.wallet)
+
+    if (userBalance < algos) {
+      toast.error('You do not have enough algos within your wallet.')
+      return
+    }
 
     // Confirmation
     // TODO: make a better confirmation
@@ -82,7 +146,27 @@ const Art = () => {
       `Are you sure you want to donate ${algos} algos?`
     )
     if (result) {
-      // TODO: Make transaction and toast promise status
+      const confirmData = await apiSubmitTransaction(
+        self.wallet,
+        creator.wallet,
+        algos,
+        creator.profileName,
+        connector
+      )
+      if (confirmData) {
+        toast.success('Transaction made succesfully.')
+
+        const transactionData = {
+          donatorID: self._id,
+          receiverID: creatorID,
+          algos,
+          artworkID: _id,
+          algoTxnID: confirmData,
+        }
+        dispatch(addTransaction(transactionData))
+      } else {
+        toast.error('An issue occured with the transaction.')
+      }
       return
     }
   }

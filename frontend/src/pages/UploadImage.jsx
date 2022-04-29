@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { useDispatch, useSelector } from 'react-redux'
 import { uploadArtwork, reset } from '../features/artwork/artworkSlice'
+import { selectAddress } from '../features/walletconnect/walletConnectSlice'
 
 const UploadImage = () => {
   const [file, setFile] = useState(null)
@@ -19,6 +20,8 @@ const UploadImage = () => {
     (state) => state.artwork
   )
 
+  const walletAddress = useSelector(selectAddress)
+
   useEffect(() => {
     if (isError) {
       toast.error(message)
@@ -34,6 +37,12 @@ const UploadImage = () => {
       dispatch(reset())
     }
   }, [isError, isSuccess, message, dispatch, navigate])
+
+  // useEffect(() => {
+  //   if (localStorage?.getItem('isWalletConnected') === 'true') {
+  //     dispatch(walletConnectInit())
+  //   }
+  // }, [])
 
   const onChange = (e) => {
     setFile(e.target.files[0])
@@ -61,6 +70,14 @@ const UploadImage = () => {
 
     if (!title.replace(/\s/g, '').length) {
       toast.error('Please enter a title.')
+      return
+    }
+
+    if (
+      localStorage.getItem('isWalletConnected') === null ||
+      localStorage.getItem('isWalletConnected') === 'false'
+    ) {
+      toast.error('Please connect your wallet within the settings page.')
       return
     }
 
