@@ -2,7 +2,6 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import transactionService from './transactionService'
 
 const initialState = {
-  transactions: [],
   isError: false,
   isSuccess: false,
   isLoading: false,
