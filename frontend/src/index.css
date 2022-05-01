@@ -347,10 +347,6 @@ ul {
   color: var(--mid-dark-color);
 }
 
-.card-creator:hover {
-  text-decoration: underline;
-}
-
 .card-description {
   max-width: inherit;
 }
@@ -367,13 +363,9 @@ ul {
   font-size: 1.3rem;
 }
 
-.profile-username:hover {
+/* Link to user page */
+.user-link:hover {
   text-decoration: underline;
-}
-
-/* User */
-.user-username {
-  font-size: 1.3rem;
 }
 
 /* Artwork */
@@ -411,10 +403,6 @@ ul {
 
 .artwork-creator {
   margin-bottom: 1rem;
-}
-
-.artwork-creator:hover {
-  text-decoration: underline;
 }
 
 .artwork-progress {
