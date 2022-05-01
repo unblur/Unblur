@@ -55,8 +55,10 @@ const Card = (props) => {
 
     const percent = (total/algos) * 100
 
-    if(percent >= 100)isUnblurred = true
-
+    if(percent >= 100){
+      isUnblurred = true
+      percent = 100
+    }
     return `${percent}%`
   }
 
