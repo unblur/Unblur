@@ -128,7 +128,7 @@ const User = () => {
         <h1>
           {`${user.profileName || user.username}`}
         </h1>
-        <div className='profile-username light-text'>@{user.username}</div>
+        <div className='user-username light-text'>@{user.username}</div>
       </section>
 
       {/* TODO: filter cards by type */}
