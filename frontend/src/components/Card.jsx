@@ -73,9 +73,11 @@ const Card = (props) => {
           <div className='card-title truncate'>{title}</div>
 
           <div className='card-creator truncate'>
-            <Link to={creator !== null ? `/user/${creator._id}` : `/browse`} className='light-text'>
-              {getUsername()}
-            </Link>
+            <span className = 'user-link'>
+              <Link to={creator !== null ? `/user/${creator._id}` : `/browse`} className='light-text user-link'>
+                {getUsername()}
+              </Link>
+            </span>
           </div>
 
           <div className='card-description'>
