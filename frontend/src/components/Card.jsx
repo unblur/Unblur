@@ -14,22 +14,46 @@ const Card = (props) => {
   const isSupporter = false || artwork.isSupporter
 
   const [creator, setCreator] = useState({})
+  const [transactionList, setTransactionList] = useState({})
 
   useEffect(() => {
     const fetchData = async () => {
       const response = await axios.get(`${API_URL}/users/${creatorID}`)
       setCreator(response.data)
     }
+    const getArtworkTransactions = async () => {
+      const endpoints = transactionIDs.map(
+        (transactionID) => `${API_URL}/transactions/${transactionID}`
+      )
+  
+      const transactionRet = await axios
+        .all(endpoints.map((endpoint) => axios.get(endpoint)))
+        .then((transactions) => {
+          return transactions.map((transaction) => transaction.data)
+        })
+      const filteredTransactions = transactionRet.filter(transaction =>transaction.artworkID == artwork._id)
+  
+      setTransactionList(filteredTransactions)
+    }
     fetchData()
+    getArtworkTransactions()
   }, [])
+
+  
+
 
   const isUnblurred = false
 
   // TODO: implement based on transactionIDs
   const getPercentageUnblurred = () => {
     // TODO: set isUnblurred = true if (amount accumulated from transactions) >= algosToUnblur
+    const algos = artwork.algosToUnblur
+    let total = 0
+    for(let transaction in transactionList){
+      total += transactionList[transaction].algos
+    }
 
-    const percent = 10
+    const percent = (total/algos) * 100
 
     return `${percent}%`
   }
