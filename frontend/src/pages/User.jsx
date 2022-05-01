@@ -126,7 +126,7 @@ const User = () => {
     <>
       <section className='heading left-align'>
         <h1>
-          {`${user.profileName || user.username}'s Profile`}
+          {`${user.profileName || user.username}`}
         </h1>
         <div className='profile-username light-text'>@{user.username}</div>
       </section>

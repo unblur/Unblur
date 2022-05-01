@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useLocation, Navigate } from 'react-router-dom'
+import { useLocation, Navigate, Link } from 'react-router-dom'
 import axios from 'axios'
 
 // TODO: update API_URL
@@ -74,8 +74,10 @@ const Art = () => {
           <h1>{title}</h1>
 
           {/* TODO: translate creatorID to creator's profile name or username if they don't have one */}
-          <div className='artwork-creator light-text'>
-            {creator.username ?? ''}
+          <div className='artwork-creator'>
+            <Link to={creator !== null ? `/user/${creator._id}` : `/browse`} className='light-text'>
+              {creator.username ?? ''}
+            </Link>
           </div>
 
           <div className='artwork-progress'>
