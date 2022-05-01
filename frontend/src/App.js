@@ -19,6 +19,7 @@ import ResetPasswordRequest from './pages/ResetPasswordRequest'
 import ResetPassword from './pages/ResetPassword'
 import UploadImage from './pages/UploadImage'
 import Art from './pages/Art'
+import User from './pages/User'
 
 function App() {
   const { user } = useSelector((state) => state.auth)
@@ -49,6 +50,7 @@ function App() {
             )}
             <Route path='/browse' element={<Browse />} />
             <Route path='/art/:id' element={<Art />} />
+            <Route path='/user/:id' element={<User />} />
             <Route
               path='/resetpasswordrequest'
               element={<ResetPasswordRequest />}

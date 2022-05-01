@@ -138,7 +138,11 @@ const Profile = () => {
             <FaPen size={30} className='edit-icon' />
           </Link>
         </h1>
-        <div className='profile-username light-text'>@{self.username}</div>
+        <div className='profile-username'>
+          <Link to={`/user/${self._id}`} className='light-text'>
+            @{self.username}
+          </Link>
+        </div>
       </section>
 
       {/* TODO: filter cards by type */}
