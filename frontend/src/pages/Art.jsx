@@ -75,8 +75,8 @@ const Art = () => {
 
           {/* TODO: translate creatorID to creator's profile name or username if they don't have one */}
           <div className='artwork-creator'>
-            <span className='user-link'>
-              <Link to={creator !== null ? `/user/${creator._id}` : `/browse`} className='light-text'>
+            <span>
+              <Link to={creator !== null ? `/user/${creator._id}` : `/browse`} className='light-text user-link'>
                 {creator.username ?? ''}
               </Link>
             </span>
