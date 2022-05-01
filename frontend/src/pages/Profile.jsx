@@ -139,9 +139,11 @@ const Profile = () => {
           </Link>
         </h1>
         <div className='profile-username'>
-          <Link to={`/user/${self._id}`} className='light-text'>
-            @{self.username}
-          </Link>
+          <span className='user-link'>
+            <Link to={`/user/${self._id}`} className='light-text'>
+              @{self.username}
+            </Link>
+          </span>
         </div>
       </section>
 
