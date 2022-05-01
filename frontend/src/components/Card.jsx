@@ -42,7 +42,7 @@ const Card = (props) => {
   
 
 
-  const isUnblurred = false
+  let isUnblurred = false
 
   // TODO: implement based on transactionIDs
   const getPercentageUnblurred = () => {
@@ -54,6 +54,8 @@ const Card = (props) => {
     }
 
     const percent = (total/algos) * 100
+
+    if(percent >= 100)isUnblurred = true
 
     return `${percent}%`
   }
