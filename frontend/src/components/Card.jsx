@@ -32,11 +32,8 @@ const Card = (props) => {
         .then((transactions) => {
           return transactions.map((transaction) => transaction.data)
         })
-      const filteredTransactions = transactionRet.filter(
-        (transaction) => transaction.artworkID == artwork._id
-      )
 
-      getPercentageUnblurred(filteredTransactions)
+      getPercentageUnblurred(transactionRet)
     }
     fetchData()
     getArtworkTransactions()
@@ -45,12 +42,12 @@ const Card = (props) => {
   const getPercentageUnblurred = (transactionsList) => {
     const algos = artwork.algosToUnblur
     let total = 0
-    for (let transaction in transactionsList) {
-      total += transactionsList[transaction].algos
-    }
+    transactionsList.forEach((transaction) => {
+      total += transaction.algos
+    })
     let percent = (total / algos) * 100
 
-    if (percent >= 100) {
+    if (percent >= 100 || algos == 0) {
       percent = 100
       setUnblurred(true)
     }
