@@ -27,7 +27,8 @@ const Art = () => {
   const { self } = useSelector((state) => state.auth)
   const [isUnblurred, setUnblurred] = useState(false)
   const [percentageUnblurred, setPercentageUnblurred] = useState('0')
-
+  const [contributorsNum, setcontributorsNum] = useState('0')
+  const [algosRaised, setAlgosRaised] = useState('0')
   const connector = useSelector(selectConnector)
 
   // const { isError, isSuccess } = useSelector((state) => state.transactions)
@@ -57,8 +58,9 @@ const Art = () => {
     if (state.creatorID) {
       fetchData()
     }
-    if(state.transactionIDs){
+    if (state.transactionIDs) {
       getArtworkTransactions()
+      setcontributorsNum(Object.keys(state.transactionIDs).length)
     }
   }, [])
 
@@ -97,8 +99,6 @@ const Art = () => {
     blurredImage,
   } = state
 
-
-
   // FIXME: temporary function to show percentage, will be changed after parseTransactions is implemented
   // TODO: computes the percentage based on algos raised, which is computed in parseTransactions
   // TODO: rename to computePercentageUnblurred to avoid confusion with getPercentageUnblurred in Card.jsx
@@ -115,14 +115,8 @@ const Art = () => {
       percent = '100'
       setUnblurred(true)
     }
+    setAlgosRaised(`${total}`)
     setPercentageUnblurred(`${percent}%`)
-  }
-  // TODO: implement based on transactionIDs
-  const parseTransactions = () => {
-    // TODO: compute number of contributors (use a set?)
-    // TODO: compute number of algos raised (sum)
-    // TODO: compute unblur percentage based on number of algos raised (computePercentageUnblurred function above)
-    // TODO: compute if the image should be unblurred. Show unblurred image if (amount accumulated from transactions) >= algosToUnblur. Set isUnblurred = true
   }
 
   const blurredImageLink = `http://localhost:8000/files/${blurredImage}`
@@ -235,11 +229,11 @@ const Art = () => {
           <div className='artwork-summary-box'>
             <div className='summary-numbers'>
               <div className='summary-number'>
-                <div className='artwork-stat'>-1</div>
+                <div className='artwork-stat'>{contributorsNum}</div>
                 <div className='artwork-stat-label'>contributors</div>
               </div>
               <div className='summary-number'>
-                <div className='artwork-stat'>9767237238</div>
+                <div className='artwork-stat'>{algosRaised}</div>
                 <div className='artwork-stat-label'>algos raised</div>
               </div>
               <div className='summary-number'>
