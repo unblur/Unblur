@@ -21,7 +21,7 @@ const API_URL = `http://localhost:8000/api`
 const Art = () => {
   const { state } = useLocation()
   const [creator, setCreator] = useState({})
-  const [algos, setAlgos] = useState(0)
+  const [algos, setAlgos] = useState('0')
 
   const dispatch = useDispatch()
   const { self } = useSelector((state) => state.auth)
@@ -90,17 +90,22 @@ const Art = () => {
 
   const getPercentageUnblurred = (transactionsList) => {
     let total = 0
-    for (let transaction in transactionsList) {
-      total += transactionsList[transaction].algos
+    transactionsList.forEach((transaction) => {
+      total += transaction.algos
+    })
+    let percent = 0
+    let algosNeeded = parseInt(algos)
+    if (algosNeeded == 0) {
+      percent = 100
+    } else {
+      percent = (total / algosNeeded) * 100
     }
-
-    let percent = (total / algos) * 100
 
     if (percent >= 100) {
       percent = 100
       setUnblurred(true)
     }
-    setAlgosRaised(`${total}`)
+    setAlgosRaised(total)
     setPercentageUnblurred(`${percent}%`)
   }
 
