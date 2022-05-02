@@ -25,6 +25,8 @@ const Art = () => {
 
   const dispatch = useDispatch()
   const { self } = useSelector((state) => state.auth)
+  const [isUnblurred, setUnblurred] = useState(false)
+  const [percentageUnblurred, setPercentageUnblurred] = useState('0')
 
   const connector = useSelector(selectConnector)
 
@@ -35,9 +37,28 @@ const Art = () => {
       const response = await axios.get(`${API_URL}/users/${state.creatorID}`)
       setCreator(response.data)
     }
+    const getArtworkTransactions = async () => {
+      const endpoints = transactionIDs.map(
+        (transactionID) => `${API_URL}/transactions/${transactionID}`
+      )
+
+      const transactionRet = await axios
+        .all(endpoints.map((endpoint) => axios.get(endpoint)))
+        .then((transactions) => {
+          return transactions.map((transaction) => transaction.data)
+        })
+      const filteredTransactions = transactionRet.filter(
+        (transaction) => transaction.artworkID == _id
+      )
+
+      getPercentageUnblurred(filteredTransactions)
+    }
 
     if (state.creatorID) {
       fetchData()
+    }
+    if(state.transactionIDs){
+      getArtworkTransactions()
     }
   }, [])
 
@@ -76,17 +97,26 @@ const Art = () => {
     blurredImage,
   } = state
 
-  const isUnblurred = false
+
 
   // FIXME: temporary function to show percentage, will be changed after parseTransactions is implemented
   // TODO: computes the percentage based on algos raised, which is computed in parseTransactions
   // TODO: rename to computePercentageUnblurred to avoid confusion with getPercentageUnblurred in Card.jsx
-  const getPercentageUnblurred = (algos) => {
-    const percent = 10
+  const getPercentageUnblurred = (transactionsList) => {
+    // TODO: set isUnblurred = true if (amount accumulated from transactions) >= algosToUnblur
+    let total = 0
+    for (let transaction in transactionsList) {
+      total += transactionsList[transaction].algos
+    }
 
-    return `${percent}%`
+    let percent = (total / algos) * 100
+
+    if (percent >= 100) {
+      percent = '100'
+      setUnblurred(true)
+    }
+    setPercentageUnblurred(`${percent}%`)
   }
-
   // TODO: implement based on transactionIDs
   const parseTransactions = () => {
     // TODO: compute number of contributors (use a set?)
@@ -192,10 +222,10 @@ const Art = () => {
 
           <div className='artwork-progress'>
             <div className='card-progress-bar'>
-              <div style={{ width: getPercentageUnblurred() }}></div>
+              <div style={{ width: percentageUnblurred }}></div>
             </div>
             <div className='percentage-complete'>
-              {getPercentageUnblurred()} complete
+              {percentageUnblurred} complete
             </div>
           </div>
 
