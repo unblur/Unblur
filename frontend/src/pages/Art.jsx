@@ -31,8 +31,6 @@ const Art = () => {
   const [algosRaised, setAlgosRaised] = useState('0')
   const connector = useSelector(selectConnector)
 
-  // const { isError, isSuccess } = useSelector((state) => state.transactions)
-
   useEffect(() => {
     const fetchData = async () => {
       const response = await axios.get(`${API_URL}/users/${state.creatorID}`)
@@ -48,11 +46,8 @@ const Art = () => {
         .then((transactions) => {
           return transactions.map((transaction) => transaction.data)
         })
-      const filteredTransactions = transactionRet.filter(
-        (transaction) => transaction.artworkID == _id
-      )
 
-      getPercentageUnblurred(filteredTransactions)
+      getPercentageUnblurred(transactionRet)
     }
 
     if (state.creatorID) {
@@ -79,12 +74,6 @@ const Art = () => {
     }
   }, [connector])
 
-  // useEffect(() => {
-  //   if (isSuccess) {
-  //     dispatch(reset())
-  //   }
-  // }, [isSuccess])
-
   if (!state) {
     return <Navigate to='/browse' />
   }
@@ -99,11 +88,7 @@ const Art = () => {
     blurredImage,
   } = state
 
-  // FIXME: temporary function to show percentage, will be changed after parseTransactions is implemented
-  // TODO: computes the percentage based on algos raised, which is computed in parseTransactions
-  // TODO: rename to computePercentageUnblurred to avoid confusion with getPercentageUnblurred in Card.jsx
   const getPercentageUnblurred = (transactionsList) => {
-    // TODO: set isUnblurred = true if (amount accumulated from transactions) >= algosToUnblur
     let total = 0
     for (let transaction in transactionsList) {
       total += transactionsList[transaction].algos
@@ -112,7 +97,7 @@ const Art = () => {
     let percent = (total / algos) * 100
 
     if (percent >= 100) {
-      percent = '100'
+      percent = 100
       setUnblurred(true)
     }
     setAlgosRaised(`${total}`)
@@ -225,7 +210,6 @@ const Art = () => {
 
           <div className='artwork-description'>{description}</div>
 
-          {/* TODO: update contributors and algos raised */}
           <div className='artwork-summary-box'>
             <div className='summary-numbers'>
               <div className='summary-number'>

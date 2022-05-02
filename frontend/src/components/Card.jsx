@@ -14,7 +14,6 @@ const Card = (props) => {
   const isSupporter = false || artwork.isSupporter
 
   const [creator, setCreator] = useState({})
-  // const [transactionList, setTransactionList] = useState({})
   const [isUnblurred, setUnblurred] = useState(false)
   const [percentageUnblurred, setPercentageUnblurred] = useState('0')
 
@@ -43,19 +42,16 @@ const Card = (props) => {
     getArtworkTransactions()
   }, [])
 
-  // TODO: implement based on transactionIDs
   const getPercentageUnblurred = (transactionsList) => {
-    // TODO: set isUnblurred = true if (amount accumulated from transactions) >= algosToUnblur
     const algos = artwork.algosToUnblur
     let total = 0
     for (let transaction in transactionsList) {
       total += transactionsList[transaction].algos
     }
-
     let percent = (total / algos) * 100
 
     if (percent >= 100) {
-      percent = '100'
+      percent = 100
       setUnblurred(true)
     }
     setPercentageUnblurred(`${percent}%`)
