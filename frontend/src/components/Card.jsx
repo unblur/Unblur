@@ -14,7 +14,9 @@ const Card = (props) => {
   const isSupporter = false || artwork.isSupporter
 
   const [creator, setCreator] = useState({})
-  const [transactionList, setTransactionList] = useState({})
+  // const [transactionList, setTransactionList] = useState({})
+  const [isUnblurred, setUnblurred] = useState(false)
+  const [percentageUnblurred, setPercentageUnblurred] = useState('0')
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,7 +35,7 @@ const Card = (props) => {
         })
       const filteredTransactions = transactionRet.filter(transaction =>transaction.artworkID == artwork._id)
   
-      setTransactionList(filteredTransactions)
+      getPercentageUnblurred(filteredTransactions)
     }
     fetchData()
     getArtworkTransactions()
@@ -42,22 +44,25 @@ const Card = (props) => {
   
 
 
-  let isUnblurred = false
+
 
   // TODO: implement based on transactionIDs
-  const getPercentageUnblurred = () => {
+  const getPercentageUnblurred = (transactionsList) => {
     // TODO: set isUnblurred = true if (amount accumulated from transactions) >= algosToUnblur
     const algos = artwork.algosToUnblur
     let total = 0
-    for(let transaction in transactionList){
-      total += transactionList[transaction].algos
+    for(let transaction in transactionsList){
+      total += transactionsList[transaction].algos
     }
 
-    const percent = (total/algos) * 100
+    let percent = (total/algos) * 100
 
-    if(percent >= 100)isUnblurred = true
+    if(percent >= 100){
+      percent = '100'  
+      setUnblurred(true)
+    }
+    setPercentageUnblurred(`${percent}%`); 
 
-    return `${percent}%`
   }
 
   const getUsername = () => {
@@ -93,7 +98,7 @@ const Card = (props) => {
 
         <div className='card-progress-description-container'>
           <div className='card-progress-bar'>
-            <div style={{ width: getPercentageUnblurred() }}></div>
+            <div style={{ width: percentageUnblurred }}></div>
           </div>
 
           <div className='card-title truncate'>{title}</div>
