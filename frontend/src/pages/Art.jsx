@@ -25,43 +25,36 @@ const Art = () => {
 
   const dispatch = useDispatch()
   const { self } = useSelector((state) => state.auth)
+  const [transactions, setTransactions] = useState(null)
   const [isUnblurred, setUnblurred] = useState(false)
-  const [percentageUnblurred, setPercentageUnblurred] = useState('0')
-  const [contributorsNum, setcontributorsNum] = useState('0')
-  const [algosRaised, setAlgosRaised] = useState('0')
+  const [percentageUnblurred, setPercentageUnblurred] = useState('0%')
+  const [contributorsNum, setContributorsNum] = useState(0)
+  const [algosRaised, setAlgosRaised] = useState(0)
   const connector = useSelector(selectConnector)
 
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await axios.get(`${API_URL}/users/${state.creatorID}`)
-      setCreator(response.data)
-    }
-    const getArtworkTransactions = async () => {
-      const endpoints = transactionIDs.map(
-        (transactionID) => `${API_URL}/transactions/${transactionID}`
-      )
-
-      const transactionRet = await axios
-        .all(endpoints.map((endpoint) => axios.get(endpoint)))
-        .then((transactions) => {
-          const contributorsSet = new Set()
-          transactions.forEach((transaction) => {
-            contributorsSet.add(transaction.donatorID)
-          })
-          setcontributorsNum(contributorsSet.size)
-          return transactions.map((transaction) => transaction.data)
-        })
-
-      getPercentageUnblurred(transactionRet)
-    }
-
     if (state.creatorID) {
       fetchData()
     }
+
     if (state.transactionIDs) {
       getArtworkTransactions()
     }
   }, [])
+
+  useEffect(() => {
+    if (transactions) {
+      // Set number of contributors
+      const contributorsSet = new Set()
+      transactions.forEach((transaction) => {
+        contributorsSet.add(transaction.donatorID)
+      })
+      setContributorsNum(contributorsSet.size)
+
+      // Compute algos raised, percentage unblurred, and whether image is unblurred
+      setAlgosRaisedAndSetPercentageUnblurredAndSetImage()
+    }
+  }, [transactions])
 
   useEffect(() => {
     if (!self) {
@@ -92,24 +85,39 @@ const Art = () => {
     blurredImage,
   } = state
 
-  const getPercentageUnblurred = (transactionsList) => {
+  const fetchData = async () => {
+    const response = await axios.get(`${API_URL}/users/${state.creatorID}`)
+    setCreator(response.data)
+  }
+
+  const getArtworkTransactions = async () => {
+    const endpoints = transactionIDs.map(
+      (transactionID) => `${API_URL}/transactions/${transactionID}`
+    )
+
+    const transactionsData = await axios
+      .all(endpoints.map((endpoint) => axios.get(endpoint)))
+      .then((transactions) => {
+        return transactions.map((transaction) => transaction.data)
+      })
+
+    setTransactions(transactionsData)
+  }
+
+  const setAlgosRaisedAndSetPercentageUnblurredAndSetImage = () => {
+    // Compute total algos raised
     let total = 0
-    transactionsList.forEach((transaction) => {
+    transactions.forEach((transaction) => {
       total += transaction.algos
     })
-    let percent = 0
-    let algosNeeded = parseInt(algos)
-    if (algosNeeded == 0) {
-      percent = 100
-    } else {
-      percent = (total / algosNeeded) * 100
-    }
+    setAlgosRaised(total)
 
-    if (percent >= 100) {
+    // Compute percentage unblurred and set whether image is unblurred
+    let percent = (total / algosToUnblur) * 100
+    if (algosToUnblur === 0 || percent >= 100) {
       percent = 100
       setUnblurred(true)
     }
-    setAlgosRaised(total)
     setPercentageUnblurred(`${percent}%`)
   }
 
@@ -206,7 +214,10 @@ const Art = () => {
           {/* TODO: translate creatorID to creator's profile name or username if they don't have one */}
           <div className='artwork-creator'>
             <span>
-              <Link to={creator !== null ? `/user/${creator._id}` : `/browse`} className='light-text user-link'>
+              <Link
+                to={creator !== null ? `/user/${creator._id}` : `/browse`}
+                className='light-text user-link'
+              >
                 {creator.username ?? ''}
               </Link>
             </span>
