@@ -44,6 +44,11 @@ const Art = () => {
       const transactionRet = await axios
         .all(endpoints.map((endpoint) => axios.get(endpoint)))
         .then((transactions) => {
+          const contributorsSet = new Set()
+          transactions.forEach((transaction) => {
+            contributorsSet.add(transaction.donatorID)
+          })
+          setcontributorsNum(contributorsSet.size)
           return transactions.map((transaction) => transaction.data)
         })
 
@@ -55,7 +60,6 @@ const Art = () => {
     }
     if (state.transactionIDs) {
       getArtworkTransactions()
-      setcontributorsNum(Object.keys(state.transactionIDs).length)
     }
   }, [])
 
