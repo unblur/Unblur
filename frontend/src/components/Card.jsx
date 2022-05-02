@@ -15,29 +15,31 @@ const Card = (props) => {
 
   const [creator, setCreator] = useState({})
   const [isUnblurred, setUnblurred] = useState(false)
-  const [percentageUnblurred, setPercentageUnblurred] = useState('0')
+  const [percentageUnblurred, setPercentageUnblurred] = useState('0%')
 
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await axios.get(`${API_URL}/users/${creatorID}`)
-      setCreator(response.data)
-    }
-    const getArtworkTransactions = async () => {
-      const endpoints = transactionIDs.map(
-        (transactionID) => `${API_URL}/transactions/${transactionID}`
-      )
-
-      const transactionRet = await axios
-        .all(endpoints.map((endpoint) => axios.get(endpoint)))
-        .then((transactions) => {
-          return transactions.map((transaction) => transaction.data)
-        })
-
-      getPercentageUnblurred(transactionRet)
-    }
     fetchData()
     getArtworkTransactions()
   }, [])
+
+  const fetchData = async () => {
+    const response = await axios.get(`${API_URL}/users/${creatorID}`)
+    setCreator(response.data)
+  }
+
+  const getArtworkTransactions = async () => {
+    const endpoints = transactionIDs.map(
+      (transactionID) => `${API_URL}/transactions/${transactionID}`
+    )
+
+    const transactionsData = await axios
+      .all(endpoints.map((endpoint) => axios.get(endpoint)))
+      .then((transactions) => {
+        return transactions.map((transaction) => transaction.data)
+      })
+
+    getPercentageUnblurred(transactionsData)
+  }
 
   const getPercentageUnblurred = (transactionsList) => {
     const algos = artwork.algosToUnblur
@@ -94,7 +96,10 @@ const Card = (props) => {
 
           <div className='card-creator truncate'>
             <span>
-              <Link to={creator !== null ? `/user/${creator._id}` : `/browse`} className='light-text user-link'>
+              <Link
+                to={creator !== null ? `/user/${creator._id}` : `/browse`}
+                className='light-text user-link'
+              >
                 {getUsername()}
               </Link>
             </span>
