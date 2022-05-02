@@ -98,7 +98,7 @@ const Art = () => {
       total += transaction.algos
     })
     let percent = 0
-    let algosNeeded = parseInt(algos)
+    let algosNeeded = parseInt(algosToUnblur)
     if (algosNeeded == 0) {
       percent = 100
     } else {
