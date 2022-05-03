@@ -28,7 +28,6 @@ const postComment = asyncHandler(async (req, res) => {
     throw new Error('Artwork does not exist.')
   }
 
-  console.log(req.body)
   const comment = await Comment.create({
     userID: req.user.id,
     content: req.body.content
