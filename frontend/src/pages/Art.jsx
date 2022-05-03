@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { useLocation, Navigate, Link, useParams } from 'react-router-dom'
-import {} from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { getSelf } from '../features/auth/authSlice'
 import { useSelector } from 'react-redux'
@@ -174,10 +173,10 @@ const Art = () => {
           </div>
           <div className='artwork-progress'>
             <div className='card-progress-bar'>
-              <div style={{ width: percentUnblurred() }}></div>
+              <div style={{ width: `${percentUnblurred()}%` }}></div>
             </div>
             <div className='percentage-complete'>
-              {percentUnblurred()} complete
+              {percentUnblurred()}% complete
             </div>
           </div>
           <div className='artwork-description'>{artwork.description}</div>

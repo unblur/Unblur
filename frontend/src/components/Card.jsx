@@ -77,7 +77,7 @@ const Card = (props) => {
 
         <div className='card-progress-description-container'>
           <div className='card-progress-bar'>
-            <div style={{ width: percentageUnblurred() }}></div>
+            <div style={{ width: `${percentageUnblurred()}%` }}></div>
           </div>
 
           <div className='card-title truncate'>{title}</div>
