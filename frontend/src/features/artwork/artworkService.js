@@ -13,6 +13,15 @@ const getArtworks = async (page) => {
   }
 }
 
+// Get artwork by id
+const getArtworkById = async (id) => {
+  const response = await axios.get(`${API_URL}/${id}`)
+
+  return {
+    artwork: response.data,
+  }
+}
+
 // Upload artworks
 const uploadArtwork = async (artworkData, token) => {
   const config = {
@@ -29,6 +38,7 @@ const uploadArtwork = async (artworkData, token) => {
 const artworkService = {
   getArtworks,
   uploadArtwork,
+  getArtworkById,
 }
 
 export default artworkService
