@@ -3,6 +3,7 @@ const Transaction = require('../models/transactionModel')
 const Artwork = require('../models/artworkModel')
 const User = require('../models/userModel')
 const mongoose = require('mongoose')
+const { blurImage } = require('./artworkController')
 
 // @desc    Add new transaction
 // @route   POST /api/transactions/add
@@ -48,6 +49,26 @@ const addTransactions = asyncHandler(async (req, res) => {
   }
   artwork.transactionIDs.push(txn._id)
   await artwork.save()
+
+  // Calculating new blur percentage
+  const transactions = await Transaction.find({ artwork: artwork.id })
+  const total = transactions.reduce(
+    (curTotal, transaction) => curTotal + transaction.algos,
+    0
+  )
+  const percentBlur = Math.max(
+    (100 * (artwork.algosToUnblur - total)) / artwork.algosToUnblur,
+    0
+  )
+
+  console.log(percentBlur)
+
+  // Updating the image
+  await blurImage(
+    `./uploads/${artwork.image}`,
+    `./uploads/${artwork.blurredImage}`,
+    percentBlur
+  )
 
   res.json({ message: 'Added transaction successfully.' })
 })
