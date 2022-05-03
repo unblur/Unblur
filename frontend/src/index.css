@@ -220,6 +220,7 @@ ul {
     position: absolute;
     top: calc(4.4rem + 5px);
     right: 0;
+    z-index: 99;
   }
   .header .header-menu:not(.header-menu-open) {display: none;}
   .header .header-hamburger {display: block;}
