@@ -244,7 +244,7 @@ const updateSelf = asyncHandler(async (req, res) => {
 
   // Check if username exists
   const usernameExists = await User.findOne({ username })
-  if (usernameExists) {
+  if (usernameExists && req.user.id != usernameExists.id) {
     res.status(400)
     throw new Error('Username already exists. Please choose another username.')
   }
