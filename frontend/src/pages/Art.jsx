@@ -78,7 +78,7 @@ const Art = () => {
     if (algosToUnblur === 0 || percent >= 100) {
       percent = 100
     }
-    return percent
+    return percent.toFixed(1)
   }
 
   const onContribute = async (e) => {
