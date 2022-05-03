@@ -122,7 +122,9 @@ const Art = () => {
         connector
       )
       if (confirmData) {
-        toast.success('Transaction made succesfully.')
+        toast.success(
+          'Transaction made succesfully. Page will automatically refresh once updated image is ready.'
+        )
         const transactionData = {
           donatorID: self._id,
           receiverID: artwork.creatorID._id,
