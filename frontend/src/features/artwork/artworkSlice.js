@@ -3,6 +3,8 @@ import artworkService from './artworkService'
 
 const initialState = {
   artworks: [],
+  artwork: null,
+  artworkLoading: true,
   isError: false,
   isSuccess: false,
   isLoading: false,
@@ -15,6 +17,18 @@ export const getArtworks = createAsyncThunk(
   async (page, thunkAPI) => {
     try {
       return await artworkService.getArtworks(page)
+    } catch (error) {
+      return thunkAPI.rejectWithValue(getErrorMessage(error))
+    }
+  }
+)
+
+// Get artwork by ID
+export const getArtworkById = createAsyncThunk(
+  'artwork/getbyid',
+  async (id, thunkAPI) => {
+    try {
+      return await artworkService.getArtworkById(id)
     } catch (error) {
       return thunkAPI.rejectWithValue(getErrorMessage(error))
     }
@@ -52,6 +66,9 @@ export const artworkSlice = createSlice({
       state.isError = false
       state.message = ''
     },
+    setArtwork: (state, action) => {
+      state.artwork = action.payload
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -74,7 +91,17 @@ export const artworkSlice = createSlice({
         state.isError = true
         state.message = action.payload
       })
-
+      // Get artwork by id
+      .addCase(getArtworkById.pending, (state, action) => {
+        state.artworkLoading = true
+      })
+      .addCase(getArtworkById.fulfilled, (state, action) => {
+        state.artworkLoading = false
+        state.artwork = action.payload.artwork
+      })
+      .addCase(getArtworkById.rejected, (state, action) => {
+        state.artworkLoading = false
+      })
       // Upload artwork
       .addCase(uploadArtwork.pending, (state) => {
         state.isLoading = true
@@ -92,5 +119,5 @@ export const artworkSlice = createSlice({
   },
 })
 
-export const { reset } = artworkSlice.actions
+export const { reset, setArtwork } = artworkSlice.actions
 export default artworkSlice.reducer

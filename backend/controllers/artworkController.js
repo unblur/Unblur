@@ -24,6 +24,8 @@ const getArtworks = asyncHandler(async (req, res) => {
   const ARTWORKS_PER_REQUEST = 12 // We have 4 responisve sizes are 12 works perfectly for all sizes
   const page = Math.max(req.query.page || 1, 1)
   const artworks = await Artwork.find()
+    .populate('transactionIDs')
+    .populate('creatorID', ['username', 'wallet'])
     .select('-image')
     .skip((page - 1) * ARTWORKS_PER_REQUEST)
     .limit(ARTWORKS_PER_REQUEST)
@@ -53,7 +55,10 @@ const uploadWrapper = asyncHandler(async (req, res, next) => {
 // @route   GET /api/artworks/:id
 // @access  Public
 const getArtwork = asyncHandler(async (req, res) => {
-  const artwork = await Artwork.findById(req.params.id).select('-image')
+  const artwork = await Artwork.findById(req.params.id)
+    .populate('transactionIDs')
+    .populate('creatorID', ['username', 'wallet'])
+    .select('-image')
 
   if (!artwork) {
     res.status(500)
