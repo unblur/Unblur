@@ -61,8 +61,6 @@ const addTransactions = asyncHandler(async (req, res) => {
     0
   )
 
-  console.log(percentBlur)
-
   // Updating the image
   await blurImage(
     `./uploads/${artwork.image}`,
