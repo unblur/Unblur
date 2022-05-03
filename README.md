@@ -2,6 +2,10 @@
 
 CSE416 Group Project
 
+## Introduction
+
+Hi! Welcome to the CSE 416 team WOLFS GitHub repo! Our project is called Unblur, a web application that allows content creators to upload their work and recieve donations in the form of Algos, the native coin on the Algorand blockchain.
+
 ## Repo Setup Instructions
 
 1. Clone this repo: `git clone git@github.com:unblur/Unblur.git`
@@ -19,3 +23,11 @@ CSE416 Group Project
 1. Be in the Unblur repo
 2. Add a `.env` file based on [`.env-setup.md`](.env-setup.md)
 3. Start server with: `npm run server`
+
+## Team Members
+
+1. Zhen Yi Pan
+2. Angel Velazquez
+3. Ken Otomo
+4. Sajed Nahian
+5. Xavier Velez
