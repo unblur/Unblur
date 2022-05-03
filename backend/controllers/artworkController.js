@@ -149,4 +149,5 @@ module.exports = {
   getArtworks,
   getArtwork,
   uploadArtwork,
+  blurImage,
 }
