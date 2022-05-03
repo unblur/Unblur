@@ -41,6 +41,7 @@ const registerUser = asyncHandler(async (req, res) => {
   const user = await User.create({
     email,
     username,
+    profileName: username,
     password: hashedPassword,
   })
   if (!user) {
