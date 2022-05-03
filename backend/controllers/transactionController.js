@@ -51,7 +51,7 @@ const addTransactions = asyncHandler(async (req, res) => {
   await artwork.save()
 
   // Calculating new blur percentage
-  const transactions = await Transaction.find({ artwork: artwork.id })
+  const transactions = await Transaction.find({ artworkID: artwork.id })
   const total = transactions.reduce(
     (curTotal, transaction) => curTotal + transaction.algos,
     0
