@@ -31,6 +31,7 @@ app.use(express.urlencoded({ extended: false }))
 app.use('/api/users', require('./routes/userRoutes'))
 app.use('/api/artworks', require('./routes/artworkRoutes'))
 app.use('/api/transactions', require('./routes/transactionRoutes'))
+app.use('/api/comments', require('./routes/commentRoutes'))
 
 // API docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))

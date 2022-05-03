@@ -29,7 +29,9 @@ const artworkSchema = mongoose.Schema(
     dateUnblurred: {
       type: Date,
     },
-    commentIDs: [mongoose.Schema.Types.ObjectId],
+    commentIDs: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "Comment" }
+    ],
     transactionIDs: [
       { type: mongoose.Schema.Types.ObjectId, ref: 'Transaction' },
     ],
