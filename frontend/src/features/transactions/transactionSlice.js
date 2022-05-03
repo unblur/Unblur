@@ -53,6 +53,10 @@ export const transactionSlice = createSlice({
         state.isLoading = false
         state.isSuccess = true
         state.message = action.payload.message
+        // show user success message then reload page
+        setTimeout(() => {
+          window.location.reload()
+        }, 5000)
       })
       .addCase(addTransaction.rejected, (state, action) => {
         state.isLoading = false

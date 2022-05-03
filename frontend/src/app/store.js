@@ -9,6 +9,7 @@ export const store = configureStore({
     auth: authReducer,
     artwork: artworkReducer,
     walletConnect: walletConnectReducer,
+    transactions: transactionReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
