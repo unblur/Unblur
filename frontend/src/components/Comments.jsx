@@ -26,6 +26,7 @@ export const Comments = ({ artworkId }) => {
   }
 
   const postComment = async () => {
+    if (!comment) return
     const token = auth.user.token
     const config = {
       headers: {
@@ -35,8 +36,8 @@ export const Comments = ({ artworkId }) => {
     const data = {
       content: comment,
     }
-    const response = await axios.post(`${API_URL}/${artworkId}`, data, config)
     setComment('')
+    const response = await axios.post(`${API_URL}/${artworkId}`, data, config)
     await getComments()
 
     return response.data
