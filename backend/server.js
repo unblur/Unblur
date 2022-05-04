@@ -21,7 +21,17 @@ app.use(cors())
 
 // Serving images
 // TODO: make sure fully unblurred images are blocked from being served statically
-app.use('/files', express.static(path.join(__dirname, '..', 'uploads')))
+app.use(
+  '/files',
+  (req, res, next) => {
+    console.log(req.url)
+    if (!req.url.includes('-blurred')) {
+      throw new Error('Access to that file is not allowed')
+    }
+    next()
+  },
+  express.static(path.join(__dirname, '..', 'uploads'))
+)
 
 // Body parser
 app.use(express.json())

@@ -42,11 +42,6 @@ const Card = (props) => {
   }
 
   const blurredImageLink = `http://localhost:8000/files/${artwork.blurredImage}`
-  const index = artwork.blurredImage.indexOf('-')
-  const unblurredImageLink = `http://localhost:8000/files/${artwork.blurredImage.substring(
-    0,
-    index
-  )}${artwork.blurredImage.substring(index + 8)}`
 
   const navigateToArtPage = () => {
     navigate(artPage)
@@ -66,11 +61,7 @@ const Card = (props) => {
           <div
             className='card-image'
             style={{
-              backgroundImage: `url(${
-                percentageUnblurred() >= 100
-                  ? unblurredImageLink
-                  : blurredImageLink
-              })`,
+              backgroundImage: `url(${blurredImageLink})`,
             }}
           ></div>
         </div>

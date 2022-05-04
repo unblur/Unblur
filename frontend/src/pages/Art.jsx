@@ -57,11 +57,6 @@ const Art = () => {
   }
 
   const blurredImageLink = `http://localhost:8000/files/${artwork.blurredImage}`
-  const index = artwork.blurredImage.indexOf('-')
-  const unblurredImageLink = `http://localhost:8000/files/${artwork.blurredImage.substring(
-    0,
-    index
-  )}${artwork.blurredImage.substring(index + 8)}`
 
   const algosRaised = () => {
     // Compute total algos raised
@@ -154,12 +149,7 @@ const Art = () => {
       <div className='artwork-container'>
         {/* TODO: update image url */}
         <div className='artwork-image-container'>
-          <img
-            src={
-              percentUnblurred() >= 100 ? unblurredImageLink : blurredImageLink
-            }
-            className='artwork'
-          />
+          <img src={blurredImageLink} className='artwork' />
         </div>
         <div className='artwork-info-container'>
           <h1>{artwork.title}</h1>
