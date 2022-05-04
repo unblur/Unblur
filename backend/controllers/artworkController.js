@@ -4,6 +4,7 @@ const { exec } = require('child_process')
 const path = require('path')
 const multer = require('multer')
 const Jimp = require('jimp')
+const fs = require('fs')
 
 const storage = multer.diskStorage({
   destination: './uploads/',
@@ -119,6 +120,16 @@ const blurImage = async (imagePath, imageOutPath, percentBlur) => {
   const imageWidthAlgo = (blur) => 300 - 2.5 * blur
 
   return new Promise(async (resolve, reject) => {
+    if (percentBlur <= 1) {
+      fs.copyFile(imagePath, imageOutPath, (err) => {
+        if (err) {
+          reject()
+        } else {
+          resolve()
+        }
+      })
+      return
+    }
     const FRONT_END_IMAGE_MAX_HEIGHT_MAX_WIDTH = 300
     const image = await Jimp.read(imagePath)
     const { width, height } = image.bitmap
