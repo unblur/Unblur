@@ -14,6 +14,7 @@ import {
 } from '../features/walletconnect/walletConnectSlice'
 import { addTransaction } from '../features/transactions/transactionSlice'
 import { getArtworkById } from '../features/artwork/artworkSlice'
+import { Comments } from '../components/Comments'
 // TODO: update API_URL
 const API_URL = `http://localhost:8000/api`
 
@@ -214,6 +215,7 @@ const Art = () => {
           </div>
         </div>
       </div>
+      <Comments artworkId={artwork._id} />
     </>
   )
 }

@@ -7,7 +7,13 @@ const Artwork = require('../models/artworkModel')
 // @access  Public
 const getCommentsForArtwork = asyncHandler(async (req, res) => {
   const artwork = await Artwork.findById(req.params.id)
-    .populate('commentIDs')
+    .populate({
+      path: 'commentIDs',
+      populate: {
+        path: 'userID',
+        select: 'username _id',
+      },
+    })
     .select('+commentIDs')
 
   if (!artwork) {
@@ -30,7 +36,7 @@ const postComment = asyncHandler(async (req, res) => {
 
   const comment = await Comment.create({
     userID: req.user.id,
-    content: req.body.content
+    content: req.body.content,
   })
   if (!comment) {
     res.status(400)
@@ -41,11 +47,11 @@ const postComment = asyncHandler(async (req, res) => {
   await artwork.save()
 
   res.json({
-    message: 'Successfully posted comment.'
+    message: 'Successfully posted comment.',
   })
 })
 
 module.exports = {
   getCommentsForArtwork,
-  postComment
+  postComment,
 }
