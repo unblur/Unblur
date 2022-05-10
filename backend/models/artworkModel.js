@@ -5,6 +5,7 @@ const artworkSchema = mongoose.Schema(
     creatorID: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
+      ref: 'User',
     },
     // This is the unblurred image that is NOT statically served
     image: {
@@ -28,8 +29,12 @@ const artworkSchema = mongoose.Schema(
     dateUnblurred: {
       type: Date,
     },
-    commentIDs: [mongoose.Schema.Types.ObjectId],
-    transactionIDs: [mongoose.Schema.Types.ObjectId],
+    commentIDs: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "Comment" }
+    ],
+    transactionIDs: [
+      { type: mongoose.Schema.Types.ObjectId, ref: 'Transaction' },
+    ],
   },
   {
     timestamps: true,

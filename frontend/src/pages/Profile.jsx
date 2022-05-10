@@ -154,6 +154,9 @@ const Profile = () => {
       {supportedArtworks.length > 0 && (
         <CardsContainer artworks={supportedArtworks} />
       )}
+      {supportedArtworks.length + createdArtworks.length == 0 && (
+        <p>This user hasn't been active.</p>
+      )}
     </>
   )
 }

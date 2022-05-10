@@ -22,7 +22,17 @@ app.use(cors())
 
 // Serving images
 // TODO: make sure fully unblurred images are blocked from being served statically
-app.use('/files', express.static(path.join(__dirname, '..', 'uploads')))
+app.use(
+  '/files',
+  (req, res, next) => {
+    console.log(req.url)
+    if (!req.url.includes('-blurred')) {
+      throw new Error('Access to that file is not allowed')
+    }
+    next()
+  },
+  express.static(path.join(__dirname, '..', 'uploads'))
+)
 
 // Body parser
 app.use(express.json())
@@ -34,6 +44,8 @@ app.use('/api/users', require('./routes/userRoutes'))
 app.use('/api/artworks', require('./routes/artworkRoutes'))
 app.use('/api/transactions', require('./routes/transactionRoutes'))
 app.use(express.static('../frontend/build'));
+app.use('/api/comments', require('./routes/commentRoutes'))
+
 // API docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
