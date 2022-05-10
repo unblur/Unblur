@@ -24,7 +24,7 @@ app.use(cors())
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "..", "frontend", "build", "index.html"))); // change this if your dir structure is different
   app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+    res.sendFile(path.join(__dirname, "..", "frontend", "build", "index.html"));
   });
 }
 
