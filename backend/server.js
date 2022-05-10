@@ -21,6 +21,15 @@ app.use(cors())
 
 // Serving images
 // TODO: make sure fully unblurred images are blocked from being served statically
+
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "..", "frontend", "build", "index.html"))); // change this if your dir structure is different
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+  });
+}
+
 app.use(
   '/files',
   (req, res, next) => {
@@ -41,11 +50,6 @@ app.use(express.urlencoded({ extended: false }))
 app.use('/api/users', require('./routes/userRoutes'))
 app.use('/api/artworks', require('./routes/artworkRoutes'))
 app.use('/api/transactions', require('./routes/transactionRoutes'))
-<<<<<<< HEAD
-app.use(express.static('../frontend/build'));
-app.use('/api/comments', require('./routes/commentRoutes'))
-=======
->>>>>>> parent of 7fe4ee2 (Testing deployment with Azure Web App)
 
 // API docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
