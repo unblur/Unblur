@@ -1,46 +1,29 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import axios from 'axios'
+import { Link, useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { setArtwork } from '../features/artwork/artworkSlice'
 
 // TODO: update API_URL
 const API_URL = `http://localhost:8000/api`
 
 const Card = (props) => {
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
   const { artwork } = props
-  const { creatorID, title, description, transactionIDs } = artwork
+  const {
+    algosToUnblur,
+    title,
+    description,
+    transactionIDs: transactionsList,
+    creatorID: creator,
+  } = artwork
   const artPage = `/art/${artwork._id}`
 
   const isCreator = false || artwork.isCreator
   const isSupporter = false || artwork.isSupporter
 
-  const [creator, setCreator] = useState({})
-  const [isUnblurred, setUnblurred] = useState(false)
-  const [percentageUnblurred, setPercentageUnblurred] = useState('0')
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await axios.get(`${API_URL}/users/${creatorID}`)
-      setCreator(response.data)
-    }
-    const getArtworkTransactions = async () => {
-      const endpoints = transactionIDs.map(
-        (transactionID) => `${API_URL}/transactions/${transactionID}`
-      )
-
-      const transactionRet = await axios
-        .all(endpoints.map((endpoint) => axios.get(endpoint)))
-        .then((transactions) => {
-          return transactions.map((transaction) => transaction.data)
-        })
-
-      getPercentageUnblurred(transactionRet)
-    }
-    fetchData()
-    getArtworkTransactions()
-  }, [])
-
-  const getPercentageUnblurred = (transactionsList) => {
-    const algos = artwork.algosToUnblur
+  const percentageUnblurred = () => {
+    const algos = algosToUnblur
     let total = 0
     transactionsList.forEach((transaction) => {
       total += transaction.algos
@@ -49,9 +32,9 @@ const Card = (props) => {
 
     if (percent >= 100 || algos == 0) {
       percent = 100
-      setUnblurred(true)
     }
-    setPercentageUnblurred(`${percent}%`)
+
+    return percent
   }
 
   const getUsername = () => {
@@ -59,14 +42,14 @@ const Card = (props) => {
   }
 
   const blurredImageLink = `http://localhost:8000/files/${artwork.blurredImage}`
-  const index = artwork.blurredImage.indexOf('-')
-  const unblurredImageLink = `http://localhost:8000/files/${artwork.blurredImage.substring(
-    0,
-    index
-  )}${artwork.blurredImage.substring(index + 8)}`
+
+  const navigateToArtPage = () => {
+    navigate(artPage)
+    dispatch(setArtwork(artwork))
+  }
 
   return (
-    <Link to={artPage} state={artwork} className='reset-text-styles'>
+    <div onClick={navigateToArtPage}>
       <div className='card-container'>
         {/* Card tags */}
         {isSupporter && (
@@ -78,25 +61,21 @@ const Card = (props) => {
           <div
             className='card-image'
             style={{
-              backgroundImage: `url(${
-                isUnblurred ? unblurredImageLink : blurredImageLink
-              })`,
+              backgroundImage: `url(${blurredImageLink})`,
             }}
           ></div>
         </div>
 
         <div className='card-progress-description-container'>
           <div className='card-progress-bar'>
-            <div style={{ width: percentageUnblurred }}></div>
+            <div style={{ width: `${percentageUnblurred()}%` }}></div>
           </div>
 
           <div className='card-title truncate'>{title}</div>
 
           <div className='card-creator truncate'>
             <span>
-              <Link to={creator !== null ? `/user/${creator._id}` : `/browse`} className='light-text user-link'>
-                {getUsername()}
-              </Link>
+              <div className='light-text'>{getUsername()}</div>
             </span>
           </div>
 
@@ -105,7 +84,7 @@ const Card = (props) => {
           </div>
         </div>
       </div>
-    </Link>
+    </div>
   )
 }
 

@@ -4,6 +4,7 @@ const { exec } = require('child_process')
 const path = require('path')
 const multer = require('multer')
 const Jimp = require('jimp')
+const fs = require('fs')
 
 const storage = multer.diskStorage({
   destination: './uploads/',
@@ -24,6 +25,8 @@ const getArtworks = asyncHandler(async (req, res) => {
   const ARTWORKS_PER_REQUEST = 12 // We have 4 responisve sizes are 12 works perfectly for all sizes
   const page = Math.max(req.query.page || 1, 1)
   const artworks = await Artwork.find()
+    .populate('transactionIDs')
+    .populate('creatorID', ['username', 'wallet'])
     .select('-image')
     .skip((page - 1) * ARTWORKS_PER_REQUEST)
     .limit(ARTWORKS_PER_REQUEST)
@@ -53,7 +56,10 @@ const uploadWrapper = asyncHandler(async (req, res, next) => {
 // @route   GET /api/artworks/:id
 // @access  Public
 const getArtwork = asyncHandler(async (req, res) => {
-  const artwork = await Artwork.findById(req.params.id).select('-image')
+  const artwork = await Artwork.findById(req.params.id)
+    .populate('transactionIDs')
+    .populate('creatorID', ['username', 'wallet'])
+    .select('-image')
 
   if (!artwork) {
     res.status(500)
@@ -114,6 +120,16 @@ const blurImage = async (imagePath, imageOutPath, percentBlur) => {
   const imageWidthAlgo = (blur) => 300 - 2.5 * blur
 
   return new Promise(async (resolve, reject) => {
+    if (percentBlur <= 1) {
+      fs.copyFile(imagePath, imageOutPath, (err) => {
+        if (err) {
+          reject()
+        } else {
+          resolve()
+        }
+      })
+      return
+    }
     const FRONT_END_IMAGE_MAX_HEIGHT_MAX_WIDTH = 300
     const image = await Jimp.read(imagePath)
     const { width, height } = image.bitmap
@@ -144,4 +160,5 @@ module.exports = {
   getArtworks,
   getArtwork,
   uploadArtwork,
+  blurImage,
 }

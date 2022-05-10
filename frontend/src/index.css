@@ -220,12 +220,17 @@ ul {
     position: absolute;
     top: calc(4.4rem + 5px);
     right: 0;
+    z-index: 99;
   }
-  .header .header-menu:not(.header-menu-open) {display: none;}
-  .header .header-hamburger {display: block;}
+  .header .header-menu:not(.header-menu-open) {
+    display: none;
+  }
+  .header .header-hamburger {
+    display: block;
+  }
   .header-menu .header-link {
     padding: 10px 25px;
-    width: 6rem
+    width: 6rem;
   }
 }
 
@@ -457,4 +462,17 @@ ul {
 .wallet-address {
   text-align: left;
   margin: 0 0 5px 3px;
+}
+
+.comment-textarea {
+  margin-top: 1rem;
+  resize: vertical;
+  width: 100%;
+  padding: 1rem;
+  font-family: 'Roboto', sans-serif;
+}
+
+.comment-container {
+  max-width: 600px;
+  margin: 0 auto 4rem auto;
 }

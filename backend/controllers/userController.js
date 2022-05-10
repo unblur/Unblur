@@ -41,6 +41,7 @@ const registerUser = asyncHandler(async (req, res) => {
   const user = await User.create({
     email,
     username,
+    profileName: username,
     password: hashedPassword,
   })
   if (!user) {
@@ -244,7 +245,7 @@ const updateSelf = asyncHandler(async (req, res) => {
 
   // Check if username exists
   const usernameExists = await User.findOne({ username })
-  if (usernameExists) {
+  if (usernameExists && req.user.id != usernameExists.id) {
     res.status(400)
     throw new Error('Username already exists. Please choose another username.')
   }
@@ -450,10 +451,7 @@ const resetPassword = asyncHandler(async (req, res) => {
 
 // Generate JWT
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    // FIXME: auto sign the user out if token is expired on the browser
-    expiresIn: '60d',
-  })
+  return jwt.sign({ id }, process.env.JWT_SECRET, {})
 }
 
 module.exports = {

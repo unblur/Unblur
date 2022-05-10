@@ -6,7 +6,7 @@ import CardsContainer from '../components/CardsContainer'
 
 const User = () => {
   // TODO: optimize - move to redux state
-  const [user, setUser] = useState({isLoading:true})
+  const [user, setUser] = useState({ isLoading: true })
   const [getUserError, setGetUserError] = useState(false)
   const [createdArtworks, setCreatedArtworks] = useState([])
   const [supportedArtworks, setSupportedArtworks] = useState([])
@@ -28,13 +28,15 @@ const User = () => {
       )
 
       // allSettled instead of all so one error does not reject all transactions
-      const transactions = await Promise
-        .allSettled(endpoints.map((endpoint) => axios.get(endpoint)))
-        .then((transactionPromises) => {
-          return transactionPromises
-            .filter((transactionPromise) => transactionPromise.status === 'fulfilled')
-            .map((transactionPromise) => transactionPromise.value.data)
-        })
+      const transactions = await Promise.allSettled(
+        endpoints.map((endpoint) => axios.get(endpoint))
+      ).then((transactionPromises) => {
+        return transactionPromises
+          .filter(
+            (transactionPromise) => transactionPromise.status === 'fulfilled'
+          )
+          .map((transactionPromise) => transactionPromise.value.data)
+      })
 
       return transactions
     }
@@ -47,11 +49,11 @@ const User = () => {
           })
         ),
       ]
-  
+
       const endpoints = artworkIDs.map(
         (artworkID) => `${API_URL}/artworks/${artworkID}`
       )
-  
+
       const artworks = await axios
         .all(endpoints.map((endpoint) => axios.get(endpoint)))
         .then((artworks) => {
@@ -60,7 +62,7 @@ const User = () => {
             return artwork.data
           })
         })
-  
+
       return artworks
     }
 
@@ -68,7 +70,7 @@ const User = () => {
       const endpoints = user.artworkIDs.map(
         (artworkID) => `${API_URL}/artworks/${artworkID}`
       )
-  
+
       const artworks = await axios
         .all(endpoints.map((endpoint) => axios.get(endpoint)))
         .then((artworks) => {
@@ -77,13 +79,14 @@ const User = () => {
             return artwork.data
           })
         })
-  
+
       return artworks
     }
 
     const loadUser = async () => {
       let error = false
-      const user = await axios.get(`${API_URL}/users/${id}`)
+      const user = await axios
+        .get(`${API_URL}/users/${id}`)
         .then((user) => {
           setUser(user.data)
           return user
@@ -97,9 +100,10 @@ const User = () => {
       getTransactions(user.data)
         .then((transactions) => getSupportedArtworks(transactions))
         .then((supportedArtworks) => setSupportedArtworks(supportedArtworks))
-      
-      getCreatedArtworks(user.data)
-        .then((createdArtworks) => setCreatedArtworks(createdArtworks))
+
+      getCreatedArtworks(user.data).then((createdArtworks) =>
+        setCreatedArtworks(createdArtworks)
+      )
     }
 
     loadUser()
@@ -109,7 +113,7 @@ const User = () => {
   if (getUserError) {
     return (
       <>
-        <Navigate to="/browse"/>
+        <Navigate to='/browse' />
       </>
     )
   }
@@ -125,9 +129,7 @@ const User = () => {
   return (
     <>
       <section className='heading left-align'>
-        <h1>
-          {`${user.profileName || user.username}`}
-        </h1>
+        <h1>{`${user.profileName || user.username}`}</h1>
         <div className='profile-username light-text'>@{user.username}</div>
       </section>
 
@@ -137,6 +139,9 @@ const User = () => {
       )}
       {supportedArtworks.length > 0 && (
         <CardsContainer artworks={supportedArtworks} />
+      )}
+      {supportedArtworks.length + createdArtworks.length == 0 && (
+        <p>This user hasn't been active.</p>
       )}
     </>
   )
