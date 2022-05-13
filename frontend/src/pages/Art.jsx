@@ -16,7 +16,9 @@ import { addTransaction } from '../features/transactions/transactionSlice'
 import { getArtworkById } from '../features/artwork/artworkSlice'
 import { Comments } from '../components/Comments'
 // TODO: update API_URL
-const API_URL = `http://unblur-final.azurewebsites.net/api`
+const port = process.env.PORT || 8080
+const hostName = process.env.WEBSITE_HOSTNAME || "unblur-final.azurewebsites.net"
+const API_URL = `http://${hostName}:${port}`
 
 const Art = () => {
   const { id } = useParams()
@@ -55,8 +57,10 @@ const Art = () => {
   if (!artwork) {
     return <div>loading...</div>
   }
-
-  const blurredImageLink = `http://localhost:8000/files/${artwork.blurredImage}`
+  const port = process.env.PORT || 8080
+  const hostName = process.env.WEBSITE_HOSTNAME || "unblur-final.azurewebsites.net"
+  const API_URL = `http://${hostName}:${port}`
+  const blurredImageLink = `${API_URL}/files/${artwork.blurredImage}`
 
   const algosRaised = () => {
     // Compute total algos raised

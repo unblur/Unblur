@@ -23,7 +23,7 @@ if (process.env.NODE_ENV === 'production') {
       path.join(__dirname, '..', 'frontend', 'build')
     )
   ) // change this if your dir structure is different
-  app.get('/*', (req, res) => {
+  app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'frontend', 'build', 'index.html'))
   })
 } else {
