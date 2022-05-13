@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { setArtwork } from '../features/artwork/artworkSlice'
-
 // TODO: update API_URL
-const API_URL = `http://unblur-final.azurewebsites.net/api`
+const port = process.env.PORT || 8080
+const hostName = process.env.WEBSITE_HOSTNAME || "unblur-final.azurewebsites.net"
+const API_URL = `http://${hostName}:${port}`
 
 const Card = (props) => {
   const navigate = useNavigate()
@@ -40,8 +41,10 @@ const Card = (props) => {
   const getUsername = () => {
     return creator.username ?? ''
   }
-
-  const blurredImageLink = `http://localhost:8000/files/${artwork.blurredImage}`
+  const port = process.env.PORT || 8080
+  const hostName = process.env.WEBSITE_HOSTNAME || "unblur-final.azurewebsites.net"
+  const API_URL = `http://${hostName}:${port}`
+  const blurredImageLink = `${API_URL}/files/${artwork.blurredImage}`
 
   const navigateToArtPage = () => {
     navigate(artPage)
