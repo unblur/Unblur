@@ -17,7 +17,8 @@ import { getArtworkById } from '../features/artwork/artworkSlice'
 import { Comments } from '../components/Comments'
 // TODO: update API_URL
 const port = process.env.PORT || 8080
-const hostName = process.env.WEBSITE_HOSTNAME || "unblur-final.azurewebsites.net"
+const hostName =
+  process.env.WEBSITE_HOSTNAME || 'unblur-final.azurewebsites.net'
 const API_URL = `http://${hostName}:${port}`
 
 const Art = () => {
@@ -58,7 +59,8 @@ const Art = () => {
     return <div>loading...</div>
   }
   const port = process.env.PORT || 8080
-  const hostName = process.env.WEBSITE_HOSTNAME || "unblur-final.azurewebsites.net"
+  const hostName =
+    process.env.WEBSITE_HOSTNAME || 'unblur-final.azurewebsites.net'
   const API_URL = `http://${hostName}:${port}`
   const blurredImageLink = `${API_URL}/files/${artwork.blurredImage}`
 
