@@ -12,7 +12,7 @@ const User = () => {
   const [supportedArtworks, setSupportedArtworks] = useState([])
 
   // TODO: update API_URL
-  const API_URL = `http://localhost:8000/api`
+  const API_URL = `http://unblur-final.azurewebsites.net/api`
 
   const { id } = useParams()
 

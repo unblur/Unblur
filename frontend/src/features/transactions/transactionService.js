@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 // TODO: update API_URL
-const API_URL = `http://localhost:8000/api/transactions`
+const API_URL = `http://unblur-final.azurewebsites.net/api/transactions`
 
 // Add Transaction
 const addTransaction = async (token, data) => {

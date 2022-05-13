@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 // TODO: update API_URL
-const API_URL = `http://localhost:8000/api/users`
+const API_URL = `http://unblur-final.azurewebsites.net/api/users`
 
 // Sign up
 const signUp = async (userData) => {

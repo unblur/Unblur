@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 // TODO: update API_URL
-const API_URL = `http://localhost:8000/api/artworks`
+const API_URL = `http://unblur-final.azurewebsites.net/api/artworks`
 
 // Get all artworks
 const getArtworks = async (page) => {

@@ -15,7 +15,7 @@ const Profile = () => {
   const [transactions, setTransactions] = useState([])
 
   // TODO: update API_URL
-  const API_URL = `http://localhost:8000/api`
+  const API_URL = `http://unblur-final.azurewebsites.net/api`
 
   const dispatch = useDispatch()
   const { self, isLoading, isError, isSuccess, message } = useSelector(
