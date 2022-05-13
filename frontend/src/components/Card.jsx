@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux'
 import { setArtwork } from '../features/artwork/artworkSlice'
 
 // TODO: update API_URL
-const API_URL = `http://localhost:8000/api`
+const API_URL = `http://unblur-final.azurewebsites.net/api`
 
 const Card = (props) => {
   const navigate = useNavigate()
