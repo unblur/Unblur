@@ -1,7 +1,9 @@
 import axios from 'axios'
 
 // TODO: update API_URL
-const API_URL = `http://unblur-final.azurewebsites.net/api/users`
+const port = process.env.PORT || 8080
+const hostName = process.env.WEBSITE_HOSTNAME || "unblur-final.azurewebsites.net"
+const API_URL = `http://${hostName}:${port}`
 
 // Sign up
 const signUp = async (userData) => {

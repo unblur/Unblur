@@ -15,7 +15,9 @@ const Profile = () => {
   const [transactions, setTransactions] = useState([])
 
   // TODO: update API_URL
-  const API_URL = `http://unblur-final.azurewebsites.net/api`
+  const port = process.env.PORT || 8080
+  const hostName = process.env.WEBSITE_HOSTNAME || "unblur-final.azurewebsites.net"
+  const API_URL = `http://${hostName}:${port}`
 
   const dispatch = useDispatch()
   const { self, isLoading, isError, isSuccess, message } = useSelector(
