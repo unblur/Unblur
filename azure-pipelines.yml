@@ -9,7 +9,7 @@ trigger:
 variables:
 
   # Azure Resource Manager connection created during pipeline creation
-  azureSubscription: '36b5da47-25f9-4a17-8b81-c146d506f248'
+  azureSubscription: 'Azure for Students(1)(36b5da47-25f9-4a17-8b81-c146d506f248)'
 
   # Web app name
   webAppName: 'Unblur'
