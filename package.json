@@ -8,7 +8,7 @@
     "server": "nodemon backend/server.js",
     "client": "npm start --prefix frontend",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "azure": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client && npm run start"
+    "azure": "NPM_CONFIG_PRODUCTION=false npm install --prefix frontend && npm run build --prefix frontend && npm run start"
   },
   "repository": {
     "type": "git",
