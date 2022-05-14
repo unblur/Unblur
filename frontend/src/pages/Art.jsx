@@ -19,7 +19,7 @@ import { Comments } from '../components/Comments'
 const port = process.env.PORT || 8080
 const hostName =
   process.env.WEBSITE_HOSTNAME || 'unblur-final.azurewebsites.net'
-const API_URL = `http://${hostName}:${port}/api`
+const API_URL = `https://${hostName}:${port}/api`
 
 const Art = () => {
   const { id } = useParams()
@@ -61,7 +61,7 @@ const Art = () => {
   const port = process.env.PORT || 8080
   const hostName =
     process.env.WEBSITE_HOSTNAME || 'unblur-final.azurewebsites.net'
-  const API_URL = `http://${hostName}:${port}`
+  const API_URL = `https://${hostName}:${port}`
   const blurredImageLink = `${API_URL}/files/${artwork.blurredImage}`
 
   const algosRaised = () => {

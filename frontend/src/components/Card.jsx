@@ -5,7 +5,7 @@ import { setArtwork } from '../features/artwork/artworkSlice'
 // TODO: update API_URL
 const port = process.env.PORT || 8080
 const hostName = process.env.WEBSITE_HOSTNAME || "unblur-final.azurewebsites.net"
-const API_URL = `http://${hostName}:${port}`
+const API_URL = `https://${hostName}:${port}`
 
 const Card = (props) => {
   const navigate = useNavigate()
@@ -43,7 +43,7 @@ const Card = (props) => {
   }
   const port = process.env.PORT || 8080
   const hostName = process.env.WEBSITE_HOSTNAME || "unblur-final.azurewebsites.net"
-  const API_URL = `http://${hostName}:${port}`
+  const API_URL = `https://${hostName}:${port}`
   const blurredImageLink = `${API_URL}/files/${artwork.blurredImage}`
 
   const navigateToArtPage = () => {
