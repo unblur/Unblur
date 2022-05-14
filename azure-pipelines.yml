@@ -9,7 +9,7 @@ trigger:
 variables:
 
   # Azure Resource Manager connection created during pipeline creation
-  azureSubscription: '0ed6b9c5-fc31-453a-9bfd-44cfc47aa7ab'
+  azureSubscription: '36b5da47-25f9-4a17-8b81-c146d506f248'
 
   # Web app name
   webAppName: 'Unblur'
@@ -63,5 +63,10 @@ stages:
               appType: webAppLinux
               WebAppName: $(webAppName)
               packageForLinux: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
-              StartupCommand: 'npm run azure'
-              
+              RuntimeStack: 'NODE|16-lts'
+              ScriptType: 'Inline Script'
+              InlineScript: |
+                npm install 
+                npm install --prefix frontend
+                npm run build --prefix frontend
+                npm run start- 
