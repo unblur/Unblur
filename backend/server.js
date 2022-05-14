@@ -6,7 +6,7 @@ const connectDB = require('./config/db')
 const { errorHandler } = require('./middleware/errorMiddleware')
 const swaggerUi = require('swagger-ui-express')
 const swaggerDocument = require('./swagger.json')
-const port = process.env.PORT || 8000
+const port = process.env.PORT || 8080
 
 connectDB()
 
