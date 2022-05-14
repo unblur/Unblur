@@ -17,7 +17,7 @@ const Profile = () => {
   // TODO: update API_URL
   const port = process.env.PORT || 8080
   const hostName = process.env.WEBSITE_HOSTNAME || "unblur-final.azurewebsites.net"
-  const API_URL = `http://${hostName}:${port}`
+  const API_URL = `http://${hostName}:${port}/api`
 
   const dispatch = useDispatch()
   const { self, isLoading, isError, isSuccess, message } = useSelector(
