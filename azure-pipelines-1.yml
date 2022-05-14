@@ -27,7 +27,7 @@ stages:
   - job: Build
     displayName: Build
     pool:
-      vmImage: $(vmImageName)
+      name:default
 
     steps:
     - task: ArchiveFiles@2
