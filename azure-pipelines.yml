@@ -27,7 +27,7 @@ stages:
   - job: Build
     displayName: Build
     pool:
-      name: DESKTOP-C6N350L
+      name: default
 
     steps:
     - task: ArchiveFiles@2
@@ -51,7 +51,7 @@ stages:
     displayName: Deploy
     environment: $(environmentName)
     pool:
-      name: DESKTOP-C6N350L
+      name: default
     strategy:
       runOnce:
         deploy:
