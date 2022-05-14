@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/36b5da47-25f9-4a17-8b81-c146d506f248/resourceGroups/Unblur-Tiler/providers/Microsoft.Web/sites/Unblur-Final",
+    "appService.deploySubpath": "."
+}
