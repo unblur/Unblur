@@ -63,7 +63,7 @@ const UploadImage = () => {
       return
     }
 
-    if (algosToUnblur === '' || algosToUnblur < 0) {
+    if (algosToUnblur === '' || algosToUnblur <= 0) {
       toast.error('Please enter valid algos to unblur.')
       return
     }
