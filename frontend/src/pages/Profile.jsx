@@ -14,7 +14,7 @@ const Profile = () => {
   const [supportedArtworks, setSupportedArtworks] = useState([])
   const [transactions, setTransactions] = useState([])
 
-  const API_URL = `https://unblur.cse356.compas.cs.stonybrook.edu/api`
+  const API_URL = `${process.env.REACT_APP_ROOT_PATH}/api`
 
   const dispatch = useDispatch()
   const { self, isLoading, isError, isSuccess, message } = useSelector(
