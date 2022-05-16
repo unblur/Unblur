@@ -42,7 +42,14 @@ const Settings = () => {
       username: self.username,
       profileName: self.profileName || '',
     }))
-    setWallet(self.wallet)
+
+    if (
+      localStorage.getItem('isWalletConnected') !== null &&
+      localStorage.getItem('isWalletConnected') === 'true'
+    )
+    {
+      setWallet(self.wallet)
+    }
   }
 
   const subscribeToEvents = (connector) => {

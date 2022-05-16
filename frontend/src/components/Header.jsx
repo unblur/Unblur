@@ -13,8 +13,6 @@ const Header = () => {
   const onSignOut = () => {
     dispatch(signOut())
     dispatch(reset())
-    const userData = { wallet: '' }
-    dispatch(updateWallet(userData))
     dispatch(resetConnection())
     navigate('/browse')
   }
