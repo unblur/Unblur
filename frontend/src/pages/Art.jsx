@@ -15,7 +15,7 @@ import {
 import { addTransaction } from '../features/transactions/transactionSlice'
 import { getArtworkById } from '../features/artwork/artworkSlice'
 import { Comments } from '../components/Comments'
-const API_URL = `https://unblur.cse356.compas.cs.stonybrook.edu`
+const API_URL = `${process.env.REACT_APP_ROOT_PATH}`
 
 const Art = () => {
   const { id } = useParams()

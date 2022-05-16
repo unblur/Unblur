@@ -11,7 +11,7 @@ const User = () => {
   const [createdArtworks, setCreatedArtworks] = useState([])
   const [supportedArtworks, setSupportedArtworks] = useState([])
 
-  const API_URL = `https://unblur.cse356.compas.cs.stonybrook.edu/api`
+  const API_URL = `${process.env.REACT_APP_ROOT_PATH}/api`
 
   const { id } = useParams()
 
