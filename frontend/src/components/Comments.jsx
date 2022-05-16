@@ -3,10 +3,7 @@ import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 
-//TODO: Update API URL
-const port = process.env.PORT || 8080
-const hostName = process.env.WEBSITE_HOSTNAME || "unblur-final.azurewebsites.net"
-const API_URL = `https://${hostName}:${port}/api/comments/artwork`
+const API_URL = `${process.env.REACT_APP_ROOT_PATH}/api/comments/artwork`
 
 export const Comments = ({ artworkId }) => {
   const auth = useSelector((state) => state.auth)

@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import WalletConnect from '@walletconnect/client'
 import QRCodeModal from 'algorand-walletconnect-qrcode-modal'
-import { apiGetAccountAssets } from './api'
 
 const initialState = {
   accounts: [],
@@ -18,11 +17,9 @@ export const walletConnectSlice = createSlice({
   initialState,
   reducers: {
     setFetching(state, action) {
-      console.log('setFetching: ', action.payload)
       state.fetching = action.payload
     },
     switchChain(state, action) {
-      console.log('switchChain chain: ', action.payload)
       state.chain = action.payload
     },
     resetConnection: (state) => {
@@ -31,7 +28,6 @@ export const walletConnectSlice = createSlice({
       state.assets = []
       state.connected = false
       state.connector = null
-      console.log('reset state', state)
     },
     walletConnectInit: (state) => {
       // Create a connector
@@ -39,8 +35,6 @@ export const walletConnectSlice = createSlice({
         bridge: 'https://bridge.walletconnect.org',
         qrcodeModal: QRCodeModal,
       })
-      console.log('connector initialized.')
-      console.log(state.connector)
     },
     setConnected: (state, action) => {
       state.connected = action.payload
@@ -53,7 +47,6 @@ export const walletConnectSlice = createSlice({
     onSessionUpdate: (state, action) => {
       state.accounts = action.payload
       state.address = action.payload[0]
-      console.log(state.address)
     },
     setAccountAssets: (state, action) => {
       state.assets = action.payload

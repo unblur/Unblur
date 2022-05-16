@@ -11,10 +11,7 @@ const User = () => {
   const [createdArtworks, setCreatedArtworks] = useState([])
   const [supportedArtworks, setSupportedArtworks] = useState([])
 
-  // TODO: update API_URL
-  const port = process.env.PORT || 8080
-  const hostName = process.env.WEBSITE_HOSTNAME || "unblur-final.azurewebsites.net"
-  const API_URL = `https://${hostName}:${port}/api`
+  const API_URL = `${process.env.REACT_APP_ROOT_PATH}/api`
 
   const { id } = useParams()
 
