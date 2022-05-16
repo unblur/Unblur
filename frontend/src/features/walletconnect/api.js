@@ -2,13 +2,12 @@ import algosdk from 'algosdk'
 import { formatJsonRpcRequest } from '@json-rpc-tools/utils'
 
 const algodServer = 'https://testnet-algorand.api.purestake.io/ps2'
-const algodToken = { 'X-API-Key': 'H9WedVpACAHJMWGFLvDYas27ArrwdMo8Sgn4noG1' }
+const algodToken = { 'X-API-Key': process.env.REACT_APP_ALGOD_TOKEN }
 const algodPort = ''
 const testNetClient = new algosdk.Algodv2(algodToken, algodServer, algodPort)
 const numMicroAlgos = 1000000
-const unblurPercentageFee = 0.01
-const unblurWallet =
-  'PHSKOSKMCORJVVBWNBGKISNAZLWHNOMOX3REKRNO3GRKETA65IM2O7X5YM'
+const unblurPercentageFee = parseFloat(process.env.REACT_APP_UNBLUR_FEE)
+const unblurWallet = process.env.REACT_APP_UNBLUR_WALLET
 
 export async function apiGetAccountBalance(address) {
   const accountInfo = await testNetClient.accountInformation(address).do()
