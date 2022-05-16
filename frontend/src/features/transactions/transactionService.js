@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_URL = `https://unblur.cse356.compas.cs.stonybrook.edu/api/transactions`
+const API_URL = `${process.env.REACT_APP_ROOT_PATH}/api/transactions`
 
 // Add Transaction
 const addTransaction = async (token, data) => {
