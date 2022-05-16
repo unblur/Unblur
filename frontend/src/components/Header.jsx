@@ -1,7 +1,8 @@
 import { NavLink, Link, useNavigate } from 'react-router-dom'
 import { GiHamburgerMenu } from 'react-icons/gi'
 import { useDispatch, useSelector } from 'react-redux'
-import { signOut, reset } from '../features/auth/authSlice'
+import { signOut, reset, updateWallet } from '../features/auth/authSlice'
+import { resetConnection } from '../features/walletconnect/walletConnectSlice'
 import { useState } from 'react'
 
 const Header = () => {
@@ -12,6 +13,9 @@ const Header = () => {
   const onSignOut = () => {
     dispatch(signOut())
     dispatch(reset())
+    const userData = { wallet: '' }
+    dispatch(updateWallet(userData))
+    dispatch(resetConnection())
     navigate('/browse')
   }
 

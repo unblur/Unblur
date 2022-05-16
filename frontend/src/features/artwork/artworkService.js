@@ -1,9 +1,6 @@
 import axios from 'axios'
 
-// TODO: update API_URL
-const port = process.env.PORT || 8080
-const hostName = process.env.WEBSITE_HOSTNAME || "unblur-final.azurewebsites.net"
-const API_URL = `https://${hostName}:${port}/api/artworks`
+const API_URL = `${process.env.REACT_APP_ROOT_PATH}/api/artworks`
 
 // Get all artworks
 const getArtworks = async (page) => {

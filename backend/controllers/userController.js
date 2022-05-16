@@ -66,7 +66,7 @@ const registerUser = asyncHandler(async (req, res) => {
       `http://localhost:3000/verifyemail?token=${verificationToken}&id=${user._id}`
     )
   } else {
-    const link = `http://localhost:3000/verifyemail?token=${verificationToken}&id=${user._id}`
+    const link = `https://${process.env.WEBSITE_HOSTNAME}/verifyemail?token=${verificationToken}&id=${user._id}`
     const sendStatus = await sendEmail(
       user.email,
       'Verify Email Address',
@@ -220,7 +220,7 @@ const verifyEmailRequest = asyncHandler(async (req, res) => {
       `http://localhost:3000/verifyemail?token=${verificationToken}&id=${user._id}`
     )
   } else {
-    const link = `http://localhost:3000/verifyemail?token=${verificationToken}&id=${user._id}`
+    const link = `https://${process.env.WEBSITE_HOSTNAME}/verifyemail?token=${verificationToken}&id=${user._id}`
     const sendStatus = await sendEmail(
       user.email,
       'Verify Email Address',
@@ -392,7 +392,7 @@ const resetPasswordRequest = asyncHandler(async (req, res) => {
       `http://localhost:3000/resetpassword?token=${resetToken}&id=${user._id}`
     )
   } else {
-    const link = `http://localhost:3000/resetpassword?token=${resetToken}&id=${user._id}`
+    const link = `https://${process.env.WEBSITE_HOSTNAME}/resetpassword?token=${resetToken}&id=${user._id}`
     const sendStatus = await sendEmail(
       user.email,
       'Password Reset Request',

@@ -1,9 +1,6 @@
 import axios from 'axios'
 
-// TODO: update API_URL
-const port = process.env.PORT || 8080
-const hostName = process.env.WEBSITE_HOSTNAME || "unblur-final.azurewebsites.net"
-const API_URL = `https://${hostName}:${port}/api/users`
+const API_URL = `${process.env.REACT_APP_ROOT_PATH}/api/users`
 
 // Sign up
 const signUp = async (userData) => {
@@ -25,6 +22,8 @@ const signIn = async (userData) => {
 
 const signOut = () => {
   localStorage.removeItem('user')
+  localStorage.removeItem('isWalletConnected')
+  localStorage.removeItem('walletconnect')
 }
 
 // Send verify email request
