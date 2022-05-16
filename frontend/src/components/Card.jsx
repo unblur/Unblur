@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { setArtwork } from '../features/artwork/artworkSlice'
 
-const API_URL = `https://unblur.cse356.compas.cs.stonybrook.edu`
+const API_URL = `${process.env.REACT_APP_ROOT_PATH}`
 
 const Card = (props) => {
   const navigate = useNavigate()

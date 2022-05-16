@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 
-const API_URL = `https://unblur.cse356.compas.cs.stonybrook.edu/api/comments/artwork`
+const API_URL = `${process.env.REACT_APP_ROOT_PATH}/api/comments/artwork`
 
 export const Comments = ({ artworkId }) => {
   const auth = useSelector((state) => state.auth)

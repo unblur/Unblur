@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_URL = `https://unblur.cse356.compas.cs.stonybrook.edu/api/users`
+const API_URL = `${process.env.REACT_APP_ROOT_PATH}/api/users`
 
 // Sign up
 const signUp = async (userData) => {
@@ -22,6 +22,8 @@ const signIn = async (userData) => {
 
 const signOut = () => {
   localStorage.removeItem('user')
+  localStorage.removeItem('isWalletConnected')
+  localStorage.removeItem('walletconnect')
 }
 
 // Send verify email request
