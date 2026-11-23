@@ -91,7 +91,10 @@ const registerUser = asyncHandler(async (req, res) => {
 // @route   POST /api/users/login
 // @access  Public
 const loginUser = asyncHandler(async (req, res) => {
-  const { emailOrUsername, password } = req.body
+  let { emailOrUsername, password } = req.body
+
+  // Case insensitive email or username
+  emailOrUsername = emailOrUsername.toLowerCase()
 
   // Check if user exists
   const [userEmail, userName] = await Promise.all([
